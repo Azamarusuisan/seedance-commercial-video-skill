@@ -1,4 +1,4 @@
 interface:
-  display_name: "Seedance Commercial Video"
+  display_name: "Seedance"
   short_description: "Higgsfield SeedanceでCM動画を設計・生成"
   default_prompt: "Seedanceで15秒のCM動画を作成してください"
