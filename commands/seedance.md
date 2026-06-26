@@ -1,6 +1,10 @@
-# /seedance
+# Seedance Commercial Video
 
 Use the installed `seedance` skill for this request.
+
+Note: some Codex CLI versions do not expose personal plugin command files in the `/` command list.
+If `/seedance` is not recognized, invoke the skill by typing a normal prompt that starts with
+`seedance`, for example: `seedance 15秒CMをPC用とスマホ用で作る`.
 
 Before task actions, read `skills/seedance/SKILL.md` and the referenced workflow file under `skills/seedance/references/`. Follow the commercial rights gate, budget lock, retry strategy, acceptance criteria, and delivery package rules.
 
