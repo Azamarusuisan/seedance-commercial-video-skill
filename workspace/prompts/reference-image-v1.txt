@@ -1,0 +1,44 @@
+Use case: video-generation-reference
+Asset type: image-to-video reference image for a short Seedance video
+
+Primary request:
+Create a clean, rights-safe reference image that can be used as the visual anchor for a short AI-generated video.
+
+Video use case:
+{commercial | social-post | product-demo | app-walkthrough | explainer | event-teaser | portfolio | background-loop | story-scene}
+
+Project/title/name:
+{project_name}
+
+Viewer and placement:
+{target_viewer}
+{placement}
+
+Scene/backdrop:
+{scene_or_visual_metaphor}
+
+Subject:
+{main_subject_or_object}
+
+Style/medium:
+{style_direction}
+
+Composition/framing:
+Create the image in {aspect_ratio} composition with clear safe space for short text if text is allowed. Keep the main subject readable and uncluttered.
+
+Lighting/mood:
+{lighting_and_mood}
+
+Text:
+Use only these exact words if text is allowed:
+{approved_text_or_none}
+
+Constraints:
+- Use abstract, synthetic, user-provided, or rights-cleared visual elements only.
+- Do not use third-party logos, real brand imitation, real people, celebrities, existing characters, copyrighted elements, private data, or copied UI unless the user explicitly provided the asset and usage rights.
+- Do not include unsupported claims, fake awards, fake official partnerships, fake metrics, guaranteed outcomes, or legal/medical/financial claims.
+- Keep text sharp, minimal, and large if used. No unreadable microtext.
+
+Avoid:
+{project_specific_avoid_list}
+

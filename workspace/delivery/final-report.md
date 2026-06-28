@@ -124,6 +124,8 @@ Status: in progress. CM direction is proposal v1 for `競馬AI`, and Higgsfield 
 - note用のワークフロー図解PNG/SVGを作成した。
 - note-ready draftを縦横動画、図解、有料テンプレート多めに増強した。
 - note風HTMLプレビューを作成した。
+- 画像生成からSeedance image-to-videoへ渡す汎用動線を追加した。
+- CM以外の用途にも使える汎用Seedance内部プロンプト/テンプレートを追加した。
 - Higgsfield MCPリクエスト待ちの状態をログ化した。
 - コスト見積もりと生成ジョブの未実行理由をJSONで残した。
 - note記事下書き、導入文、有料部分構成案、タイトル案を作成した。

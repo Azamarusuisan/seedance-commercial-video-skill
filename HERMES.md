@@ -6,6 +6,7 @@ Hermes-specific notes:
 
 - Use the included plugin skill at `skills/seedance/SKILL.md`.
 - Use the workflow reference at `skills/seedance/references/seedance-cm-workflow.md`.
+- Use `skills/seedance/references/image-to-video-handoff.md` when a generated/reference image should become a Seedance video.
 - `SKILL.md` and `references/seedance-cm-workflow.md` remain available for root-skill compatibility.
 - Use Hermes Chrome for web login and browser actions:
   `/Users/stork/Applications/Hermes Chrome.command`

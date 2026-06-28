@@ -1,27 +1,78 @@
 ---
 name: seedance
-description: Create short commercial videos with Higgsfield Seedance from a service/product brief, model reference, product references, screenshots, or brand assets. Use when an agent needs to plan prompts, generate PC/mobile variants, estimate cost, submit Seedance jobs, track outputs, or package reusable CM-generation workflow for fashion, EC, app, SaaS, product, or brand promotion videos.
+description: Create short videos with Higgsfield Seedance from a brief, generated reference image, product/reference assets, screenshots, or brand materials. Use when an agent needs to plan image-to-video prompts, generate vertical/horizontal variants, estimate cost, submit Seedance jobs through Higgsfield MCP, track outputs, or package reusable video workflows for commercials, product demos, explainers, social posts, app walkthroughs, event teasers, portfolio clips, or visual loops.
 ---
 
-# Seedance Commercial Video
+# Seedance Video Workflow
 
 ## Overview
 
-Use this skill to produce short CM-style videos with Higgsfield Seedance while keeping the workflow reusable across brands and projects. Treat every brand name, pronunciation, product name, person, and claim as user-provided input; do not bake project-specific defaults into the skill.
+Use this skill to produce short videos with Higgsfield Seedance while keeping the workflow reusable across video use cases. Treat every project name, brand, person, product, claim, style, and reference asset as user-provided input; do not bake project-specific defaults into the skill.
+
+The skill supports CM/commercial work, but it is not limited to CM. Route the job by `video_use_case` first, then apply the correct prompt structure and safety checks.
+
+## Supported Use Cases
+
+Choose the closest use case before writing prompts:
+
+- `commercial`: ads, CM, product/service promotion, sales-oriented short videos.
+- `social-post`: X, TikTok, Instagram, YouTube Shorts, announcement clips, visual hooks.
+- `product-demo`: product motion, EC showcase, catalog-style video, before/after usage.
+- `app-walkthrough`: SaaS/app screens, dashboard moments, feature walkthroughs.
+- `explainer`: educational, tutorial, how-to, workflow explanation.
+- `event-teaser`: event, seminar, launch, campaign teaser.
+- `portfolio`: case study, creator showcase, project reveal, note/LP embed.
+- `background-loop`: atmospheric loop, hero background, ambient visual, motion backdrop.
+- `story-scene`: narrative beat, concept scene, mood shot, character/environment clip.
+
+If the user does not specify a use case, infer a conservative default from the brief and state it in the brief. For commercial or public-facing uses, keep rights and claims checks active.
+
+## Image-To-Video Route
+
+Use this route when the user has no footage, wants a generated visual reference, or asks for image-to-video:
+
+1. Lock the video brief:
+   - `video_use_case`
+   - title/project name
+   - pronunciation, if relevant
+   - target viewer
+   - intended platform or placement
+   - aspect ratio, duration, count
+   - audio policy
+   - text policy
+   - budget, max jobs, max retry count
+   - rights/commercial-publication status
+2. Create or select a reference image:
+   - Prefer user-provided assets with clear usage rights.
+   - If there are no usable assets, create an abstract or synthetic generated reference image.
+   - Keep generated reference text minimal because image text may fail.
+   - Save the selected reference image inside `workspace/assets/`.
+3. Write one Seedance prompt per output:
+   - Do not reuse a 16:9 prompt unchanged for 9:16.
+   - Treat the image as a visual anchor, not a source of legal clearance.
+   - Mention what should be preserved from the reference image: mood, subject, layout, colors, product, or scene.
+4. Prepare MCP requests:
+   - `workspace/scripts/seedance-cost.sh` and `workspace/scripts/seedance-generate.sh` include `IMAGE_FILE` when the file exists.
+   - Use `IMAGE_FILE=workspace/assets/<reference>.png` to override the default.
+   - The generated MCP request stores the prompt plus `image=<path>` for the host Higgsfield MCP tool.
+5. Run Higgsfield MCP only after approval, cost check, login/credit check, and rights check.
+6. Record sanitized results, result URLs, MP4 paths, and known limitations.
 
 ## Workflow
 
 1. Lock the brief:
-   - service/product name
+   - video use case
+   - title/project/product/service name
    - required pronunciation, if any
-   - target audience
+   - target audience or viewer
+   - intended placement: feed, note, LP, YouTube, pitch deck, app page, internal review, etc.
    - deliverables: aspect ratio, duration, count
    - maximum budget, maximum jobs, and maximum retry count
-   - whether AI voice-over and AI in-video text are allowed
-   - required references: model, products, screenshots, brand assets
-2. Gather references from local/project files first. Use web assets only when explicitly allowed.
+   - whether AI voice-over, music, and in-video text are allowed
+   - required references: generated image, model/person, products, screenshots, logo, style frames, brand assets
+2. Gather references from local/project files first. Use web assets only when explicitly allowed and rights are clear.
 3. Write one prompt per output. Do not reuse a 16:9 prompt unchanged for 9:16.
-4. Keep Seedance responsible for cinematic video. Keep in-video text short: one phrase per beat.
+4. Keep Seedance responsible for cinematic/motion video. Keep in-video text short: one phrase per beat.
 5. Preflight:
    - Confirm the host agent has Higgsfield MCP connected.
    - Use Higgsfield MCP to check account/login/plan/credits.
@@ -29,78 +80,96 @@ Use this skill to produce short CM-style videos with Higgsfield Seedance while k
    - Use Higgsfield MCP to estimate generation cost.
 6. Generate:
    - Use `seedance_2_0` by default unless the user chooses another model.
-   - Prefer `--resolution 4k` and `--bitrate_mode high` when the user prioritizes quality and credits allow.
-   - Use `--generate_audio true` only when AI narration/music is wanted.
+   - Prefer `1080p` for the first approved draft unless the user prioritizes quality and credits allow higher settings.
+   - Use `generate_audio=true` only when narration/music is wanted and approved.
 7. Track every artifact:
    - prompt file
-   - reference file list
+   - reference image or asset list
    - model and parameters
+   - cost estimate
    - job JSON
    - result URL
    - downloaded MP4 path
 8. Verify before final:
    - output opens and has expected duration/aspect
-   - brand/service pronunciation is correct in prompt
+   - important names and pronunciation are correct in the prompt
    - text is short enough to be plausible
-   - reference person/object is not badly distorted
+   - reference person/object/product is not badly distorted
    - visual does not imply unsupported claims
+   - usage limitations are documented
 
-## Commercial Rights Gate
+## Rights Gate
 
-商用CMとして扱う場合は、生成前に素材の権利状態を確認する。AIだけで法務判断を完結させない。
+For public-facing, commercial, client, brand, or monetized uses, confirm material rights before generation and before final delivery. AI cannot complete legal clearance by itself.
 
-- ユーザーが提供した画像、動画、ロゴ、人物素材、商品素材、スクリーンショットを優先する。
-- Web上の画像や第三者素材を、商用CMの最終成果物へ無断利用しない。
-- 人物写真、店舗写真、商品写真、ロゴ、UIスクリーンショットは、ユーザーが商用利用権を持っている前提が必要。
-- 権利が不明な素材を使う場合、その出力は「内部確認用ドラフト」として扱い、最終納品物とは分ける。
-- 有名人、既存ブランド、他社広告、映画、アニメ、ゲームなどのIPを無断で模倣しない。
-- 商標、著作権、肖像権、パブリシティ権のリスクがある場合は、別素材、抽象表現、汎用モデル、架空ブランド表現などの代替案を作る。
-- 最終公開前の権利確認は、クライアントまたは権利確認担当者が行う。
+- Prefer user-provided images, videos, logos, people, product materials, screenshots, or brand assets.
+- Do not use web images or third-party materials in final public/commercial outputs unless the user confirms rights.
+- Person photos, store photos, product photos, logos, and UI screenshots require a clear usage basis.
+- If rights are unclear, label the output as an internal draft and keep it separate from final deliverables.
+- Do not imitate celebrities, existing brands, third-party ads, films, anime, games, or protected characters without permission.
+- When trademark, copyright, likeness, or publicity-right risk exists, use alternate materials, abstract visuals, generic models, fictional brands, or non-commercial drafts.
+- Final publication rights checks must be performed by the user/client or responsible human reviewer.
 
 ## Budget Lock
 
-動画生成は費用が膨らみやすいため、生成前に予算と回数を固定する。
+Video generation can consume credits quickly. Lock budget and iteration limits before any paid generation.
 
-- 生成前に、最大予算、最大ジョブ数、最大再生成回数を確認する。
-- 予算が不明な場合は、最小構成で進める。例: 1本、短尺、低めの解像度、音声なし、少ないバリエーション。
-- 予算を超える生成を勝手に実行しない。
-- 品質改善目的でも、無制限に再生成しない。
-- 予算オーバー時は、本数、秒数、解像度、音声、バリエーション数を減らす。
-- 再生成は原則2回まで。3回目以降はユーザー確認、構成見直し、素材見直し、または手動編集案へ切り替える。
-- 見積もりが可能な場合は、生成前にHiggsfield MCPで確認し、結果を記録する。
+- Confirm maximum budget, maximum job count, and maximum retry count before generation.
+- If budget is unknown, use a minimal setup: one short draft, one aspect ratio, no audio, no extra variants.
+- Do not exceed budget or run unlimited regenerations.
+- If the estimate is too high, reduce count, duration, resolution, audio, or variants.
+- Regeneration is normally limited to 2 attempts. For a third attempt, ask the user to confirm budget, revise references, simplify the prompt, or switch to manual editing.
+- When cost estimation is available, run it through Higgsfield MCP before generation and record the result.
 
-## Acceptance Criteria
+## Use-Case Prompt Guidance
 
-納品OK/NGは以下で判定する。重要項目が満たせない場合は、納品せず再生成、手動修正、構成見直しの対象にする。
+### Commercial
 
-- 指定されたアスペクト比、秒数、本数がブリーフと一致している。
-- 店舗名、商品名、サービス名、読み方が間違っていない。
-- ナレーションがある場合、読み方、イントネーション、言語、トーンの指定がプロンプトまたは制作メモに明記されている。
-- 画面内テキストが長すぎず、潰れず、ドラフトとして読める。
-- ロゴ、人物、商品、UIが大きく破綻していない。
-- 根拠のない売上保証、医療・法律・金融的な断定、虚偽の実績、架空の提携表現がない。
-- 最終MP4を実際に開ける。
-- 出力ファイルの保存先、生成設定、ジョブ情報、成果物URLが記録されている。
-- 重要なブランド要素が間違っている場合は納品せず、再生成または修正対象にする。
-- AI生成動画としての限界、確認事項、使用上の注意が納品メモに残っている。
+- Structure: hook, value proposition, use/result, brand/CTA.
+- Safety: unsupported sales, profit, hit-rate, No.1, official partnership, medical/financial/legal claims require evidence.
+- Text: short tagline plus brand/service name.
 
-## Commercial Safety Rules
+### Social Post
 
-商用CMでは、誤認や権利リスクにつながる表現を避ける。
+- Structure: instant visual hook, motion surprise, one memorable phrase, shareable ending.
+- Safety: avoid fake platform UI, fake endorsements, and third-party logos unless rights are confirmed.
+- Text: one phrase per beat.
 
-Do not generate or approve:
+### Product Demo
 
-- 売上保証。
-- 「必ず儲かる」「絶対集客できる」などの断定。
-- 根拠のないNo.1表記、業界最高、世界初、唯一などの優位性表現。
-- 架空の口コミ、架空の受賞歴、架空の掲載実績。
-- 実在企業との提携を匂わせる表現。
-- 医療、美容、金融、法律などで誤認を招く効果保証。
-- 第三者ブランド、有名人、キャラクター、映画、アニメ、ゲーム等の無断利用。
-- 実際の商品、価格、キャンペーン条件、在庫、納期と違う表示。
-- AI生成であることを隠したまま、実写証拠や実物保証のように見せる表現。
+- Structure: product reveal, use motion, material/detail shot, final product frame.
+- Safety: do not imply exact product condition, fit, specifications, or availability unless provided.
+- Text: feature label plus product name.
 
-必要な主張がある場合は、ユーザーから根拠資料を受け取り、最終公開前に人間が確認する。
+### App Walkthrough
+
+- Structure: app context, feature action, dashboard/result moment, final screen.
+- Safety: avoid fake metrics, fake customers, real private data, and copied third-party UI.
+- Text: feature name plus short outcome.
+
+### Explainer
+
+- Structure: concept/problem, visual metaphor, step-by-step transformation, final takeaway.
+- Safety: keep factual claims cautious and label generated diagrams as explanatory when needed.
+- Text: short labels only.
+
+### Event Teaser
+
+- Structure: atmosphere, date/theme reveal, highlight moment, event title/CTA.
+- Safety: do not show unapproved venues, speakers, sponsors, or logos.
+- Text: event title, date, CTA.
+
+### Portfolio
+
+- Structure: project title, process/visual reveal, outcome frame, creator/client credit.
+- Safety: avoid unapproved client logos, private work, or unlicensed assets.
+- Text: project title plus credit.
+
+### Background Loop
+
+- Structure: seamless ambience, slow motion, no hard narrative dependency.
+- Safety: avoid readable claims or logos unless provided.
+- Text: usually none.
 
 ## MCP Pattern
 
@@ -114,6 +183,14 @@ APPROVED=1 bash workspace/scripts/seedance-cost.sh
 APPROVED=1 bash workspace/scripts/seedance-generate.sh
 ```
 
+For image-to-video, explicitly pass the reference image when needed:
+
+```bash
+IMAGE_FILE=workspace/assets/reference-image-v1.png \
+APPROVED=1 \
+bash workspace/scripts/seedance-generate.sh
+```
+
 The generated files under `workspace/mcp-requests/` describe the intended Higgsfield MCP calls. After running MCP, record sanitized responses with:
 
 ```bash
@@ -123,23 +200,36 @@ bash workspace/scripts/record-mcp-json.sh cost <mcp-cost-response.json>
 bash workspace/scripts/record-mcp-json.sh job <mcp-job-response.json>
 ```
 
-When passing multiple media references, first verify the Higgsfield MCP media schema with a low-cost test or current model documentation. If a multi-reference path fails, fall back to one strong visual reference plus explicit product/service description in the prompt.
+When passing multiple media references, first verify the Higgsfield MCP media schema with a low-cost test or current model documentation. If a multi-reference path fails, fall back to one strong visual reference plus explicit description in the prompt.
 
 ## Prompt Rules
 
-- Always include the required pronunciation when the service/product name has a non-obvious reading.
-- Use concise in-video text. Prefer 1-8 characters for logos and 5-14 Japanese characters for caption cards.
+- Always include required pronunciation when a name has a non-obvious reading.
+- State `video_use_case`, target viewer, platform/placement, aspect ratio, duration, and output count.
+- Use concise in-video text. Prefer 1-8 characters for logos/names and 5-14 Japanese characters for caption cards.
 - For voice-over, write exact narration and specify language, tone, and pronunciation.
-- Separate PC and mobile composition:
-  - PC/16:9: wider layout, product/app panels, clearer service explanation.
-  - Mobile/9:16: centered subject, faster hook, fewer words, stronger final brand moment.
-- Do not claim exact fit, exact product condition, medical/legal/financial outcomes, or official partnership unless the user provided that basis.
+- Separate wide and mobile composition:
+  - 16:9: wider layout, panels, environment, clearer explanation.
+  - 9:16: centered subject, faster hook, fewer words, strong final moment.
+- Do not claim exact fit, exact product condition, medical/legal/financial outcomes, sales/profit/customer acquisition, or official partnership unless the user provided that basis.
 - For people: preserve broad identity, expression, and natural face quality without promising perfect likeness.
 - For products: preserve color/material/shape as a goal, but label generated footage as reference if used commercially.
+- For generated references: specify what Seedance should inherit, such as mood, composition, lighting, subject, style, or color.
+
+## Acceptance Criteria
+
+- Specified aspect ratio, duration, and count match the brief.
+- Required names, labels, and pronunciation notes are correct.
+- In-video text is short, readable, and draft-appropriate.
+- Reference person/object/product/UI is not badly distorted.
+- Output does not include unsupported claims or unauthorized third-party elements.
+- Final MP4 opens successfully.
+- Output file path, generation settings, job information, result URL, and limitations are recorded.
+- For public/commercial/client use, rights and claims notes are present.
 
 ## Delivery Package
 
-案件ごとに、成果物と制作情報を同じフォルダまたは同じ納品メモに整理する。
+For each project, organize deliverables and production information in the same folder or delivery memo.
 
 - final MP4 files
 - prompt files
@@ -152,27 +242,30 @@ When passing multiple media references, first verify the Higgsfield MCP media sc
 - usage notes
 - known limitations
 
-`known limitations`には、必要に応じて以下を明記する。
+`known limitations` should mention, when applicable:
 
-- AI生成動画のため、極小文字、完全なロゴ再現、完全な人物一致は保証できない。
-- 重要な法的表現、医療表現、金融表現、価格表記、キャンペーン条件は人間が確認する。
-- 最終公開前に、クライアント側で内容、権利、表記を確認する。
+- AI-generated video may not guarantee tiny text, exact logos, exact face identity, exact product geometry, exact UI, or legal/factual accuracy.
+- Important legal, medical, financial, pricing, campaign, product, or rights statements require human review.
+- Final publication requires user/client review of content, rights, claims, and platform rules.
+- If any source material rights are unclear, the output is an internal draft, not a final public asset.
 
 ## Reference
 
-Read `references/seedance-cm-workflow.md` before writing final prompts or generating multi-variant CM jobs.
+Read `references/seedance-cm-workflow.md` before writing final prompts or generating multi-variant jobs. The filename is kept for backward compatibility; the content now covers general short-video workflows, not only CM.
 
 ## Final Checklist
 
 - [ ] Brief confirmed
+- [ ] Use case confirmed
 - [ ] Rights confirmed
 - [ ] Budget confirmed
 - [ ] Aspect ratio confirmed
 - [ ] Duration confirmed
-- [ ] Brand name checked
-- [ ] Voiceover pronunciation checked
+- [ ] Reference image/assets confirmed
+- [ ] Names and pronunciation checked
+- [ ] Voiceover policy checked
 - [ ] On-screen text readable
-- [ ] Claims are safe
+- [ ] Claims and rights are safe for intended use
 - [ ] Final MP4 opened successfully
 - [ ] Output paths recorded
 - [ ] Delivery package created

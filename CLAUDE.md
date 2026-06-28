@@ -8,5 +8,5 @@ Claude Code-specific notes:
 - Run Higgsfield account checks, Seedance cost estimates, and Seedance generation through the host-provided Higgsfield MCP tool, not a local `higgsfield` package.
 - Do not paste or save credentials into files, prompts, logs, or shell history.
 - If Higgsfield or note asks for login, stop and ask the user to complete it manually in Hermes Chrome.
-- Keep CM generation gated until the user approves the final brief and prompt.
+- Keep Seedance generation gated until the user approves the final use case, brief, reference image/assets, budget, and prompt.
 - Do not press note publish buttons or finalize paid settings.

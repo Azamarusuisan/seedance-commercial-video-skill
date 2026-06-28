@@ -1,7 +1,7 @@
 {
   "name": "seedance",
   "version": "0.1.0",
-  "description": "Plan and produce short commercial videos with the generic Seedance workflow.",
+  "description": "Plan and produce short videos with the generic Seedance image-to-video workflow.",
   "author": {
     "name": "Azamarusuisan",
     "url": "https://github.com/Azamarusuisan"
@@ -12,23 +12,23 @@
   "keywords": [
     "seedance",
     "higgsfield",
-    "commercial-video",
+    "short-video",
     "video-generation"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Seedance",
-    "shortDescription": "Commercial video workflow for Seedance.",
-    "longDescription": "A generic commercial-video workflow for planning, generating, reviewing, and packaging short Seedance videos with rights, budget, retry, and delivery guardrails.",
+    "shortDescription": "Short-video workflow for Seedance.",
+    "longDescription": "A generic short-video workflow for planning, image-to-video prompting, generating, reviewing, and packaging Seedance videos with rights, budget, retry, and delivery guardrails.",
     "developerName": "Azamarusuisan",
     "category": "Productivity",
     "capabilities": [
       "Write"
     ],
     "defaultPrompt": [
-      "Plan a short commercial video with Seedance.",
-      "Create PC and mobile Seedance prompt drafts.",
-      "Review a Seedance CM brief before generation."
+      "Plan a short video with Seedance.",
+      "Create image-to-video Seedance prompt drafts.",
+      "Review a Seedance video brief before generation."
     ]
   }
 }

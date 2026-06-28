@@ -179,6 +179,8 @@ PY
 default_image_file() {
   if [ -n "${IMAGE_FILE:-}" ]; then
     printf '%s\n' "$IMAGE_FILE"
+  elif [ -f "$REPO_ROOT/workspace/assets/reference-image-v1.png" ]; then
+    printf '%s\n' "$REPO_ROOT/workspace/assets/reference-image-v1.png"
   elif [ -f "$REPO_ROOT/workspace/assets/reference-keiba-ai-gptimage-v1.png" ]; then
     printf '%s\n' "$REPO_ROOT/workspace/assets/reference-keiba-ai-gptimage-v1.png"
   else
@@ -193,7 +195,7 @@ approval_gate() {
 
   if [ "${APPROVED:-0}" != "1" ]; then
     write_status_json "$log_path" "$command_name" "blocked" "APPROVED=1 is required before cost or generation."
-    log_warn "Blocked: set APPROVED=1 only after the user approves the final brief, prompt, reference image, and budget."
+    log_warn "Blocked: set APPROVED=1 only after the user approves the final brief, prompt, reference image/assets, budget, and intended use."
     exit 2
   fi
 

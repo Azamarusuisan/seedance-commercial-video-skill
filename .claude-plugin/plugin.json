@@ -1,7 +1,7 @@
 {
   "name": "seedance",
   "version": "0.1.0",
-  "description": "Plan and produce short commercial videos with Higgsfield MCP and Seedance, including briefs, prompts, cost gates, delivery checks, and note drafts.",
+  "description": "Plan and produce short videos with Higgsfield MCP and Seedance, including image-to-video prompts, briefs, cost gates, delivery checks, and note drafts.",
   "author": {
     "name": "Azamarusuisan"
   }

@@ -44,7 +44,7 @@ write_mcp_request_with_prompt \
   "wait=true" \
   "wait_timeout=$WAIT_TIMEOUT" \
   "wait_interval=$WAIT_INTERVAL" \
-  "result_url_log=workspace/logs/result-urls.md" \
+  "result_url_log=$URL_LOG" \
   "download_path=$OUT_MP4" \
   "$image_arg"
 

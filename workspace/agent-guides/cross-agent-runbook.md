@@ -1,6 +1,6 @@
 # Cross-Agent Runbook
 
-This runbook keeps the same CM workflow usable from Codex, Claude Code, Hermes, and OpenCrew-style automation.
+This runbook keeps the same Seedance short-video workflow usable from Codex, Claude Code, Hermes, and OpenCrew-style automation. The current project is a CM, but the workflow also supports social posts, product demos, app walkthroughs, explainers, event teasers, portfolio clips, background loops, and story scenes.
 
 ## Current Project
 
@@ -17,13 +17,14 @@ This runbook keeps the same CM workflow usable from Codex, Claude Code, Hermes, 
 
 Stop and ask the user before passing each gate:
 
-1. CM concept approval
-2. Final Seedance prompt approval
-3. Higgsfield login and paid/credit status
-4. Cost approval
-5. Video generation
-6. note draft insertion
-7. Any public release
+1. Video use case and concept approval
+2. Reference image/assets approval
+3. Final Seedance prompt approval
+4. Higgsfield login and paid/credit status
+5. Cost approval
+6. Video generation
+7. note draft insertion, when relevant
+8. Any public release
 
 The last gate must never be automated here. note publishing is prohibited.
 
@@ -35,9 +36,17 @@ Run from the repository root:
 bash workspace/scripts/preflight.sh
 ```
 
-If GPT Image reference generation is required:
+If generated reference image creation is required:
 
 ```bash
+bash workspace/scripts/gpt-image-reference.sh
+```
+
+For generic image-to-video, prefer:
+
+```bash
+GPT_IMAGE_PROMPT_FILE=workspace/prompts/reference-image-v1.txt \
+GPT_IMAGE_OUT=workspace/assets/reference-image-v1.png \
 bash workspace/scripts/gpt-image-reference.sh
 ```
 
@@ -60,11 +69,27 @@ bash workspace/scripts/record-mcp-json.sh account <mcp-account-response.json>
 bash workspace/scripts/record-mcp-json.sh model <mcp-model-response.json>
 ```
 
-After the prompt is final and explicitly approved, prepare MCP cost and generation requests:
+After the prompt, reference image/assets, rights status, and budget are final and explicitly approved, prepare MCP cost and generation requests:
 
 ```bash
 APPROVED=1 bash workspace/scripts/seedance-cost.sh
 APPROVED=1 bash workspace/scripts/seedance-generate.sh
+```
+
+For image-to-video, pass the reference image explicitly:
+
+```bash
+IMAGE_FILE=workspace/assets/reference-image-v1.png \
+PROMPT_FILE=workspace/prompts/seedance-video-v1.txt \
+ASPECT_RATIO=9:16 \
+APPROVED=1 \
+bash workspace/scripts/seedance-cost.sh
+
+IMAGE_FILE=workspace/assets/reference-image-v1.png \
+PROMPT_FILE=workspace/prompts/seedance-video-v1.txt \
+ASPECT_RATIO=9:16 \
+APPROVED=1 \
+bash workspace/scripts/seedance-generate.sh
 ```
 
 Then run the generated request files through Higgsfield MCP and record sanitized responses:
@@ -89,8 +114,8 @@ Use environment variables only for the current shell/session. Do not write secre
 - `HIGGSFIELD_MCP_AVAILABLE`: optional marker for shell preflight; real MCP availability must be checked in the host agent's MCP tool list.
 - `HERMES_CDP_PORT`: defaults to `9223`.
 - `HIGGSFIELD_MODEL`: defaults to `seedance_2_0`.
-- `PROMPT_FILE`: defaults to `workspace/prompts/seedance-9x16-v1.txt`.
-- `IMAGE_FILE`: defaults to `workspace/assets/reference-keiba-ai-gptimage-v1.png`, then falls back to `workspace/assets/reference-keiba-ai-v1.png`.
+- `PROMPT_FILE`: defaults to `workspace/prompts/seedance-9x16-v1.txt` for the current project. Generic projects can use `workspace/prompts/seedance-video-generic-template.txt` as a template and save a project-specific prompt.
+- `IMAGE_FILE`: when set, overrides the reference image. Otherwise scripts prefer `workspace/assets/reference-image-v1.png`, then the current project fallback images.
 - `DURATION`: defaults to `15`.
 - `RESOLUTION`: defaults to `1080p`.
 - `BITRATE_MODE`: defaults to `high`.
@@ -102,7 +127,7 @@ Use environment variables only for the current shell/session. Do not write secre
 
 The Seedance scripts require `APPROVED=1`. They also refuse to run if the prompt still contains pending markers such as `Do not run`, `pending`, or `proposal`.
 
-When the user approves the final prompt, remove the pending header from `workspace/prompts/seedance-9x16-v1.txt` and keep only the actual Seedance prompt.
+When the user approves the final prompt, remove pending/proposal markers from the project-specific prompt file and keep only the actual Seedance prompt.
 
 The scripts do not execute a local Higgsfield CLI. They prepare MCP request JSON under `workspace/mcp-requests/`. Use the Higgsfield MCP tool exposed by Codex, Claude Code, Hermes, or OpenCrew to execute the request.
 

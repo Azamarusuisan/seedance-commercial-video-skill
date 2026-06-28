@@ -12,11 +12,15 @@ git status --short || true
 for required in \
   "SKILL.md" \
   "references/seedance-cm-workflow.md" \
+  "references/image-to-video-handoff.md" \
   "skills/seedance/SKILL.md" \
   "skills/seedance/references/seedance-cm-workflow.md" \
+  "skills/seedance/references/image-to-video-handoff.md" \
   "workspace/agent-guides/cross-agent-runbook.md" \
   "workspace/inputs/project-brief.md" \
   "workspace/briefs/cm-brief.md" \
+  "workspace/prompts/reference-image-v1.txt" \
+  "workspace/prompts/seedance-video-generic-template.txt" \
   "workspace/prompts/seedance-9x16-v1.txt"
 do
   if [ -f "$required" ]; then

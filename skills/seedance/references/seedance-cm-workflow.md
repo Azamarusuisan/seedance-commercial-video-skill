@@ -1,64 +1,138 @@
-# Seedance CM Workflow
+# Seedance Short Video Workflow
+
+This file keeps the historical `seedance-cm-workflow.md` name for compatibility. The workflow is now generic and can be used for commercials, social posts, product demos, app walkthroughs, explainers, event teasers, portfolio clips, background loops, and story scenes.
 
 ## Required Inputs
 
 Capture these before generation:
 
-- Brand/service/product name
+- Video use case:
+  - `commercial`
+  - `social-post`
+  - `product-demo`
+  - `app-walkthrough`
+  - `explainer`
+  - `event-teaser`
+  - `portfolio`
+  - `background-loop`
+  - `story-scene`
+- Project/title/brand/product/service name
 - Pronunciation guide, if needed
-- One-line value proposition
+- One-line objective or viewer takeaway
+- Target viewer
+- Intended placement: X, TikTok, Instagram, YouTube, note, LP, pitch deck, app page, internal review, etc.
 - Target format: `16:9`, `9:16`, `1:1`, or another supported ratio
 - Duration and number of variants
 - Main reference assets:
+  - generated reference image
   - model/person image
   - product images
   - app screenshots
   - logo or brand visuals
+  - style frames
 - Audio policy:
   - AI voice-over allowed or not
   - AI music allowed or not
   - in-video AI text allowed or not
+- Rights and publication status:
+  - internal draft only
+  - public organic post
+  - paid ad/commercial
+  - client delivery
+  - monetized article/course/product
+
+## Image-To-Video Handoff
+
+Use this route when a still reference image should drive the Seedance video:
+
+1. Prepare the reference prompt in `workspace/prompts/reference-image-v1.txt` or a project-specific prompt file.
+2. Generate or select a reference image and save it under `workspace/assets/`.
+3. Use that image as `IMAGE_FILE` when preparing Seedance cost/generation requests.
+4. Keep the Seedance prompt explicit about what to inherit from the image:
+   - subject
+   - mood
+   - composition
+   - lighting
+   - colors
+   - product details
+   - style
+   - safe text areas
+5. Do not ask Seedance to infer legal rights from the reference image.
+6. If the image has too much text, reduce video text and restate text explicitly in the Seedance prompt.
+
+Example:
+
+```bash
+GPT_IMAGE_PROMPT_FILE=workspace/prompts/reference-image-v1.txt \
+GPT_IMAGE_OUT=workspace/assets/reference-image-v1.png \
+bash workspace/scripts/gpt-image-reference.sh
+
+IMAGE_FILE=workspace/assets/reference-image-v1.png \
+PROMPT_FILE=workspace/prompts/seedance-video-v1.txt \
+ASPECT_RATIO=9:16 \
+APPROVED=1 \
+bash workspace/scripts/seedance-cost.sh
+
+IMAGE_FILE=workspace/assets/reference-image-v1.png \
+PROMPT_FILE=workspace/prompts/seedance-video-v1.txt \
+ASPECT_RATIO=9:16 \
+APPROVED=1 \
+bash workspace/scripts/seedance-generate.sh
+```
+
+The scripts prepare MCP request JSON only. The actual cost/generation call must be run through the host-provided Higgsfield MCP tool.
 
 ## 15-Second Structure
 
-Use this as the default short CM structure.
+Use this as the default short-video structure. Adjust by use case.
 
 ### 16:9
 
-1. 0-3s: Establish the product/service and main subject.
-2. 3-7s: Show the problem or transformation trigger.
-3. 7-12s: Show the product/service result with visual proof.
-4. 12-15s: End with brand/service name and one clear CTA or claim.
+1. 0-3s: Establish the subject, scene, or core idea.
+2. 3-7s: Show the transformation, action, feature, or concept shift.
+3. 7-12s: Show the main visual result, explanation, or emotional payoff.
+4. 12-15s: End with title, brand, CTA, takeaway, or seamless loop point.
 
 ### 9:16
 
-1. 0-2s: Immediate hook.
-2. 2-6s: Fast transformation or benefit demonstration.
+1. 0-2s: Immediate visual hook.
+2. 2-6s: Fast motion, transformation, or key step.
 3. 6-11s: Main result, centered and readable.
-4. 11-15s: Final brand/service moment.
+4. 11-15s: Final title/CTA/takeaway or loop point.
 
 ## 30-Second Structure
 
 For two 15-second clips that will be joined later:
 
-- Clip A: hook, problem, transformation setup.
-- Clip B: result, social proof or use cases, final brand/service moment.
+- Clip A: hook, context, setup, transformation trigger.
+- Clip B: result, explanation/use cases, final title/CTA/takeaway.
 
 Keep each clip self-contained enough to work alone.
 
-## Prompt Template
+## Generic Prompt Template
 
 ```text
-{ASPECT} commercial video for {BRAND_OR_SERVICE_NAME}.
-Pronounce the name as "{PRONUNCIATION}".
+Create a {DURATION}-second {ASPECT} short video with Higgsfield Seedance.
 
-Goal:
-{ONE_LINE_VALUE_PROPOSITION}
+Video use case:
+{VIDEO_USE_CASE}
 
-References:
-- Use the provided main reference as the primary subject or product anchor.
-- Use additional references only as visual/product/app references.
-- Do not imply unsupported official partnerships or guarantees.
+Project/title/name:
+{PROJECT_NAME}
+Pronunciation guide:
+{PRONUNCIATION_OR_NONE}
+
+Target viewer and placement:
+{TARGET_VIEWER}
+{PLACEMENT}
+
+Objective:
+{ONE_LINE_OBJECTIVE}
+
+Reference image/assets:
+- Use the provided reference image as the primary visual anchor.
+- Preserve: {WHAT_TO_PRESERVE_FROM_REFERENCE}
+- Do not copy or invent third-party logos, private data, unsupported claims, or exact UI unless provided and approved.
 
 Visual direction:
 {STYLE_DIRECTION}
@@ -73,78 +147,130 @@ In-video text:
 Use only short, clean text:
 1. "{TEXT_1}"
 2. "{TEXT_2}"
-3. "{BRAND_OR_SERVICE_NAME}"
+3. "{FINAL_TEXT}"
 
 Voice-over:
-Include a {LANGUAGE} voice-over with this exact narration:
-"{NARRATION}"
+{VOICEOVER_POLICY_AND_EXACT_NARRATION_IF_ANY}
 
 Audio:
-{MUSIC_DIRECTION}
+{MUSIC_OR_SFX_DIRECTION}
 
 Quality and safety:
-Realistic commercial footage. Clear subject. Stable face/object. No distorted anatomy, no unreadable long text, no unsupported claims, no unsafe or sexualized framing, no clutter.
+Clear subject, stable motion, readable short text, no clutter, no unsupported claims, no unauthorized third-party brands, no private data, no unsafe framing.
 ```
+
+## Use-Case Defaults
+
+### Commercial
+
+- Style: premium product/service visual, clear value proposition, strong final CTA.
+- Text: tagline + project/brand name.
+- Warning: do not imply sales, profit, hit rate, ranking, official partnership, medical/legal/financial outcomes, or customer acquisition unless substantiated.
+
+### Social Post
+
+- Style: immediate visual hook, kinetic motion, shareable surprise.
+- Text: one short phrase per beat.
+- Warning: avoid fake platform UI, fake endorsements, third-party logos, and engagement guarantees.
+
+### Product Demo
+
+- Style: clean studio, catalog-quality lighting, product detail, usage motion.
+- Text: product name + short feature label.
+- Warning: do not imply exact specs, fit, condition, availability, or performance unless verified.
+
+### App Walkthrough
+
+- Style: app panels, screen transitions, dashboard/feature moment, workflow clarity.
+- Text: feature name + short result.
+- Warning: avoid fake metrics, private data, copied third-party UI, or unsupported outcomes.
+
+### Explainer
+
+- Style: simple visual metaphor, step-by-step transformation, clean labels.
+- Text: short labels, no dense paragraphs.
+- Warning: keep factual claims cautious and require human review for domain-specific claims.
+
+### Event Teaser
+
+- Style: atmosphere, reveal, date/title moment, anticipation.
+- Text: event title, date, CTA.
+- Warning: do not show unapproved speakers, sponsors, venues, logos, or ticket details.
+
+### Portfolio
+
+- Style: process reveal, before/after, final showcase frame, creator credit.
+- Text: project name + credit.
+- Warning: do not reveal private client work or unapproved assets.
+
+### Background Loop
+
+- Style: seamless ambience, slow motion, subtle parallax, no hard narrative.
+- Text: usually none.
+- Warning: avoid claims, logos, and obvious start/end discontinuities.
+
+### Story Scene
+
+- Style: cinematic beat, character/object/environment motion, mood continuity.
+- Text: optional title only.
+- Warning: avoid copyrighted characters, celebrity likeness, and unsafe depictions.
 
 ## Variant Defaults
 
-### Product / EC
+### 9:16 Mobile
 
-- Style: clean studio, catalog-quality lighting, product cards, before/after usage.
-- Text: short benefit + product/service name.
-- Warning: do not imply exact product condition or guaranteed fit unless verified.
+- Center the subject.
+- Use fast hook and fewer words.
+- Avoid small UI/detail text.
+- Keep important text away from top/bottom crop areas.
 
-### App / SaaS
+### 16:9 Wide
 
-- Style: app panels, workflow transitions, dashboard moments, user outcome.
-- Text: feature name + result.
-- Warning: avoid fake metrics unless provided.
+- Use left-to-right depth, panels, environment, and negative space.
+- Make the final frame useful as a cover, note embed, LP preview, or portfolio thumbnail.
+- Do not merely stretch a 9:16 concept.
 
-### Brand / Lifestyle
+### 1:1 Square
 
-- Style: cinematic hero, environment, brand emotion.
-- Text: tagline + brand name.
-- Warning: keep claims soft unless substantiated.
+- Use central composition.
+- Keep text minimal and larger.
+- Avoid wide-only camera movement.
 
 ## Retry Strategy
 
-AI動画が崩れた場合、同じプロンプトを闇雲に再実行しない。原因を絞り、複雑さを下げてから再生成する。
+If AI video quality is weak, do not rerun the same complex prompt blindly. Reduce complexity first.
 
-1. 画面内テキストを減らす。
-   - 長文字幕、複数行テロップ、小さい注釈を削る。
-   - ブランド名、短いタグライン、1フレーズだけにする。
-2. カメラワークをシンプルにする。
-   - 激しい回転、急ズーム、複雑なトラッキングを避ける。
-   - 固定カメラ、ゆっくりしたドリー、シンプルなパンへ寄せる。
-3. 1本の動画に詰め込む要素を減らす。
-   - 商品、UI、人物、ロゴ、テキスト、背景変化を同時に入れすぎない。
-   - 重要な1〜2要素だけを残す。
-4. 15秒動画が崩れる場合は、5秒〜8秒の短いクリップに分割する。
-   - 変身前、変身中、完成カットなどに分ける。
-   - 後編集でつなぐ前提にする。
-5. 商品、人物、ロゴが崩れる場合は、参照画像を強化する。
-   - 正面、詳細、ロゴ、UIスクリーンショットなど、必要な参照を追加する。
-   - 参照が弱いものはプロンプトだけで補わない。
-6. 顔や商品が2回以上崩れる場合は、AI生成だけで完結させない。
-   - 手動編集、別素材、別構成、実写素材、静止画モーション化を提案する。
-7. 原因が不明な場合は、プロンプトを複雑にしない。
-   - 構図、動き、テキスト、参照素材数を単純化する。
-
-再生成は原則2回までにする。3回目以降はユーザー確認、予算確認、または構成見直しを行う。
+1. Reduce in-video text.
+   - Remove long captions, multi-line subtitles, and small notes.
+   - Keep only project name, short title, or one phrase.
+2. Simplify camera movement.
+   - Avoid aggressive rotations, fast zooms, complex tracking, and multi-step motion.
+   - Use locked camera, slow dolly, simple pan, or controlled parallax.
+3. Reduce elements in one clip.
+   - Do not combine product, UI, person, logo, text, background change, and transformation all at once.
+   - Keep the most important 1-2 elements.
+4. Split longer clips.
+   - If 15 seconds fails, create 5-8 second clips and join later.
+5. Strengthen references.
+   - Use clearer front/detail/product/UI/style references when the subject breaks.
+6. If face, product, logo, or UI breaks twice, do not rely only on generation.
+   - Propose manual edit, alternate structure, stronger reference, still-to-motion treatment, or post-production.
+7. Limit retries.
+   - Regeneration is normally 2 attempts. More attempts require user approval and budget confirmation.
 
 ## Delivery Package
 
-1案件ごとに、以下を整理して納品または共有する。
+For each project, prepare:
 
 - `final/`
   - final MP4 files
-  - aspect ratio and durationが分かるファイル名
+  - filenames with aspect ratio and duration
 - `prompts/`
-  - 実際に使ったprompt files
-  - バリエーションごとの差分
+  - final prompt files
+  - variant differences
 - `references/`
   - reference asset list
-  - 使用素材の出所、権利状態、用途
+  - source, rights status, and intended usage
 - `jobs/`
   - generation settings
   - job JSON
@@ -155,12 +281,12 @@ AI動画が崩れた場合、同じプロンプトを闇雲に再実行しない
   - usage notes
   - known limitations
 
-`known limitations`には、必要に応じて以下を記載する。
+`known limitations` should mention:
 
-- AI生成動画のため、極小文字、完全なロゴ再現、完全な人物一致は保証できない。
-- 重要な法的表現、医療表現、金融表現、価格表記、キャンペーン条件は人間が確認する。
-- 最終公開前に、クライアント側で内容、権利、表記を確認する。
-- 権利が不明な素材を含む場合は、内部確認用ドラフトであり、商用公開用ではない。
+- AI-generated video can fail on tiny text, exact logos, exact faces, exact product geometry, exact UI, and complex motion.
+- Important legal, medical, financial, pricing, campaign, product, factual, or rights statements require human review.
+- Final publication requires content, rights, claims, and platform review by a human.
+- If source rights are unclear, the output is an internal draft, not a final public asset.
 
 ## Quality Checklist
 
@@ -171,8 +297,9 @@ Before final response, verify:
 - Duration is close to requested duration.
 - Aspect ratio matches target.
 - Generated text is acceptable for a draft.
-- Voice-over pronunciation was explicitly specified.
-- No brand/project-specific defaults leaked into the prompt.
-- If quality is weak, recommend a second pass with stronger references or fewer on-screen text requirements.
+- Voice-over pronunciation was explicitly specified when relevant.
+- No project-specific defaults leaked into reusable templates.
+- If quality is weak, recommend a second pass with stronger references or fewer requirements.
 - Delivery package or delivery notes are prepared.
-- Rights and budget notes are recorded.
+- Rights, budget, and limitations are recorded.
+

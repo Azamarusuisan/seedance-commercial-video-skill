@@ -1,0 +1,62 @@
+# Pending Seedance Image-to-Video Prompt
+
+Status: proposal template. Do not run Higgsfield until the project-specific brief, reference image/assets, budget, and prompt are approved.
+
+Reference image/assets:
+`{workspace/assets/reference-image-v1.png or user-provided asset paths}`
+
+Create a {duration}-second {aspect_ratio} short video with Higgsfield Seedance.
+
+Video use case:
+{commercial | social-post | product-demo | app-walkthrough | explainer | event-teaser | portfolio | background-loop | story-scene}
+
+Project/title/name:
+"{project_name}"
+Pronunciation guide:
+"{pronunciation_or_none}"
+
+Target viewer and placement:
+{target_viewer}
+{placement}
+
+Objective:
+{one_line_objective}
+
+Format:
+{aspect_ratio} video, {duration} seconds, {audio_policy}, {text_policy}, {platform_or_delivery_context}.
+
+Reference handling:
+Use the provided reference image as the primary visual anchor. Preserve {what_to_preserve_from_reference}. Do not infer or invent third-party logos, private data, unsupported claims, copied UI, or legal rights from the image.
+
+Opening beat, 0-3 seconds:
+{opening_beat}
+On-screen text: "{short_text_1}"
+
+Middle beat, 3-7 seconds:
+{middle_beat_1}
+On-screen text: "{short_text_2}"
+
+Middle beat, 7-12 seconds:
+{middle_beat_2}
+On-screen text: "{short_text_3}"
+
+Ending beat, 12-15 seconds:
+{ending_beat}
+Final on-screen text: "{final_text}"
+
+Style:
+{style_direction}
+
+Voice-over:
+{voiceover_policy_and_exact_narration_if_any}
+
+Audio:
+{music_or_sfx_direction}
+
+Safety and quality:
+- Keep the subject clear and stable.
+- Keep in-video text short and readable.
+- Avoid clutter, unreadable microtext, broken UI, distorted people, distorted products, and unsupported claims.
+- Do not use third-party logos, real people, celebrities, existing characters, private data, copyrighted elements, or copied UI unless the user supplied the asset and rights.
+- For commercial/public/client use, avoid unsupported sales, profit, ranking, official partnership, medical, legal, financial, or guaranteed outcome claims.
+
