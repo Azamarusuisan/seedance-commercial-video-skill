@@ -1,6 +1,6 @@
 ---
 name: seedance
-description: Create short commercial videos with Higgsfield Seedance from a service/product brief, model reference, product references, screenshots, or brand assets. Use when Codex needs to plan prompts, generate PC/mobile variants, estimate cost, submit Seedance jobs, track outputs, or package reusable CM-generation workflow for fashion, EC, app, SaaS, product, or brand promotion videos.
+description: Create short commercial videos with Higgsfield Seedance from a service/product brief, model reference, product references, screenshots, or brand assets. Use when an agent needs to plan prompts, generate PC/mobile variants, estimate cost, submit Seedance jobs, track outputs, or package reusable CM-generation workflow for fashion, EC, app, SaaS, product, or brand promotion videos.
 ---
 
 # Seedance Commercial Video

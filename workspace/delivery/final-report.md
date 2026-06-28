@@ -6,9 +6,13 @@ Status: in progress. CM direction is proposal v1 for `競馬AI`, and Higgsfield 
 
 - `workspace/inputs/project-brief.md`
 - `workspace/assets/README.md`
+- `workspace/assets/reference-keiba-ai-v1.png`
+- `workspace/assets/workflow-diagram-v1.svg`
+- `workspace/assets/workflow-diagram-v1.png`
 - `workspace/briefs/cm-brief.md`
 - `workspace/briefs/cm-discussion-questions.md`
 - `workspace/prompts/seedance-9x16-v1.txt`
+- `workspace/prompts/seedance-16x9-v1.txt`
 - `workspace/prompts/gpt-image-keiba-reference-v1.txt`
 - `workspace/logs/generation-log.md`
 - `workspace/logs/gpt-image-cli-status.json`
@@ -19,6 +23,9 @@ Status: in progress. CM direction is proposal v1 for `競馬AI`, and Higgsfield 
 - `workspace/logs/result-urls.md`
 - `workspace/outputs/README.md`
 - `workspace/note/note-draft.md`
+- `workspace/note/note-ready-draft-v1.md`
+- `workspace/note/note-preview.html`
+- `workspace/note/note-structure.md`
 - `workspace/note/title-ideas.md`
 - `workspace/note/intro.md`
 - `workspace/note/paid-section-outline.md`
@@ -45,7 +52,8 @@ Status: in progress. CM direction is proposal v1 for `競馬AI`, and Higgsfield 
 ## 生成した動画のパスまたはURL
 
 - Local MP4: not available
-- Expected path after successful generation: `workspace/outputs/final-cm-v1.mp4`
+- Expected vertical path after successful generation: `workspace/outputs/final-cm-9x16-v1.mp4`
+- Expected horizontal path after successful generation: `workspace/outputs/final-cm-16x9-v1.mp4`
 - Result URL: not available
 - Reason: final prompt is not approved yet, and Higgsfield MCP execution has not been completed in this session.
 
@@ -56,19 +64,24 @@ Status: in progress. CM direction is proposal v1 for `競馬AI`, and Higgsfield 
 ## 使用したプロンプト
 
 - `workspace/prompts/seedance-9x16-v1.txt`
+- `workspace/prompts/seedance-16x9-v1.txt`
 - Current prompt status: proposal v1 for 競馬AI image-to-video, pending final user approval.
 
 ## コスト見積もり
 
 - Status: not executed
 - Reason: generation remains gated. `workspace/scripts/seedance-cost.sh` also blocks without `APPROVED=1`.
-- Log: `workspace/logs/cost-estimate.json`
+- Default log: `workspace/logs/cost-estimate.json`
+- Recommended vertical log: `workspace/logs/cost-estimate-9x16.json`
+- Recommended horizontal log: `workspace/logs/cost-estimate-16x9.json`
 
 ## 生成ジョブ情報
 
 - Status: not executed
 - Reason: generation remains gated and must be executed through Higgsfield MCP after approval.
-- Log: `workspace/logs/job-v1.json`
+- Default log: `workspace/logs/job-v1.json`
+- Recommended vertical log: `workspace/logs/job-9x16-v1.json`
+- Recommended horizontal log: `workspace/logs/job-16x9-v1.json`
 
 ## クロスエージェント対応
 
@@ -90,6 +103,9 @@ Status: in progress. CM direction is proposal v1 for `競馬AI`, and Higgsfield 
 ## note下書きの状態
 
 - Local draft created: `workspace/note/note-draft.md`
+- Rich note-ready draft created: `workspace/note/note-ready-draft-v1.md`
+- note-style HTML preview created: `workspace/note/note-preview.html`
+- note structure memo created: `workspace/note/note-structure.md`
 - Title ideas created: `workspace/note/title-ideas.md`
 - Intro created: `workspace/note/intro.md`
 - Paid section outline created: `workspace/note/paid-section-outline.md`
@@ -103,7 +119,11 @@ Status: in progress. CM direction is proposal v1 for `競馬AI`, and Higgsfield 
 - workspace構成を作成した。
 - 入力テンプレートを作成した。
 - CMブリーフを作成した。
-- 9:16 Seedance用プロンプトテンプレートを作成した。
+- 9:16 Seedance用プロンプトを作成した。
+- 16:9 Seedance用プロンプトを作成した。
+- note用のワークフロー図解PNG/SVGを作成した。
+- note-ready draftを縦横動画、図解、有料テンプレート多めに増強した。
+- note風HTMLプレビューを作成した。
 - Higgsfield MCPリクエスト待ちの状態をログ化した。
 - コスト見積もりと生成ジョブの未実行理由をJSONで残した。
 - note記事下書き、導入文、有料部分構成案、タイトル案を作成した。
@@ -117,6 +137,7 @@ Status: in progress. CM direction is proposal v1 for `競馬AI`, and Higgsfield 
 - Seedanceモデル状態確認。
 - コスト見積もり取得。
 - 9:16 CM動画の生成。
+- 16:9 CM動画の生成。
 - MP4ダウンロード。
 - noteエディタへの自動下書き投入。
 - GPT Image APIによる参照画像生成。`OPENAI_API_KEY` が環境にないため未実行。
@@ -127,6 +148,7 @@ Status: in progress. CM direction is proposal v1 for `競馬AI`, and Higgsfield 
 - Higgsfieldに課金済みでログインできているか。
 - Seedance `seedance_2_0` を利用できるクレジットがあるか。
 - CMの最終内容、画面内テキスト、音声有無、CTAを承認するか。
+- 縦動画だけで進めるか、横動画も生成するか。
 - 実案件で使う素材の商用利用権があるか。
 - 商品名、読み方、CTA、根拠のある主張が正しいか。
 - 生成動画に権利不明素材、誇大広告、公式提携誤認がないか。
@@ -137,7 +159,8 @@ Status: in progress. CM direction is proposal v1 for `競馬AI`, and Higgsfield 
 - [ ] Higgsfieldの課金状態とクレジットを確認した。
 - [ ] 競馬AI CMの最終ブリーフとSeedanceプロンプトを承認した。
 - [ ] 生成MP4を開いて確認した。
-- [ ] 9:16、15秒、音声なしの条件に合っている。
+- [ ] 9:16または16:9、15秒、音声なしの条件に合っている。
+- [ ] 縦動画と横動画の役割が分かれている。
 - [ ] 商品名と読み方が正しい。
 - [ ] 画面内テキストが読める。
 - [ ] 誇大広告表現がない。

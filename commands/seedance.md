@@ -1,8 +1,13 @@
+---
+description: Plan and prepare a Higgsfield MCP / Seedance commercial video workflow.
+argument-hint: "[brief]"
+---
+
 # Seedance Commercial Video
 
 Use the installed `seedance` skill for this request.
 
-Note: some Codex CLI versions do not expose personal plugin command files in the `/` command list.
+Note: some CLI/plugin versions do not expose personal plugin command files in the `/` command list.
 If `/seedance` is not recognized, invoke the skill by typing a normal prompt that starts with
 `seedance`, for example: `seedance 15秒CMをPC用とスマホ用で作る`.
 

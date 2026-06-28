@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codex × Higgsfield MCPで、AI CM制作を半自動化する方法</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #ffffff;
+      --ink: #242424;
+      --muted: #696f73;
+      --line: #e4e6e3;
+      --soft: #f7f8f6;
+      --green: #21a67a;
+      --green-dark: #0b6c51;
+      --amber: #f6efe4;
+      --amber-line: #dfcdb2;
+      --blue-soft: #eef5fb;
+      --blue-line: #cbdceb;
+      --danger-soft: #fff4ed;
+      --danger-line: #efc8ac;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      line-height: 1.9;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      max-width: 1120px;
+      height: 56px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: 0;
+      font-size: 20px;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .layout {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 740px) 260px;
+      gap: 56px;
+      padding: 42px 24px 88px;
+    }
+
+    article {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 16px;
+      color: var(--green-dark);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 36px;
+      line-height: 1.35;
+      letter-spacing: 0;
+      font-weight: 850;
+    }
+
+    .meta {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #20242c, #21a67a 58%, #d2414b);
+      flex: 0 0 auto;
+    }
+
+    .cover {
+      margin: 34px 0 34px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #0b1020;
+    }
+
+    .cover img,
+    .workflow img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .lead {
+      font-size: 18px;
+      line-height: 2;
+    }
+
+    h2 {
+      margin: 58px 0 18px;
+      padding-top: 8px;
+      font-size: 26px;
+      line-height: 1.45;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 36px 0 12px;
+      font-size: 20px;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 22px;
+    }
+
+    ul,
+    ol {
+      margin: 0 0 24px;
+      padding-left: 1.4em;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .callout {
+      margin: 30px 0;
+      padding: 20px 22px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .note-green {
+      background: #f0faf6;
+      border-color: #cbe8dc;
+    }
+
+    .danger {
+      background: var(--danger-soft);
+      border-color: var(--danger-line);
+    }
+
+    .workflow {
+      margin: 28px 0 36px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+      margin: 28px 0 36px;
+    }
+
+    .video-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .video-card strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+
+    .video-slot {
+      border: 1px dashed #9fb5ad;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #f8fbfa, #edf6f2);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--green-dark);
+      font-weight: 800;
+      padding: 20px;
+      min-height: 180px;
+    }
+
+    .video-slot.vertical {
+      aspect-ratio: 9 / 16;
+      min-height: 0;
+    }
+
+    .video-slot.wide {
+      aspect-ratio: 16 / 9;
+    }
+
+    .brief-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 20px 0 28px;
+    }
+
+    .brief-item {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .brief-label {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .brief-value {
+      margin-top: 4px;
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    .compare {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0 32px;
+      font-size: 14px;
+    }
+
+    .compare th,
+    .compare td {
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .compare th {
+      background: var(--soft);
+      font-weight: 800;
+    }
+
+    .premium-divider {
+      margin: 58px 0 34px;
+      padding: 24px;
+      border: 1px solid var(--amber-line);
+      background: var(--amber);
+      border-radius: 8px;
+    }
+
+    .premium-divider strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .paid-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 20px 0 28px;
+    }
+
+    .paid-list div {
+      border: 1px solid var(--blue-line);
+      background: var(--blue-soft);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    code {
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: #f0f0ee;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.92em;
+    }
+
+    pre {
+      margin: 18px 0 28px;
+      padding: 18px;
+      overflow-x: auto;
+      background: #1f2328;
+      color: #f6f8fa;
+      border-radius: 8px;
+      line-height: 1.65;
+      font-size: 13px;
+    }
+
+    pre code {
+      padding: 0;
+      background: transparent;
+      color: inherit;
+    }
+
+    aside {
+      position: sticky;
+      top: 88px;
+      align-self: start;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .side-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: #fff;
+    }
+
+    .side-card h2 {
+      margin: 0 0 12px;
+      padding: 0;
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .side-card a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 0;
+    }
+
+    .side-card a:hover {
+      color: var(--green-dark);
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 940px) {
+      .layout {
+        display: block;
+        padding: 28px 18px 64px;
+      }
+
+      aside {
+        position: static;
+        margin-top: 40px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .brief-grid,
+      .paid-list,
+      .video-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .video-card:first-child {
+        max-width: 320px;
+      }
+
+      .topbar-inner {
+        padding: 0 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">note preview</div>
+      <div class="status">下書き / 公開前レビュー</div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <article>
+      <p class="eyebrow">AI動画制作 / Codex / Higgsfield MCP / Seedance</p>
+      <h1>Codex × Higgsfield MCPで、AI CM制作を半自動化する方法</h1>
+      <div class="meta">
+        <div class="avatar" aria-hidden="true"></div>
+        <div>
+          <div>フジ AI開発</div>
+          <div>2026年6月28日 下書き</div>
+        </div>
+      </div>
+
+      <figure class="cover">
+        <img src="../assets/reference-keiba-ai-v1.png" alt="競馬AIの9:16短尺CM参照ビジュアル">
+      </figure>
+
+      <p class="lead">AI動画生成は、もう「プロンプトを入れたら映像が出る」段階まで来ています。ただ、商用に近い短尺CMを作るときに本当に面倒なのは、動画生成そのものだけではありません。</p>
+
+      <div class="callout note-green">
+        <p>この記事では、CodexとHiggsfield MCPを使って、短尺CM制作の企画、参照画像、Seedanceプロンプト、MCP実行準備、納品チェック、note記事化までを半自動化する流れを紹介します。</p>
+        <p>Higgsfield / Seedanceで実際に動画を生成するには、Higgsfieldの課金アカウントと利用可能なクレジットが必要です。ブリーフ作成、プロンプト作成、note下書き作成、納品チェックリスト作成までは課金前でも準備できます。</p>
+      </div>
+
+      <h2 id="goal">今回作るもの</h2>
+      <p>今回の題材は、競馬AIというサービスのCMです。ターゲットはXの競馬ユーザー。狙いは、タイムラインで流れてきたときに「AIでここまで綺麗なCMを作れるのか」と思ってもらうことです。</p>
+      <p>最後は「フジ AI開発」を印象に残す構成にします。実在の競馬場、実在馬、実在騎手、第三者ロゴ、Web上の権利不明素材は使いません。</p>
+
+      <div class="video-grid">
+        <div class="video-card">
+          <strong>9:16 縦動画</strong>
+          <div class="video-slot vertical">
+            <div>Seedance 9:16 CM<br>後で埋め込み</div>
+          </div>
+          <p><code>workspace/outputs/final-cm-9x16-v1.mp4</code></p>
+        </div>
+        <div class="video-card">
+          <strong>16:9 横動画</strong>
+          <div class="video-slot wide">
+            <div>Seedance 16:9 CM<br>後で埋め込み</div>
+          </div>
+          <p><code>workspace/outputs/final-cm-16x9-v1.mp4</code></p>
+        </div>
+      </div>
+
+      <h2 id="workflow">実際のワークフロー図</h2>
+      <p>今回の流れを図にすると、こうなります。動画生成をいきなり始めず、先にブリーフ、権利確認、縦横別プロンプト、停止条件を固めます。</p>
+      <figure class="workflow">
+        <img src="../assets/workflow-diagram-v1.png" alt="CodexとHiggsfield MCPを使ったAI CM制作ワークフロー図">
+      </figure>
+
+      <h2 id="why">AI動画生成だけでは足りない理由</h2>
+      <p>AI動画生成は便利ですが、CM制作として見ると、生成ボタンを押す前後に必要な作業がかなりあります。</p>
+      <ul>
+        <li>商品名やサービス名の表記が途中でぶれる</li>
+        <li>読み方や発音がプロンプトに入っていない</li>
+        <li>9:16と16:9を同じプロンプトで作ってしまい、構図が崩れる</li>
+        <li>画面内テキストが長すぎて読めない</li>
+        <li>権利不明の画像やロゴを使ってしまう</li>
+        <li>根拠のない「No.1」「必ず勝てる」のような表現が混ざる</li>
+        <li>生成ログやジョブ情報が残らない</li>
+      </ul>
+
+      <h2 id="roles">CodexとMCPの役割分担</h2>
+      <p>Codex側で自動化するのは、主に制作管理と文章化です。入力テンプレート、CMブリーフ、9:16/16:9プロンプト、MCP用リクエストJSON、納品前チェック、note下書きまでを整理します。</p>
+      <p>Higgsfield MCP側では、アカウント確認、モデル確認、コスト見積もり、Seedance生成を行います。未ログイン、未課金、クレジット不足の場合は、そこで止めます。</p>
+
+      <h2 id="format">縦動画と横動画で何を変えるのか</h2>
+      <table class="compare">
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th>9:16 縦動画</th>
+            <th>16:9 横動画</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>主な用途</td>
+            <td>X、ショート動画、スマホ閲覧</td>
+            <td>note埋め込み、YouTube風プレビュー、LP、実績紹介</td>
+          </tr>
+          <tr>
+            <td>最初の目的</td>
+            <td>スクロールを止める</td>
+            <td>世界観と制作力を見せる</td>
+          </tr>
+          <tr>
+            <td>構図</td>
+            <td>中央に被写体、上下に短い文字</td>
+            <td>左右に余白、横方向に情報を展開</td>
+          </tr>
+          <tr>
+            <td>注意点</td>
+            <td>小さい文字を入れない</td>
+            <td>縦用プロンプトをそのまま流用しない</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="brief">今回のCMブリーフ</h2>
+      <div class="brief-grid">
+        <div class="brief-item"><div class="brief-label">サービス名</div><div class="brief-value">競馬AI</div></div>
+        <div class="brief-item"><div class="brief-label">読み方</div><div class="brief-value">けいばエーアイ</div></div>
+        <div class="brief-item"><div class="brief-label">ターゲット</div><div class="brief-value">Xの競馬ユーザー</div></div>
+        <div class="brief-item"><div class="brief-label">CTA</div><div class="brief-value">フジ AI開発</div></div>
+        <div class="brief-item"><div class="brief-label">フォーマット</div><div class="brief-value">9:16 / 16:9</div></div>
+        <div class="brief-item"><div class="brief-label">再生成上限</div><div class="brief-value">各フォーマット原則2回まで</div></div>
+      </div>
+      <p>注意したのは、競馬AIだからといって、的中保証や利益保証のように見せないことです。「必ず勝てる」「回収率が上がる」「勝率No.1」のような表現は、根拠なしには入れません。</p>
+
+      <h2 id="prompt">Seedance用プロンプトの考え方</h2>
+      <p>縦動画は、0-3秒、3-7秒、7-11秒、11-15秒の4場面で作ります。横動画は同じメッセージを扱いつつ、左右に広がる構図と、note/YouTube風プレビューに使いやすい締めフレームを意識します。</p>
+      <ul>
+        <li>0-3秒: 光の競馬場と「競馬AI」</li>
+        <li>3-7秒: AI分析パネルとデータ粒子</li>
+        <li>7-11秒: Xで思わず止まるようなCM表現</li>
+        <li>11-15秒: 「フジ AI開発」で締める</li>
+      </ul>
+
+      <div class="callout danger">
+        <p>生成前に止める条件: CM内容が未承認、プロンプトがproposal状態、Higgsfield未ログイン、未課金、クレジット不足、権利不明素材あり、誇大表現あり。このどれかに該当したら生成しません。</p>
+      </div>
+
+      <h2 id="files">実際に作られるファイル</h2>
+      <pre><code>workspace/
+  assets/
+    reference-keiba-ai-v1.png
+    workflow-diagram-v1.png
+  briefs/
+    cm-brief.md
+  prompts/
+    seedance-9x16-v1.txt
+    seedance-16x9-v1.txt
+  outputs/
+    final-cm-9x16-v1.mp4
+    final-cm-16x9-v1.mp4
+  note/
+    note-ready-draft-v1.md
+    note-preview.html
+  logs/
+    cost-estimate-9x16.json
+    cost-estimate-16x9.json
+    job-9x16-v1.json
+    job-16x9-v1.json</code></pre>
+
+      <h2 id="check">納品前チェック</h2>
+      <p>生成後は、動画が開けるか、比率が合っているか、尺が合っているか、商品名が正しいか、画面内テキストが長すぎないか、的中保証や利益保証が混ざっていないかを確認します。</p>
+      <p>生成AIの動画は、文字、ロゴ、細部、人物、商品形状が崩れることがあります。そのため、最終公開前の確認は人間が行います。</p>
+
+      <section class="premium-divider" id="paid">
+        <strong>ここから有料部分の構成</strong>
+        <p>有料部分では、実案件で使いやすいテンプレートをまとめます。無料部分で全体像を見せ、有料部分でそのまま使える型を渡す設計です。</p>
+      </section>
+
+      <h2>有料部分で渡すもの</h2>
+      <div class="paid-list">
+        <div>Codexに投げるマスタープロンプト</div>
+        <div>CMブリーフテンプレート</div>
+        <div>参照画像プロンプトテンプレート</div>
+        <div>9:16 Seedanceプロンプト</div>
+        <div>16:9 Seedanceプロンプト</div>
+        <div>Higgsfield MCP実行前チェック</div>
+        <div>縦横動画の生成順序</div>
+        <div>納品前チェックリスト</div>
+        <div>note記事化テンプレート</div>
+        <div>実案件用ヒアリングシート</div>
+      </div>
+
+      <h3>Codexに投げるマスタープロンプト</h3>
+      <pre><code>ユーザーの商品・サービス情報から、Higgsfield MCP / Seedance用の短尺CM制作ワークフローを作ってください。
+
+必ず以下を作成してください。
+- 入力テンプレート
+- CMブリーフ
+- 参照画像プロンプト
+- 9:16 Seedance用プロンプト
+- 16:9 Seedance用プロンプト
+- Higgsfield MCP実行前チェック
+- コスト見積もり記録
+- 生成ジョブ記録
+- 納品前チェック
+- note記事下書き
+
+ルール:
+- noteは公開しない
+- Higgsfield生成はユーザー承認後
+- 課金状態とクレジット確認前に生成しない
+- 権利不明素材を商用CMに使わない
+- 縦動画と横動画のプロンプトを分ける
+- 再生成は原則2回まで</code></pre>
+
+      <h3>縦横動画の生成順序</h3>
+      <pre><code>1. 9:16用プロンプトを承認する
+2. 9:16のコスト見積もりを取る
+3. 9:16を1本生成する
+4. 表記、尺、構図、権利、誇大表現を確認する
+5. 必要なら9:16を最大2回まで再生成する
+6. OKなら16:9用プロンプトを承認する
+7. 16:9のコスト見積もりを取る
+8. 16:9を1本生成する
+9. note記事に縦横両方を埋め込む
+10. 公開前に人間が最終確認する</code></pre>
+
+      <h2 id="summary">まとめ</h2>
+      <p>CodexとHiggsfield MCPを組み合わせると、短尺CM制作はかなり整理できます。重要なのは、動画生成だけを自動化するのではなく、ブリーフ、権利確認、予算、縦横別プロンプト、ログ、納品チェック、note記事化までを一つの流れにすることです。</p>
+      <p>Higgsfieldの課金アカウントが必要なのは、実際にSeedanceで動画を生成する段階です。その前に、Codexで設計と下書きを固めておけば、課金後に迷わず1本目の生成へ進めます。</p>
+
+      <div class="badge-row">
+        <span class="badge">Codex</span>
+        <span class="badge">Higgsfield MCP</span>
+        <span class="badge">Seedance</span>
+        <span class="badge">9:16</span>
+        <span class="badge">16:9</span>
+        <span class="badge">AI CM制作</span>
+      </div>
+    </article>
+
+    <aside>
+      <div class="side-card">
+        <h2>目次</h2>
+        <a href="#goal">今回作るもの</a>
+        <a href="#workflow">ワークフロー図</a>
+        <a href="#why">動画生成だけでは足りない理由</a>
+        <a href="#roles">役割分担</a>
+        <a href="#format">縦横の使い分け</a>
+        <a href="#brief">CMブリーフ</a>
+        <a href="#prompt">プロンプト設計</a>
+        <a href="#files">作られるファイル</a>
+        <a href="#check">納品前チェック</a>
+        <a href="#paid">有料部分</a>
+        <a href="#summary">まとめ</a>
+      </div>
+    </aside>
+  </main>
+</body>
+</html>
+
