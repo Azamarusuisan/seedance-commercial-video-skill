@@ -23,9 +23,10 @@ Use this skill to produce short CM-style videos with Higgsfield Seedance while k
 3. Write one prompt per output. Do not reuse a 16:9 prompt unchanged for 9:16.
 4. Keep Seedance responsible for cinematic video. Keep in-video text short: one phrase per beat.
 5. Preflight:
-   - `higgsfield account status --json`
-   - `higgsfield model get seedance_2_0 --json`
-   - `higgsfield generate cost seedance_2_0 ... --json`
+   - Confirm the host agent has Higgsfield MCP connected.
+   - Use Higgsfield MCP to check account/login/plan/credits.
+   - Use Higgsfield MCP to check `seedance_2_0` availability.
+   - Use Higgsfield MCP to estimate generation cost.
 6. Generate:
    - Use `seedance_2_0` by default unless the user chooses another model.
    - Prefer `--resolution 4k` and `--bitrate_mode high` when the user prioritizes quality and credits allow.
@@ -66,7 +67,7 @@ Use this skill to produce short CM-style videos with Higgsfield Seedance while k
 - 品質改善目的でも、無制限に再生成しない。
 - 予算オーバー時は、本数、秒数、解像度、音声、バリエーション数を減らす。
 - 再生成は原則2回まで。3回目以降はユーザー確認、構成見直し、素材見直し、または手動編集案へ切り替える。
-- 見積もりが可能な場合は、生成前に`higgsfield generate cost ... --json`で確認し、結果を記録する。
+- 見積もりが可能な場合は、生成前にHiggsfield MCPで確認し、結果を記録する。
 
 ## Acceptance Criteria
 
@@ -101,38 +102,28 @@ Do not generate or approve:
 
 必要な主張がある場合は、ユーザーから根拠資料を受け取り、最終公開前に人間が確認する。
 
-## CLI Pattern
+## MCP Pattern
+
+Use the host-provided Higgsfield MCP tool for account checks, model checks, cost estimates, and generation. Do not use the unrelated PyPI `higgsfield` package or assume a local CLI is available.
+
+For cross-agent handoff, prepare request JSON with:
 
 ```bash
-higgsfield generate cost seedance_2_0 \
-  --prompt "$(cat prompts/variant.txt)" \
-  --image ./assets/reference.png \
-  --aspect_ratio 16:9 \
-  --duration 15 \
-  --resolution 4k \
-  --bitrate_mode high \
-  --generate_audio true \
-  --mode std \
-  --json
+bash workspace/scripts/higgsfield-status.sh
+APPROVED=1 bash workspace/scripts/seedance-cost.sh
+APPROVED=1 bash workspace/scripts/seedance-generate.sh
 ```
+
+The generated files under `workspace/mcp-requests/` describe the intended Higgsfield MCP calls. After running MCP, record sanitized responses with:
 
 ```bash
-higgsfield generate create seedance_2_0 \
-  --prompt "$(cat prompts/variant.txt)" \
-  --image ./assets/reference.png \
-  --aspect_ratio 16:9 \
-  --duration 15 \
-  --resolution 4k \
-  --bitrate_mode high \
-  --generate_audio true \
-  --mode std \
-  --json \
-  --wait \
-  --wait-timeout 60m \
-  --wait-interval 10s
+bash workspace/scripts/record-mcp-json.sh account <mcp-account-response.json>
+bash workspace/scripts/record-mcp-json.sh model <mcp-model-response.json>
+bash workspace/scripts/record-mcp-json.sh cost <mcp-cost-response.json>
+bash workspace/scripts/record-mcp-json.sh job <mcp-job-response.json>
 ```
 
-When passing multiple media references, first verify the CLI/media schema with a low-cost test or current model documentation. If a multi-reference path fails, fall back to one strong visual reference plus explicit product/service description in the prompt.
+When passing multiple media references, first verify the Higgsfield MCP media schema with a low-cost test or current model documentation. If a multi-reference path fails, fall back to one strong visual reference plus explicit product/service description in the prompt.
 
 ## Prompt Rules
 

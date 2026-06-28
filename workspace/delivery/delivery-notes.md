@@ -1,0 +1,29 @@
+# Delivery Notes
+
+- Project: 競馬AI
+- Status: proposal v1. Not approved for generation.
+- Date: 2026-06-28
+- Model: seedance_2_0
+- Aspect ratio: 9:16
+- Duration: 15秒想定、要確認
+- Audio: TBD
+- Prompt files:
+  - `workspace/prompts/seedance-9x16-v1.txt`
+  - `workspace/prompts/gpt-image-keiba-reference-v1.txt`
+- Reference files:
+  - `workspace/assets/reference-keiba-ai-v1.png`
+  - intended GPT Image output: `workspace/assets/reference-keiba-ai-gptimage-v1.png`
+- Job IDs:
+  - none, generation not executed
+- Result URLs:
+  - none, generation not executed
+- Local MP4 paths:
+  - expected: `workspace/outputs/final-cm-v1.mp4`
+  - current: not available
+- Known limitations:
+  - see `workspace/delivery/known-limitations.md`
+- Rights / review reminders:
+  - Use only user-provided or commercially licensed assets for final commercial output.
+  - Do not imply official partnership with any platform or company unless written proof exists.
+  - Do not imply hit-rate, profit, recovery-rate, or betting success guarantees.
+  - Confirm all claims and usage terms before publishing.

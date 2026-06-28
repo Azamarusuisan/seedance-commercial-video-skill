@@ -19,3 +19,4 @@ Before task actions, read `skills/seedance/SKILL.md` and the referenced workflow
 3. Do not generate paid jobs until budget and deliverables are clear.
 4. Do not use third-party web assets in final commercial outputs unless the user confirms commercial rights.
 5. Keep the workflow generic. Do not hard-code a project name, client name, celebrity, brand, or product unless the user provides it in the current brief.
+6. Run Higgsfield account checks, cost estimates, and generation through Higgsfield MCP. Do not use a local `higgsfield` CLI or unrelated package.

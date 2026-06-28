@@ -1,0 +1,12 @@
+Use case: ads-marketing
+Asset type: image-to-video reference image for a vertical 9:16 AI commercial
+Primary request: Create a polished vertical commercial key visual for a Japanese service named "競馬AI" by "フジ AI開発". The image should make X/Twitter users feel surprised that AI can create such a beautiful CM.
+Scene/backdrop: A cinematic, futuristic horse racing analysis scene. A sleek luminous race track curves through a night stadium made of abstract light, with an elegant racehorse silhouette in motion and transparent AI data panels floating around it. No real racetrack, no real logos, no jockey identity, no betting slips.
+Subject: The feeling of using an AI horse racing analysis service, presented as premium AI development and data visualization, not as a guaranteed betting result.
+Style/medium: High-end cinematic 3D render, realistic lighting, premium Japanese tech commercial, crisp detail, clean and modern.
+Composition/framing: 9:16 vertical, centered horse silhouette and flowing track, strong top-to-bottom depth, generous safe space for short Japanese text near top and final brand text near bottom.
+Lighting/mood: Electric blue, silver, and subtle red accent lights; dramatic but clean; beautiful, surprising, professional.
+Text (verbatim): "競馬AI" and "フジ AI開発" only. Keep text sharp, large, and readable.
+Constraints: abstract generated visual only; no third-party logos; no real brand imitation; no famous horses, jockeys, venues, characters, or copyrighted elements; no claims of winning, profit, odds accuracy, No.1, official partnership, or guaranteed results.
+Avoid: betting tickets, money piles, casino imagery, exact UI screenshots, cluttered text, unreadable microtext, watermarks.
+

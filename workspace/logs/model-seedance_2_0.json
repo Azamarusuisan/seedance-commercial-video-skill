@@ -1,0 +1,7 @@
+{
+  "checked_at": "2026-06-28T08:32:21.134981+00:00",
+  "command": "Higgsfield MCP model get seedance_2_0",
+  "status": "pending_mcp_execution",
+  "reason": "Prepared MCP request at workspace/mcp-requests/model-seedance_2_0.request.json. Run it with the host-provided Higgsfield MCP tool.",
+  "security_note": "No API key, token, cookie, session, password, or payment credential was saved."
+}

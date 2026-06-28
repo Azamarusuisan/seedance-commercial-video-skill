@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-06-28T08:32:21.088868+00:00",
+  "request_type": "higgsfield_mcp.model_get",
+  "tool_hint": "Higgsfield MCP: get model metadata for seedance_2_0",
+  "arguments": {
+    "model": "seedance_2_0"
+  },
+  "output_log": "workspace/logs/model-seedance_2_0.json",
+  "execution": "Run this with the Higgsfield MCP tool exposed by the host agent. Do not use the unrelated PyPI higgsfield package.",
+  "security_note": "Do not save API keys, cookies, sessions, tokens, payment data, or raw browser storage."
+}

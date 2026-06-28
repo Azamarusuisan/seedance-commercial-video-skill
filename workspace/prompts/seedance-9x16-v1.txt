@@ -1,0 +1,62 @@
+# Pending Seedance Image-to-Video Prompt
+
+Status: proposal v1, pending user approval. Do not run Higgsfield yet.
+
+Reference image:
+`workspace/assets/reference-keiba-ai-v1.png`
+
+Create a 15-second vertical 9:16 commercial video for:
+"競馬AI"
+Pronunciation guide: "けいばエーアイ".
+
+Audience:
+X/Twitter users in Japan who like horse racing, data analysis, AI tools, and visually surprising short videos.
+
+Objective:
+Make viewers feel: "AI can create a commercial this beautiful." Present "競馬AI" as a premium AI-powered horse racing analysis service by "フジ AI開発". Do not promise winning, profit, hit rate, recovery rate, or betting outcomes.
+
+Format:
+9:16 vertical mobile commercial, 15 seconds, no AI voice-over for the first draft, clean readable Japanese text, centered subject, fast hook, premium AI development tone.
+
+Opening shot, 0-3 seconds:
+Start from the reference image mood: a dark futuristic race track made of light, an elegant abstract horse silhouette, and AI data panels floating in a cinematic night stadium. The title "競馬AI" appears large and clean.
+On-screen text: "競馬AI"
+
+Middle beat, 3-7 seconds:
+The camera moves forward through glowing race lines. Transparent AI analysis panels animate around the horse silhouette: graphs, probability-like abstract shapes, race flow maps, and data particles. Keep all panels fictional and unreadable, with no real odds, no real race data, no UI copying.
+On-screen text: "AIで、競馬を美しく"
+
+Middle beat, 7-11 seconds:
+Show a stylish usage scene for X users: the vertical CM feels like a premium post in a fast-moving timeline, making the viewer stop scrolling. The service appears as AI development and beautiful data visualization, not a betting guarantee.
+On-screen text: "予想を、データで見る"
+
+Ending beat, 11-15 seconds:
+The horse silhouette and light track resolve into a strong final brand moment. Emphasize the developer name.
+Final on-screen text: "フジ AI開発"
+CTA text: "フジ AI開発"
+
+Style:
+High-end cinematic Japanese tech commercial, futuristic horse racing data visualization, electric blue and silver with subtle red accents, clean premium lighting, crisp motion, polished 3D render look, surprising quality for an X short video.
+
+Brand lock:
+- Include the exact service name: "競馬AI"
+- Include the exact developer name: "フジ AI開発"
+- Keep the pronunciation in production notes: "けいばエーアイ"
+- Do not imply official partnership with any racecourse, horse racing organization, platform, or brand.
+- Do not imply guaranteed wins, profit, hit rate, recovery rate, or betting success.
+
+Voice-over:
+None for the first draft.
+
+On-screen text:
+Use only these short phrases:
+- "競馬AI"
+- "AIで、競馬を美しく"
+- "予想を、データで見る"
+- "フジ AI開発"
+
+Avoid:
+- Winning guarantee, profit guarantee, hit-rate claims, recovery-rate claims, No.1, only, official partnership, medical, financial, legal, or investment-like claims.
+- Real logos, real racecourse names, real horses, real jockeys, celebrities, existing characters, third-party brand imitation, betting tickets, money piles, casino imagery, or unlicensed web assets.
+- Dense Japanese text, unreadable small text, fake reviews, fake awards, fake press coverage.
+

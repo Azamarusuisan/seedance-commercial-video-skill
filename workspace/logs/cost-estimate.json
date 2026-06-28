@@ -1,0 +1,7 @@
+{
+  "checked_at": "2026-06-28T08:35:02.731064+00:00",
+  "command": "Higgsfield MCP Seedance cost seedance_2_0",
+  "status": "blocked",
+  "reason": "Prompt still contains pending/proposal markers.",
+  "security_note": "No API key, token, cookie, session, password, or payment credential was saved."
+}

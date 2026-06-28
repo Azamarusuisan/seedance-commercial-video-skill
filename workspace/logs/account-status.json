@@ -1,0 +1,7 @@
+{
+  "checked_at": "2026-06-28T08:32:21.110947+00:00",
+  "command": "Higgsfield MCP account status",
+  "status": "pending_mcp_execution",
+  "reason": "Prepared MCP request at workspace/mcp-requests/account-status.request.json. Run it with the host-provided Higgsfield MCP tool after manual login.",
+  "security_note": "No API key, token, cookie, session, password, or payment credential was saved."
+}
