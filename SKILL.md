@@ -11,6 +11,12 @@ Use this skill to produce short videos with Higgsfield Seedance while keeping th
 
 The skill supports CM/commercial work, but it is not limited to CM. Route the job by `video_use_case` first, then apply the correct prompt structure and safety checks.
 
+For TikTok-style story videos with recurring guides, theater-like cast libraries, user-supplied character sources, external narration, storyboard panels, or edited Japanese captions, also read `references/tiktok-story-cast-workflow.md` before writing prompts or preparing jobs.
+
+When the user asks to learn from external Higgsfield/Seedance examples, X posts, or demo repositories, read `references/higgsfield-mcp-demo-patterns.md` and use it only as a production-pattern reference unless rights are confirmed.
+
+When the user asks for viral, popular, market-demand, autonomous learning, trend optimization, UGC, or "what people want," read `references/public-demand-short-video-patterns.md` before choosing the concept, hook, storyboard, or generation route.
+
 ## Supported Use Cases
 
 Choose the closest use case before writing prompts:
@@ -58,6 +64,33 @@ Use this route when the user has no footage, wants a generated visual reference,
 5. Run Higgsfield MCP only after approval, cost check, login/credit check, and rights check.
 6. Record sanitized results, result URLs, MP4 paths, and known limitations.
 
+## TikTok Story / Cast Library Route
+
+Use this route when the user wants a TikTok/Shorts-style narrative, a recurring "cast" of guide characters, or user-supplied source characters/assets:
+
+1. Treat the deliverable as `video_use_case=social-post` or `story-scene`.
+2. Build or update a local cast library:
+   - guide/model references
+   - user-supplied source characters
+   - creature/prop/background references
+   - scene-specific reference frames
+   - rights notes and publication status
+3. Keep the story continuous across clips:
+   - one 60s story can be planned as 4 x 15s clips
+   - each clip should end by motivating the next clip
+   - the same guide/cast should appear or be clearly implied throughout
+4. Create a storyboard script before generation:
+   - for a 60s story, write 8-12 panels before writing Seedance prompts
+   - each panel must include time range, cast, location, camera motion, action, narration, planned subtitle/telop, primary reference, and next-scene motivation
+   - do not generate until the storyboard shows a continuous cause-and-effect chain
+5. If the generation endpoint accepts only one start image, choose one primary reference per clip. Do not force multiple start images into one request.
+6. For voice-led edits, keep Seedance visual-only and generate narration separately:
+   - set Seedance audio generation to false unless explicitly approved
+   - write exact narration in the target language
+   - generate voice-over with the approved TTS route
+   - add subtitles/telop in editing after audio timing is known
+7. For existing characters, celebrities, or third-party IP-like material, use user-supplied source assets only when the user confirms rights. If rights are unclear, mark the output as internal draft only.
+
 ## Workflow
 
 1. Lock the brief:
@@ -70,9 +103,12 @@ Use this route when the user has no footage, wants a generated visual reference,
    - maximum budget, maximum jobs, and maximum retry count
    - whether AI voice-over, music, and in-video text are allowed
    - required references: generated image, model/person, products, screenshots, logo, style frames, brand assets
+   - cast/source asset manifest when using recurring characters or user-supplied source materials
+   - storyboard/script panel count when making a narrative or TikTok story
+   - demand target when optimizing for public/social performance: views, comments, saves, paid ad CTR, product recall, or story retention
 2. Gather references from local/project files first. Use web assets only when explicitly allowed and rights are clear.
 3. Write one prompt per output. Do not reuse a 16:9 prompt unchanged for 9:16.
-4. Keep Seedance responsible for cinematic/motion video. Keep in-video text short: one phrase per beat.
+4. Keep Seedance responsible for cinematic/motion video. Keep in-video text short: one phrase per beat. For subtitle-heavy workflows, generate no in-video text and add captions in post.
 5. Preflight:
    - Confirm the host agent has Higgsfield MCP connected.
    - Use Higgsfield MCP to check account/login/plan/credits.
@@ -81,7 +117,7 @@ Use this route when the user has no footage, wants a generated visual reference,
 6. Generate:
    - Use `seedance_2_0` by default unless the user chooses another model.
    - Prefer `1080p` for the first approved draft unless the user prioritizes quality and credits allow higher settings.
-   - Use `generate_audio=true` only when narration/music is wanted and approved.
+   - Use `generate_audio=true` only when narration/music is wanted and approved. For workflows with external TTS, keep `generate_audio=false`.
 7. Track every artifact:
    - prompt file
    - reference image or asset list
@@ -97,6 +133,7 @@ Use this route when the user has no footage, wants a generated visual reference,
    - reference person/object/product is not badly distorted
    - visual does not imply unsupported claims
    - usage limitations are documented
+9. For social-demand work, score the draft concept or finished output against the demand pattern checklist before spending more generation credits.
 
 ## Rights Gate
 
@@ -107,6 +144,7 @@ For public-facing, commercial, client, brand, or monetized uses, confirm materia
 - Person photos, store photos, product photos, logos, and UI screenshots require a clear usage basis.
 - If rights are unclear, label the output as an internal draft and keep it separate from final deliverables.
 - Do not imitate celebrities, existing brands, third-party ads, films, anime, games, or protected characters without permission.
+- User-supplied source images of public figures, performers, actors, fictional characters, or recognizable IP must be treated as rights-sensitive source assets. They can be cataloged for internal drafting, but public/commercial output requires the user's rights confirmation.
 - When trademark, copyright, likeness, or publicity-right risk exists, use alternate materials, abstract visuals, generic models, fictional brands, or non-commercial drafts.
 - Final publication rights checks must be performed by the user/client or responsible human reviewer.
 
@@ -134,6 +172,8 @@ Video generation can consume credits quickly. Lock budget and iteration limits b
 - Structure: instant visual hook, motion surprise, one memorable phrase, shareable ending.
 - Safety: avoid fake platform UI, fake endorsements, and third-party logos unless rights are confirmed.
 - Text: one phrase per beat.
+- For TikTok story posts, use a cast manifest, fast handheld motion, short Japanese telop when relevant, and a continuous story chain instead of unrelated shots.
+- For demand-driven posts, design the first 2 seconds to work silently: face, product motion, conflict, curiosity, or a before/after visual must be visible immediately.
 
 ### Product Demo
 
@@ -171,6 +211,13 @@ Video generation can consume credits quickly. Lock budget and iteration limits b
 - Safety: avoid readable claims or logos unless provided.
 - Text: usually none.
 
+### Story Scene
+
+- Style: cinematic beat, character/object/environment motion, mood continuity.
+- Text: optional title or post-edited subtitles only.
+- Warning: avoid copyrighted characters, celebrity likeness, and unsafe depictions unless user-supplied rights are confirmed.
+- For recurring characters, define a cast role and one primary reference image per clip. Keep exact likeness expectations modest and document AI limitations.
+
 ## MCP Pattern
 
 Use the host-provided Higgsfield MCP tool for account checks, model checks, cost estimates, and generation. Do not use the unrelated PyPI `higgsfield` package or assume a local CLI is available.
@@ -206,8 +253,10 @@ When passing multiple media references, first verify the Higgsfield MCP media sc
 
 - Always include required pronunciation when a name has a non-obvious reading.
 - State `video_use_case`, target viewer, platform/placement, aspect ratio, duration, and output count.
+- For demand-led content, state the chosen hook type and why the viewer keeps watching.
 - Use concise in-video text. Prefer 1-8 characters for logos/names and 5-14 Japanese characters for caption cards.
 - For voice-over, write exact narration and specify language, tone, and pronunciation.
+- For external narration workflows, state `Seedance visual-only, generate_audio=false`; generate voice-over through the approved TTS provider and add subtitles/telop in editing.
 - Separate wide and mobile composition:
   - 16:9: wider layout, panels, environment, clearer explanation.
   - 9:16: centered subject, faster hook, fewer words, strong final moment.
@@ -215,6 +264,8 @@ When passing multiple media references, first verify the Higgsfield MCP media sc
 - For people: preserve broad identity, expression, and natural face quality without promising perfect likeness.
 - For products: preserve color/material/shape as a goal, but label generated footage as reference if used commercially.
 - For generated references: specify what Seedance should inherit, such as mood, composition, lighting, subject, style, or color.
+- For cast libraries: specify the chosen cast member, their role, the selected primary reference image, and which traits must carry through the clip.
+- For storyboard-driven stories: convert each approved panel into a Seedance prompt. Keep the prompt focused on visual action; keep narration and subtitles in the external edit plan.
 
 ## Acceptance Criteria
 
@@ -253,6 +304,12 @@ For each project, organize deliverables and production information in the same f
 
 Read `references/seedance-cm-workflow.md` before writing final prompts or generating multi-variant jobs. The filename is kept for backward compatibility; the content now covers general short-video workflows, not only CM.
 
+Read `references/tiktok-story-cast-workflow.md` for TikTok/Shorts story videos, theater-like cast libraries, user-supplied character references, visual-only Seedance workflows, external narration, and post-edited subtitles.
+
+Read `references/higgsfield-mcp-demo-patterns.md` when reusing production patterns from X/Higgsfield demo references, such as start-image prompts, post-edited audio/text, review packaging, contact sheets, and raw/final artifact tracking.
+
+Read `references/public-demand-short-video-patterns.md` when optimizing for viral/social demand, UGC ads, trend learning, 2-second hooks, public reference scanning, Marketing Studio/Virality Predictor loops, or reusable audience-fit playbooks.
+
 ## Final Checklist
 
 - [ ] Brief confirmed
@@ -264,6 +321,10 @@ Read `references/seedance-cm-workflow.md` before writing final prompts or genera
 - [ ] Reference image/assets confirmed
 - [ ] Names and pronunciation checked
 - [ ] Voiceover policy checked
+- [ ] External TTS/subtitle handoff checked when `generate_audio=false`
+- [ ] Cast/source asset manifest checked when using recurring characters
+- [ ] Storyboard panels approved when making a narrative/TikTok story
+- [ ] Demand hook and retention pattern checked for viral/social work
 - [ ] On-screen text readable
 - [ ] Claims and rights are safe for intended use
 - [ ] Final MP4 opened successfully

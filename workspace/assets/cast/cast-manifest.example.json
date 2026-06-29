@@ -1,0 +1,40 @@
+{
+  "name": "example_cast_library",
+  "updated_at": "YYYY-MM-DD",
+  "notes": "Project-specific cast/source registry. Keep raw images local or private unless intentionally licensed for this repo.",
+  "default_generation_policy": {
+    "seedance_audio": false,
+    "voiceover": "external TTS when exact narration matters",
+    "subtitles": "post-production overlays when exact text matters",
+    "reference_policy": "Use one primary start image per Seedance clip if the endpoint accepts only one start image."
+  },
+  "cast": [
+    {
+      "id": "female_guide_01",
+      "role": "guide",
+      "asset_path": "workspace/assets/cast/guides/female_guide_01.png",
+      "rights_status": "generated",
+      "use_scope": "internal draft or approved project use",
+      "prompt_identity": "adult Japanese woman traveler guide, cream travel jacket, smartphone Vlog style",
+      "notes": "Primary guide reference for 9:16 TikTok story scenes."
+    },
+    {
+      "id": "male_guide_01",
+      "role": "guide",
+      "asset_path": "workspace/assets/cast/guides/male_guide_01.png",
+      "rights_status": "user_supplied_confirmed",
+      "use_scope": "set by user/client",
+      "prompt_identity": "adult Japanese male traveler guide, bright blond center-parted hair, handheld Vlog style",
+      "notes": "Use only within the rights scope confirmed by the user/client."
+    },
+    {
+      "id": "source_character_01",
+      "role": "source_character",
+      "asset_path": "workspace/assets/cast/source_refs/source_character_01.png",
+      "rights_status": "unknown",
+      "use_scope": "internal draft only",
+      "prompt_identity": "user-supplied source character reference",
+      "notes": "Rights-sensitive source. Do not use for public/commercial output until rights are confirmed."
+    }
+  ]
+}

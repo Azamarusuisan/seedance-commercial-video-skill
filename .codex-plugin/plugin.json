@@ -1,7 +1,7 @@
 {
   "name": "seedance",
-  "version": "0.1.0",
-  "description": "Plan and produce short videos with the generic Seedance image-to-video workflow.",
+  "version": "0.1.2",
+  "description": "Plan and produce short videos with Seedance, including TikTok story scenes, cast-reference libraries, market-demand hooks, and external audio/subtitle handoff.",
   "author": {
     "name": "Azamarusuisan",
     "url": "https://github.com/Azamarusuisan"
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Seedance",
     "shortDescription": "Short-video workflow for Seedance.",
-    "longDescription": "A generic short-video workflow for planning, image-to-video prompting, generating, reviewing, and packaging Seedance videos with rights, budget, retry, and delivery guardrails.",
+    "longDescription": "A generic short-video workflow for planning, image-to-video prompting, cast-reference selection, TikTok story scenes, market-demand hook selection, external voice-over/subtitle handoff, reviewing, and packaging Seedance videos with rights, budget, retry, and delivery guardrails.",
     "developerName": "Azamarusuisan",
     "category": "Productivity",
     "capabilities": [
@@ -28,6 +28,8 @@
     "defaultPrompt": [
       "Plan a short video with Seedance.",
       "Create image-to-video Seedance prompt drafts.",
+      "Plan a TikTok story video using a cast reference library.",
+      "Optimize a short-video concept from public demand patterns.",
       "Review a Seedance video brief before generation."
     ]
   }
