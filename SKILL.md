@@ -15,6 +15,8 @@ For TikTok-style story videos with recurring guides, theater-like cast libraries
 
 When the user asks to learn from external Higgsfield/Seedance examples, X posts, or demo repositories, read `references/higgsfield-mcp-demo-patterns.md` and use it only as a production-pattern reference unless rights are confirmed.
 
+When the user asks for viral, popular, market-demand, autonomous learning, trend optimization, UGC, or "what people want," read `references/public-demand-short-video-patterns.md` before choosing the concept, hook, storyboard, or generation route.
+
 ## Supported Use Cases
 
 Choose the closest use case before writing prompts:
@@ -103,6 +105,7 @@ Use this route when the user wants a TikTok/Shorts-style narrative, a recurring 
    - required references: generated image, model/person, products, screenshots, logo, style frames, brand assets
    - cast/source asset manifest when using recurring characters or user-supplied source materials
    - storyboard/script panel count when making a narrative or TikTok story
+   - demand target when optimizing for public/social performance: views, comments, saves, paid ad CTR, product recall, or story retention
 2. Gather references from local/project files first. Use web assets only when explicitly allowed and rights are clear.
 3. Write one prompt per output. Do not reuse a 16:9 prompt unchanged for 9:16.
 4. Keep Seedance responsible for cinematic/motion video. Keep in-video text short: one phrase per beat. For subtitle-heavy workflows, generate no in-video text and add captions in post.
@@ -130,6 +133,7 @@ Use this route when the user wants a TikTok/Shorts-style narrative, a recurring 
    - reference person/object/product is not badly distorted
    - visual does not imply unsupported claims
    - usage limitations are documented
+9. For social-demand work, score the draft concept or finished output against the demand pattern checklist before spending more generation credits.
 
 ## Rights Gate
 
@@ -169,6 +173,7 @@ Video generation can consume credits quickly. Lock budget and iteration limits b
 - Safety: avoid fake platform UI, fake endorsements, and third-party logos unless rights are confirmed.
 - Text: one phrase per beat.
 - For TikTok story posts, use a cast manifest, fast handheld motion, short Japanese telop when relevant, and a continuous story chain instead of unrelated shots.
+- For demand-driven posts, design the first 2 seconds to work silently: face, product motion, conflict, curiosity, or a before/after visual must be visible immediately.
 
 ### Product Demo
 
@@ -248,6 +253,7 @@ When passing multiple media references, first verify the Higgsfield MCP media sc
 
 - Always include required pronunciation when a name has a non-obvious reading.
 - State `video_use_case`, target viewer, platform/placement, aspect ratio, duration, and output count.
+- For demand-led content, state the chosen hook type and why the viewer keeps watching.
 - Use concise in-video text. Prefer 1-8 characters for logos/names and 5-14 Japanese characters for caption cards.
 - For voice-over, write exact narration and specify language, tone, and pronunciation.
 - For external narration workflows, state `Seedance visual-only, generate_audio=false`; generate voice-over through the approved TTS provider and add subtitles/telop in editing.
@@ -302,6 +308,8 @@ Read `references/tiktok-story-cast-workflow.md` for TikTok/Shorts story videos, 
 
 Read `references/higgsfield-mcp-demo-patterns.md` when reusing production patterns from X/Higgsfield demo references, such as start-image prompts, post-edited audio/text, review packaging, contact sheets, and raw/final artifact tracking.
 
+Read `references/public-demand-short-video-patterns.md` when optimizing for viral/social demand, UGC ads, trend learning, 2-second hooks, public reference scanning, Marketing Studio/Virality Predictor loops, or reusable audience-fit playbooks.
+
 ## Final Checklist
 
 - [ ] Brief confirmed
@@ -316,6 +324,7 @@ Read `references/higgsfield-mcp-demo-patterns.md` when reusing production patter
 - [ ] External TTS/subtitle handoff checked when `generate_audio=false`
 - [ ] Cast/source asset manifest checked when using recurring characters
 - [ ] Storyboard panels approved when making a narrative/TikTok story
+- [ ] Demand hook and retention pattern checked for viral/social work
 - [ ] On-screen text readable
 - [ ] Claims and rights are safe for intended use
 - [ ] Final MP4 opened successfully
