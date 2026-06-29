@@ -11,3 +11,5 @@ No external or third-party commercial assets are used in this draft.
   - Note: the user requested GPTIMAGE specifically after this file was created. OpenAI Image API / GPT Image regeneration is blocked until `OPENAI_API_KEY` is available in the shell environment.
 
 For client-specific commercial generation, place only user-provided or commercially licensed materials here, then record rights notes in `workspace/briefs/cm-brief.md` and `workspace/delivery/final-report.md`.
+
+For TikTok/story or theater-cast projects, use `workspace/assets/cast/` plus a project-specific cast manifest. Keep raw person/source images local or private unless the repo intentionally includes licensed sample assets.

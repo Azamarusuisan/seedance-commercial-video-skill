@@ -1,0 +1,43 @@
+# TikTok Story Seedance Visual-Only Prompt
+
+Status: prompt template. Fill from an approved storyboard panel group.
+
+Vertical 9:16 handheld smartphone Vlog, TikTok story style.
+
+Video use case:
+social-post / story-scene
+
+Duration:
+{duration_seconds}s
+
+Clip group:
+{clip_group} of {total_clip_groups}
+
+Primary start image:
+{primary_reference_path}
+
+Cast:
+{cast_id}, {cast_role}, {prompt_identity}
+
+Scene continuity:
+Previous beat: {previous_beat}
+This clip reveals: {story_reveal}
+Next beat motivation: {next_beat_reason}
+
+Visual action:
+{visible_actions_from_storyboard}
+
+Camera:
+{camera_motion}, close handheld Vlog energy, dynamic but readable, subject remains clear.
+
+Environment:
+{location_and_atmosphere}
+
+Style:
+{style_direction}
+
+Audio/text policy:
+Seedance visual-only; generate_audio=false.
+No readable generated text, no subtitles, no logos, no unauthorized third-party brands.
+Japanese narration will be generated separately with external TTS.
+Japanese subtitles/telop will be added in editing.
