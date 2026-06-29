@@ -109,6 +109,30 @@ Recommended 60s rhythm:
 
 Only after this is approved, collapse the panels into 4 x 15s Seedance prompts. The prompts should describe motion and scene continuity; narration, ElevenLabs voice, and Japanese subtitles stay in post-production.
 
+## Theater Cast Assignment
+
+When a project has many generated performers, do not treat the cast library as decoration. Assign roles before writing the story:
+
+- `lead`: carries the viewer through the whole video
+- `co_lead`: appears in the first 15 seconds and gives the lead a reason to move
+- `witness`: confirms the mystery, product, or social proof without fake testimonial claims
+- `mentor`: gives the next clue, instruction, or decision point
+- `trust_actor`: older, professional, or ordinary-looking cast member used for credibility
+- `cameo`: appears in montage or crowd shots, not as a primary face reference
+
+For a 60s ensemble story, use all cast members only through panel assignment and editing. Do not force 10-15 faces into one Seedance request. Pick one primary reference image per clip, then describe the rest as background or cameo actors.
+
+Default ensemble rhythm:
+
+```text
+0-15s: lead + co-lead + first witness
+15-30s: premium/professional cast + mentor
+30-45s: ordinary cast + local guide/trust actor
+45-60s: lead returns + cast payoff + loop hook
+```
+
+Generated cast should remain fictional performers. Do not write copy that says they are real buyers, real customers, real reviewers, doctors, celebrities, or platform influencers unless the user provides real evidence and rights clearance.
+
 ## Voice And Subtitle Handoff
 
 For story content, especially Japanese Vlog narration:
