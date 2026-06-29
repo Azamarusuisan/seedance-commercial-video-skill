@@ -19,6 +19,8 @@ When the user asks for viral, popular, market-demand, autonomous learning, trend
 
 When the user asks for TikTok Ads, Spark Ads, Non-Spark Ads, ad review, Pixel, Events API, CV-focused TikTok creatives, A/B tests, post-launch ad learning, LP consistency, Japanese ad compliance, or paid TikTok deployment checks, read `references/tiktok-ad-ops-workflow.md` before writing scripts or prompts.
 
+When the user asks Hermes to run autonomously, keep iterating, run many variants, manage paid generation loops, or operate ad/launch tasks with permission, read `references/hermes-autonomous-loop.md` before executing. Autonomous execution requires a run-permission manifest with scope, caps, allowed actions, stop conditions, and logging.
+
 ## Supported Use Cases
 
 Choose the closest use case before writing prompts:
@@ -109,6 +111,7 @@ Use this route when the user wants a TikTok/Shorts-style narrative, a recurring 
    - storyboard/script panel count when making a narrative or TikTok story
    - demand target when optimizing for public/social performance: views, comments, saves, paid ad CTR, product recall, or story retention
    - TikTok ad operations context when relevant: Spark/Non-Spark, KPI, LP URL, tracking status, high-risk category, approval owner
+   - autonomous run permission manifest when Hermes or any agent is expected to execute beyond planning
 2. Gather references from local/project files first. Use web assets only when explicitly allowed and rights are clear.
 3. Write one prompt per output. Do not reuse a 16:9 prompt unchanged for 9:16.
 4. Keep Seedance responsible for cinematic/motion video. Keep in-video text short: one phrase per beat. For subtitle-heavy workflows, generate no in-video text and add captions in post.
@@ -137,7 +140,7 @@ Use this route when the user wants a TikTok/Shorts-style narrative, a recurring 
    - visual does not imply unsupported claims
    - usage limitations are documented
 9. For social-demand work, score the draft concept or finished output against the demand pattern checklist before spending more generation credits.
-10. For TikTok ad work, keep AI to planning, checking, and creative iteration. Do not execute ad publish, budget, bid, billing, account-linking, deletion, or external-posting actions.
+10. For autonomous or paid operations, execute only actions explicitly allowed in the run-permission manifest. Without that manifest, stop at planning/checklists and request approval.
 
 ## Rights Gate
 
@@ -317,6 +320,8 @@ Read `references/public-demand-short-video-patterns.md` when optimizing for vira
 
 Read `references/tiktok-ad-ops-workflow.md` when making Seedance/Higgsfield creatives for TikTok Ads, CV campaigns, Spark/Non-Spark decisions, Pixel/Events API checks, Top Ads analysis, compliance review, A/B tests, or post-launch learning loops.
 
+Read `references/hermes-autonomous-loop.md` when Hermes or another agent should run iterative research, prompt generation, paid media generation, ad account operations, budget/bid changes, Spark usage, external posting, or destructive actions under explicit permission.
+
 ## Final Checklist
 
 - [ ] Brief confirmed
@@ -333,6 +338,7 @@ Read `references/tiktok-ad-ops-workflow.md` when making Seedance/Higgsfield crea
 - [ ] Storyboard panels approved when making a narrative/TikTok story
 - [ ] Demand hook and retention pattern checked for viral/social work
 - [ ] TikTok ad ops checks completed when used for paid TikTok: Spark/Non-Spark, LP, tracking, review risk, A/B plan, human approval
+- [ ] Autonomous run-permission manifest checked before any self-running, paid, ad-account, external-posting, or destructive operation
 - [ ] On-screen text readable
 - [ ] Claims and rights are safe for intended use
 - [ ] Final MP4 opened successfully

@@ -22,17 +22,19 @@ This reference covers:
 This reference does not cover:
 
 - TikTok Ads Manager login
-- ad submission, publishing, pausing, deletion, budget, bidding, billing, or account permission changes
+- ad submission, publishing, pausing, deletion, budget, bidding, billing, or account permission changes unless a run-permission manifest explicitly allows them
 - tag/API implementation itself
 - legal review replacement
 - ad approval guarantees
 
-Stop and request human approval for:
+Stop and request a run-permission manifest for:
 
 - ad publish/send, campaign creation, budget/bid/date/targeting changes, billing, account linking, Spark Ads authorization, outside posting, pinned comments, replies, or deletion
 - high-risk categories: beauty, health, medical, pharmaceutical, supplements, diet, finance, investment, real estate, jobs, politics, religion, gambling, minors
 - use of real people, creators, public figures, customer reviews, UGC posts, voice, music, logos, facilities, comments, or screenshots without rights confirmation
 - AIGC, AI voice, AI avatars, or generated people when disclosure/labeling status is unclear
+
+If the manifest explicitly allows one of these actions, execute only within its account, campaign, budget, time, action, and asset limits. Record the action in the iteration log before and after execution.
 
 ## 2. TikTok Intake Checklist
 
@@ -366,9 +368,9 @@ Templates:
 
 ## 12. Human Approval Gate
 
-Before upload/publish, human approval must confirm:
+Before upload/publish, either human approval or a valid run-permission manifest must confirm:
 
-- ad send/publish/campaign/budget/bid/date/targeting/billing/account actions are not performed by AI
+- ad send/publish/campaign/budget/bid/date/targeting/billing/account actions are explicitly allowed, or AI stops before them
 - product name, price, discount, deadline, conditions match LP
 - LP first view answers the ad promise
 - proof, No.1, satisfaction, reviews, ranking, awards, expert claims have evidence

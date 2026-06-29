@@ -15,12 +15,14 @@ Higgsfield / Seedance short-video production skill and MCP-first workflow packag
 - `references/higgsfield-mcp-demo-patterns.md`
 - `references/public-demand-short-video-patterns.md`
 - `references/tiktok-ad-ops-workflow.md`
+- `references/hermes-autonomous-loop.md`
 - `skills/seedance/references/seedance-cm-workflow.md`
 - `skills/seedance/references/image-to-video-handoff.md`
 - `skills/seedance/references/tiktok-story-cast-workflow.md`
 - `skills/seedance/references/higgsfield-mcp-demo-patterns.md`
 - `skills/seedance/references/public-demand-short-video-patterns.md`
 - `skills/seedance/references/tiktok-ad-ops-workflow.md`
+- `skills/seedance/references/hermes-autonomous-loop.md`
 
 ## Cross-Agent Operation
 
@@ -59,10 +61,12 @@ TikTok風の物語動画や劇団型のキャスト運用では、`workspace/ass
 
 TikTok広告として配信する前提では、`references/tiktok-ad-ops-workflow.md` を参照し、Spark Ads / Non-Spark Ads、Pixel / Events API、CV向け15秒構成、審査NG、LP整合、A/Bテスト、配信後学習、人間承認ゲートを確認します。テンプレートは `workspace/prompts/tiktok-*` に置いています。
 
+Hermesに自律反復させる場合は、`references/hermes-autonomous-loop.md` と `workspace/prompts/hermes-run-permission.md` を使います。広告出稿、予算・入札変更、決済、Spark Ads利用、外部投稿、削除、高額生成、権利不明素材の本番利用は、run-permission manifestで明示許可された場合だけ実行できます。
+
 ## Safety Notes
 
 - note公開、認証情報保存、権利不明素材の公開/商用利用はしない。
 - 生成前に素材権利・公開可否・商用利用可否・主張の根拠を人間が確認する。
 - 実在人物・有名人・第三者キャラクター風の素材は、ユーザーが使用権を確認した支給素材として扱う。権利不明の場合は内部ドラフトに留める。
 - 的中保証、利益保証、No.1、公式提携、医療・金融・法律上の断定を根拠なしに入れない。
-- AIは広告公開、予算変更、入札変更、決済、ログイン、外部投稿、広告削除を実行しない。必要な場合は人間承認に止める。
+- AIは広告公開、予算変更、入札変更、決済、ログイン、外部投稿、広告削除を、run-permission manifestなしに実行しない。許可がある場合も範囲・上限・停止条件・ログ保存を守る。

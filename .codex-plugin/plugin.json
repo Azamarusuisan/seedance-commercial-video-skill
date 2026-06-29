@@ -1,7 +1,7 @@
 {
   "name": "seedance",
-  "version": "0.1.3",
-  "description": "Plan and produce short videos with Seedance, including TikTok ad ops, story scenes, cast-reference libraries, market-demand hooks, and external audio/subtitle handoff.",
+  "version": "0.1.4",
+  "description": "Plan and produce short videos with Seedance, including Hermes autonomous loops, TikTok ad ops, story scenes, cast-reference libraries, market-demand hooks, and external audio/subtitle handoff.",
   "author": {
     "name": "Azamarusuisan",
     "url": "https://github.com/Azamarusuisan"
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Seedance",
     "shortDescription": "Short-video workflow for Seedance.",
-    "longDescription": "A generic short-video workflow for planning, image-to-video prompting, TikTok ad operations checks, cast-reference selection, TikTok story scenes, market-demand hook selection, external voice-over/subtitle handoff, reviewing, and packaging Seedance videos with rights, budget, retry, and delivery guardrails.",
+    "longDescription": "A generic short-video workflow for planning, image-to-video prompting, Hermes autonomous run loops, TikTok ad operations checks, cast-reference selection, TikTok story scenes, market-demand hook selection, external voice-over/subtitle handoff, reviewing, and packaging Seedance videos with rights, budget, retry, and delivery guardrails.",
     "developerName": "Azamarusuisan",
     "category": "Productivity",
     "capabilities": [
@@ -31,6 +31,7 @@
       "Plan a TikTok story video using a cast reference library.",
       "Optimize a short-video concept from public demand patterns.",
       "Prepare TikTok Ads creative checks, A/B tests, and post-launch learning.",
+      "Run Hermes-style autonomous creative iterations with explicit permission caps.",
       "Review a Seedance video brief before generation."
     ]
   }
