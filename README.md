@@ -14,11 +14,13 @@ Higgsfield / Seedance short-video production skill and MCP-first workflow packag
 - `references/tiktok-story-cast-workflow.md`
 - `references/higgsfield-mcp-demo-patterns.md`
 - `references/public-demand-short-video-patterns.md`
+- `references/tiktok-ad-ops-workflow.md`
 - `skills/seedance/references/seedance-cm-workflow.md`
 - `skills/seedance/references/image-to-video-handoff.md`
 - `skills/seedance/references/tiktok-story-cast-workflow.md`
 - `skills/seedance/references/higgsfield-mcp-demo-patterns.md`
 - `skills/seedance/references/public-demand-short-video-patterns.md`
+- `skills/seedance/references/tiktok-ad-ops-workflow.md`
 
 ## Cross-Agent Operation
 
@@ -55,9 +57,12 @@ TikTok風の物語動画や劇団型のキャスト運用では、`workspace/ass
 
 需要寄せで複数案を作る場合は、`workspace/prompts/public-demand-hook-variants-template.md` に2〜4案を書き、フック・想定感情・商品記憶・字幕方針を比較してから生成します。
 
+TikTok広告として配信する前提では、`references/tiktok-ad-ops-workflow.md` を参照し、Spark Ads / Non-Spark Ads、Pixel / Events API、CV向け15秒構成、審査NG、LP整合、A/Bテスト、配信後学習、人間承認ゲートを確認します。テンプレートは `workspace/prompts/tiktok-*` に置いています。
+
 ## Safety Notes
 
 - note公開、認証情報保存、権利不明素材の公開/商用利用はしない。
 - 生成前に素材権利・公開可否・商用利用可否・主張の根拠を人間が確認する。
 - 実在人物・有名人・第三者キャラクター風の素材は、ユーザーが使用権を確認した支給素材として扱う。権利不明の場合は内部ドラフトに留める。
 - 的中保証、利益保証、No.1、公式提携、医療・金融・法律上の断定を根拠なしに入れない。
+- AIは広告公開、予算変更、入札変更、決済、ログイン、外部投稿、広告削除を実行しない。必要な場合は人間承認に止める。

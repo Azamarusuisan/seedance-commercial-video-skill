@@ -1,7 +1,7 @@
 {
   "name": "seedance",
-  "version": "0.1.2",
-  "description": "Plan and produce short videos with Higgsfield MCP and Seedance, including TikTok story scenes, market-demand hooks, cast-reference libraries, image-to-video prompts, briefs, cost gates, external voice/subtitle handoff, delivery checks, and note drafts.",
+  "version": "0.1.3",
+  "description": "Plan and produce short videos with Higgsfield MCP and Seedance, including TikTok ad ops, story scenes, market-demand hooks, cast-reference libraries, image-to-video prompts, briefs, cost gates, external voice/subtitle handoff, delivery checks, and note drafts.",
   "author": {
     "name": "Azamarusuisan"
   }

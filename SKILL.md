@@ -17,6 +17,8 @@ When the user asks to learn from external Higgsfield/Seedance examples, X posts,
 
 When the user asks for viral, popular, market-demand, autonomous learning, trend optimization, UGC, or "what people want," read `references/public-demand-short-video-patterns.md` before choosing the concept, hook, storyboard, or generation route.
 
+When the user asks for TikTok Ads, Spark Ads, Non-Spark Ads, ad review, Pixel, Events API, CV-focused TikTok creatives, A/B tests, post-launch ad learning, LP consistency, Japanese ad compliance, or paid TikTok deployment checks, read `references/tiktok-ad-ops-workflow.md` before writing scripts or prompts.
+
 ## Supported Use Cases
 
 Choose the closest use case before writing prompts:
@@ -106,6 +108,7 @@ Use this route when the user wants a TikTok/Shorts-style narrative, a recurring 
    - cast/source asset manifest when using recurring characters or user-supplied source materials
    - storyboard/script panel count when making a narrative or TikTok story
    - demand target when optimizing for public/social performance: views, comments, saves, paid ad CTR, product recall, or story retention
+   - TikTok ad operations context when relevant: Spark/Non-Spark, KPI, LP URL, tracking status, high-risk category, approval owner
 2. Gather references from local/project files first. Use web assets only when explicitly allowed and rights are clear.
 3. Write one prompt per output. Do not reuse a 16:9 prompt unchanged for 9:16.
 4. Keep Seedance responsible for cinematic/motion video. Keep in-video text short: one phrase per beat. For subtitle-heavy workflows, generate no in-video text and add captions in post.
@@ -134,6 +137,7 @@ Use this route when the user wants a TikTok/Shorts-style narrative, a recurring 
    - visual does not imply unsupported claims
    - usage limitations are documented
 9. For social-demand work, score the draft concept or finished output against the demand pattern checklist before spending more generation credits.
+10. For TikTok ad work, keep AI to planning, checking, and creative iteration. Do not execute ad publish, budget, bid, billing, account-linking, deletion, or external-posting actions.
 
 ## Rights Gate
 
@@ -166,6 +170,7 @@ Video generation can consume credits quickly. Lock budget and iteration limits b
 - Structure: hook, value proposition, use/result, brand/CTA.
 - Safety: unsupported sales, profit, hit-rate, No.1, official partnership, medical/financial/legal claims require evidence.
 - Text: short tagline plus brand/service name.
+- For TikTok paid ads, connect the creative to LP, KPI, tracking, Spark/Non-Spark choice, review risk, and post-launch learning.
 
 ### Social Post
 
@@ -310,6 +315,8 @@ Read `references/higgsfield-mcp-demo-patterns.md` when reusing production patter
 
 Read `references/public-demand-short-video-patterns.md` when optimizing for viral/social demand, UGC ads, trend learning, 2-second hooks, public reference scanning, Marketing Studio/Virality Predictor loops, or reusable audience-fit playbooks.
 
+Read `references/tiktok-ad-ops-workflow.md` when making Seedance/Higgsfield creatives for TikTok Ads, CV campaigns, Spark/Non-Spark decisions, Pixel/Events API checks, Top Ads analysis, compliance review, A/B tests, or post-launch learning loops.
+
 ## Final Checklist
 
 - [ ] Brief confirmed
@@ -325,6 +332,7 @@ Read `references/public-demand-short-video-patterns.md` when optimizing for vira
 - [ ] Cast/source asset manifest checked when using recurring characters
 - [ ] Storyboard panels approved when making a narrative/TikTok story
 - [ ] Demand hook and retention pattern checked for viral/social work
+- [ ] TikTok ad ops checks completed when used for paid TikTok: Spark/Non-Spark, LP, tracking, review risk, A/B plan, human approval
 - [ ] On-screen text readable
 - [ ] Claims and rights are safe for intended use
 - [ ] Final MP4 opened successfully

@@ -1,0 +1,2 @@
+Test ID,Objective,Primary Variable,A Variant,B Variant,C Variant,Fixed Elements,Primary KPI,Guardrail KPI,Decision Rule,Result,Next Creative
+TT-CV-001,CV,Hook,,,,LP/CTA/Product timing,CPA,"CVR,CTR,2s,6s","Enough sample + CPA improvement",,
