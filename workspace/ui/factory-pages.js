@@ -85,7 +85,7 @@ function html(value) {
 
 function toProjectPath(path) {
   if (!path) return "";
-  if (/^(https?:|data:|file:)/.test(path) || path.startsWith("/")) return path;
+  if (/^https?:/.test(path) || path.startsWith("/")) return path;
   if (path.startsWith("state/")) return path;
   return "../../" + path;
 }

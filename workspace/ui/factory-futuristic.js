@@ -21,6 +21,18 @@ const STATUS_JA = {
   waiting_for_render: "レンダー待ち",
   ready: "準備完了",
   planned: "計画済み",
+  queued: "キュー",
+  preparing: "準備中",
+  storyboard_review: "絵コンテ確認",
+  generated_draft_review: "生成ドラフト確認",
+  required_before_any_generation: "生成前許可必須",
+  not_granted_for_next_generation: "未許可",
+  needs_user_approval_before_generation: "承認待ち",
+  completed_review_needed: "完了・要レビュー",
+  review_needed: "要レビュー",
+  needs_decision: "要判断",
+  missing_if_needed: "必要なら未作成",
+  draft_ready: "下書きあり",
   connected: "接続済み",
   unavailable: "未接続",
 };
@@ -77,7 +89,7 @@ function cls(value) {
 
 function toProjectPath(path) {
   if (!path) return "";
-  if (/^(https?:|data:|file:)/.test(path) || path.startsWith("/")) return path;
+  if (/^https?:/.test(path) || path.startsWith("/")) return path;
   if (path.startsWith("state/")) return path;
   return "../../" + path;
 }
@@ -169,6 +181,41 @@ function beatsForJob(job) {
   return scriptBeats().filter(beat => String(beat.clip || "").toLowerCase() === label.toLowerCase());
 }
 
+function storyboardPanelForJob(job) {
+  return (appState.state.storyboard?.panels || []).find(panel => panel.id === job?.id) || {};
+}
+
+function jobReviewImage(job) {
+  const panel = storyboardPanelForJob(job);
+  return panel.generated_image || panel.image || job?.storyboard_image || job?.reference_image || appState.state.blender?.render_path || "";
+}
+
+function jobMediaHtml(job, className = "") {
+  if (job?.local_path) {
+    const src = toProjectPath(job.local_path);
+    return `
+      <div class="video-review-shell">
+        <video class="${escapeHtml(className)}" src="${escapeHtml(src)}" controls muted playsinline preload="metadata"></video>
+        ${videoActionsHtml(src, job.title || job.id || "video")}
+      </div>
+    `;
+  }
+  const image = jobReviewImage(job);
+  return image ? `<img class="${escapeHtml(className)}" src="${escapeHtml(toProjectPath(image))}" alt="${escapeHtml(job.title || job.id)}">` : "";
+}
+
+function videoActionsHtml(src, label) {
+  const cleanSrc = escapeHtml(src);
+  const filename = String(label || "seedance-video").replace(/[^a-zA-Z0-9_-]+/g, "_").toLowerCase() + ".mp4";
+  return `
+    <div class="video-actions">
+      <button type="button" data-video-action="fullscreen">全画面</button>
+      <a href="${cleanSrc}" download="${escapeHtml(filename)}">ダウンロード</a>
+      <a href="${cleanSrc}" target="_blank" rel="noopener">別タブ</a>
+    </div>
+  `;
+}
+
 function workflowDetail(phase) {
   const jobs = appState.state.jobs || [];
   const beats = scriptBeats();
@@ -242,6 +289,43 @@ function renderMetrics() {
         <small>${escapeHtml(displayText(note))}</small>
       </article>
   `).join("");
+}
+
+function requirementClass(status) {
+  const key = String(status || "").toLowerCase();
+  if (["done", "approved", "ready"].includes(key)) return "ok";
+  if (["draft_ready", "pending", "needs_decision", "missing_if_needed"].includes(key)) return "warn";
+  if (["blocked", "failed"].includes(key)) return "stop";
+  return "warn";
+}
+
+function renderRequirements() {
+  const target = document.getElementById("requirementsPanel");
+  if (!target) return;
+  const items = appState.state.pre_generation_checklist || [];
+  const stopCount = items.filter(item => requirementClass(item.status) === "stop").length;
+  const warnCount = items.filter(item => requirementClass(item.status) === "warn").length;
+  target.innerHTML = `
+    <div class="panel-heading">
+      <div>
+        <span class="eyebrow">生成前ゲート</span>
+        <h3>抜け漏れチェック</h3>
+      </div>
+      <span class="thin-pill danger">${escapeHtml(stopCount)}停止 / ${escapeHtml(warnCount)}要確認</span>
+    </div>
+    <div class="requirements-grid">
+      ${items.map(item => `
+        <article class="requirement-card ${escapeHtml(requirementClass(item.status))}">
+          <div>
+            <strong>${escapeHtml(item.label)}</strong>
+            <span>${escapeHtml(statusJa(item.status))} / ${escapeHtml(item.required_before || "")}</span>
+          </div>
+          <p>${escapeHtml(item.current || "")}</p>
+          <em>${escapeHtml(item.done_when || "")}</em>
+        </article>
+      `).join("")}
+    </div>
+  `;
 }
 
 function renderFactoryOverview() {
@@ -459,22 +543,18 @@ function castImages() {
 }
 
 function renderRecentOutputs() {
-  const images = castImages();
   const jobs = appState.state.jobs || [];
   const planned = jobs.length ? jobs : [{ id: "clip_pending", title: "予定クリップなし", status: "pending", note: "generation-state.json にジョブを追加" }];
   document.getElementById("recentOutputs").innerHTML = planned.map((job, index) => {
-    const image = images[index % Math.max(1, images.length)];
-    const imageHtml = image?.src
-      ? `<img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.name)}">`
-      : "";
     const progress = statusProgress(job.status);
     return `
       <article class="output-card">
-        <div class="output-thumb">${imageHtml}</div>
+        <div class="output-thumb">${jobMediaHtml(job)}</div>
         <div class="output-body">
           <strong>${escapeHtml(displayText(job.title || job.id))}</strong>
-          <span>${escapeHtml(job.id || `clip_${index + 1}`)} / ${escapeHtml(statusJa(job.status))} / ${beatsForJob(job).length}ビート連動</span>
+          <span>${escapeHtml(job.id || `clip_${index + 1}`)} / ${escapeHtml(statusJa(job.status))} / ${job.local_path ? "MP4保存済み" : `${beatsForJob(job).length}ビート連動`}</span>
           <div class="progress" style="--progress:${progress}%"><i></i></div>
+          ${job.local_path ? `<small>${escapeHtml(job.local_path)}</small>` : ""}
         </div>
       </article>
     `;
@@ -508,28 +588,160 @@ function renderGenerationQueue() {
 }
 
 function renderActiveGenerations() {
-  const images = castImages();
   const jobs = appState.state.jobs || [];
-  const active = jobs.slice(0, 3);
+  const active = jobs.slice(0, 4);
   document.getElementById("activeGenerationsPanel").innerHTML = `
-    <div class="panel-heading"><div><span class="eyebrow">生成予定</span><h3>スタジオジョブ</h3></div></div>
+    <div class="panel-heading"><div><span class="eyebrow">生成予定</span><h3>参照画像つきジョブ</h3></div></div>
     <div class="active-list">
       ${active.map((job, index) => {
-        const image = images[(index + 2) % Math.max(1, images.length)];
         const progress = statusProgress(job.status);
         const linkedBeats = beatsForJob(job);
         return `
           <article class="active-card">
-            <div class="active-thumb">${image?.src ? `<img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.name)}">` : ""}</div>
+            <div class="active-thumb">${jobMediaHtml(job)}</div>
             <div>
               <strong>${escapeHtml(displayText(job.title || job.id))}</strong>
-              <span>${escapeHtml(job.id || "-")} / ${escapeHtml(statusJa(job.status))} / ${linkedBeats.length}ビート / Seedance映像のみ</span>
+              <span>${escapeHtml(job.id || "-")} / ${escapeHtml(statusJa(job.status))} / ${job.local_path ? "MP4保存済み・音声なし" : `${linkedBeats.length}ビート / Seedance映像のみ`}</span>
               <div class="progress" style="--progress:${progress}%"><i></i></div>
-              <span>${escapeHtml(linkedBeats.map(beat => beat.telop).filter(Boolean).join(" -> ") || displayText(job.note || "No paid generation executed"))}</span>
+              <span>${escapeHtml(job.local_path || linkedBeats.map(beat => beat.telop).filter(Boolean).join(" -> ") || displayText(job.note || "No paid generation executed"))}</span>
             </div>
           </article>
         `;
       }).join("")}
+    </div>
+  `;
+}
+
+function renderStoryboardReview() {
+  const storyboard = appState.state.storyboard || {};
+  const approval = appState.state.approval_contract || {};
+  const jobs = appState.state.jobs || [];
+  const screenCapture = appState.runtime?.blender_assets?.screen_capture;
+  const generatedSheet = storyboard.generated_contact_sheet || storyboard.contact_sheet;
+  const referenceSheet = storyboard.reference_contact_sheet;
+  const panels = storyboard.panels || [];
+  const target = document.getElementById("storyboardReview");
+  if (!target) return;
+  target.innerHTML = `
+    <div class="panel-heading">
+      <div>
+        <span class="eyebrow">生成前レビュー</span>
+        <h3>生成絵コンテ / 許可ゲート</h3>
+      </div>
+      <span class="thin-pill danger">追加生成は許可待ち</span>
+    </div>
+
+    <div class="approval-gate-strip">
+      <div>
+        <span>現在地</span>
+        <strong>${escapeHtml(appState.state.current_work?.title || "生成前レビュー")}</strong>
+      </div>
+      <div class="blocked">
+        <span>次の生成許可</span>
+        <strong>${escapeHtml(statusJa(approval.current_permission || "blocked"))}</strong>
+      </div>
+      <div>
+        <span>Seedance本番</span>
+        <strong>未実行</strong>
+      </div>
+      <div>
+        <span>絵コンテ状態</span>
+        <strong>${escapeHtml(statusJa(storyboard.status || "pending"))}</strong>
+      </div>
+    </div>
+
+    <div class="storyboard-cinema-grid">
+      <article class="generated-storyboard-hero">
+        <div class="storyboard-frame-label">
+          <span>AI GENERATED STORYBOARD DRAFT</span>
+          <strong>ASCENSION LINE</strong>
+          <em>この生成絵コンテを承認してから次の生成へ進む</em>
+        </div>
+        ${generatedSheet ? `<img src="${escapeHtml(toProjectPath(generatedSheet))}?t=${Date.now()}" alt="生成絵コンテドラフト">` : "<strong>生成絵コンテ未作成</strong>"}
+      </article>
+      <article class="reference-stack">
+        <div class="reference-card">
+          <span>Blender実画面</span>
+          ${screenCapture?.exists ? `<img src="${escapeHtml(toProjectPath(screenCapture.path))}?t=${encodeURIComponent(screenCapture.mtime_ns || Date.now())}" alt="Blender実画面">` : "<strong>キャプチャ待ち</strong>"}
+        </div>
+        <div class="reference-card">
+          <span>参照カード / 根拠</span>
+          ${referenceSheet ? `<img src="${escapeHtml(toProjectPath(referenceSheet))}?t=${Date.now()}" alt="参照画像確認カード">` : "<strong>参照カード未作成</strong>"}
+        </div>
+      </article>
+    </div>
+
+    <div class="storyboard-panel-grid">
+      ${jobs.map(job => {
+        const panel = panels.find(item => item.id === job.id) || {};
+        const image = panel.generated_image || panel.image || job.storyboard_image;
+        const ref = panel.reference_image || job.reference_image;
+        return `
+          <article class="storyboard-card">
+            ${image ? `<img src="${escapeHtml(toProjectPath(image))}?t=${Date.now()}" alt="${escapeHtml(panel.title || job.title || job.id)}">` : ""}
+            <div>
+              <strong>${escapeHtml(panel.title || job.title || job.id)}</strong>
+              <span>${escapeHtml(panel.note || job.note || "")}</span>
+              <em>生成ドラフト / ${escapeHtml(statusJa(job.status))}</em>
+              <small>参照: ${escapeHtml(ref || "-")}</small>
+            </div>
+          </article>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderBlenderReview() {
+  const target = document.getElementById("blenderReview");
+  if (!target) return;
+  const review = appState.state.blender_to_seedance || {};
+  const source = review.blender_source || {};
+  const outputs = review.seedance_outputs || [];
+  target.innerHTML = `
+    <div class="panel-heading">
+      <div>
+        <span class="eyebrow">Blender to Seedance</span>
+        <h3>プリビズ肉付けレビュー</h3>
+      </div>
+      <span class="thin-pill warning">追加生成はレビュー後</span>
+    </div>
+    <div class="blender-review-grid">
+      <article class="blender-source-card">
+        <div class="review-card-head">
+          <span>SOURCE / BLENDER PREVIS</span>
+          <strong>主素材</strong>
+        </div>
+        <img src="${escapeHtml(toProjectPath(source.render_path || appState.state.blender?.render_path || ""))}?t=${Date.now()}" alt="Blenderプリビズ">
+        <div class="review-paths">
+          <span>${escapeHtml(source.render_path || "")}</span>
+          <span>${escapeHtml(source.blend_path || "")}</span>
+        </div>
+      </article>
+      <div class="seedance-output-grid">
+        ${outputs.map(item => `
+          <article class="seedance-output-card">
+            <div class="review-card-head">
+              <span>${escapeHtml(item.id || "clip")} / SEEDANCE OUTPUT</span>
+              <strong>${escapeHtml(statusJa(item.status))}</strong>
+            </div>
+            ${item.output ? `
+              <div class="video-review-shell">
+                <video src="${escapeHtml(toProjectPath(item.output))}" controls muted playsinline preload="metadata"></video>
+                ${videoActionsHtml(toProjectPath(item.output), item.id || "seedance-output")}
+              </div>
+            ` : ""}
+            <div class="review-focus-list">
+              ${(item.review_focus || []).map(focus => `<span>${escapeHtml(focus)}</span>`).join("")}
+            </div>
+          </article>
+        `).join("")}
+      </div>
+    </div>
+    <div class="support-reference-note">
+      <strong>補助参照</strong>
+      <span>${escapeHtml(review.support_only?.generated_storyboard || "")}</span>
+      <em>${escapeHtml(review.support_only?.note || "生成絵コンテは補助。主軸はBlenderプリビズ。")}</em>
     </div>
   `;
 }
@@ -581,6 +793,10 @@ function renderSystemPerformance() {
 function renderTerminal() {
   const runtime = appState.runtime;
   const latestInbox = (runtime?.inbox || []).slice(-1)[0];
+  const proofImages = [
+    ...(appState.library?.page_renders || []),
+    ...(appState.library?.source_captures || []),
+  ].filter(item => item.thumbnail_path || item.path).slice(0, 6);
   const baseEvents = [
     "ライン04: 費用見積が進行中",
     "生成キュー: 人間承認までロック",
@@ -604,13 +820,23 @@ function renderTerminal() {
   }).join("\n");
 
   const activity = appState.state.activity || [];
-  document.getElementById("activity").innerHTML = activity.slice(-5).reverse().map(item => `
-    <article class="activity-item">
-      <strong>${escapeHtml(item.actor || "システム")}</strong>
-      <span>${escapeHtml(item.time || "")}</span>
-      <span>${escapeHtml(displayText(item.event || ""))}</span>
-    </article>
-  `).join("");
+  document.getElementById("activity").innerHTML = `
+    <div class="ui-proof-grid">
+      ${proofImages.map(item => `
+        <article>
+          <img src="${escapeHtml(toProjectPath(item.thumbnail_path || item.path))}" alt="${escapeHtml(item.name || item.id || "UI proof")}">
+          <strong>${escapeHtml(item.name || item.id || "UI")}</strong>
+        </article>
+      `).join("")}
+    </div>
+    ${activity.slice(-3).reverse().map(item => `
+      <article class="activity-item">
+        <strong>${escapeHtml(item.actor || "システム")}</strong>
+        <span>${escapeHtml(item.time || "")}</span>
+        <span>${escapeHtml(displayText(item.event || ""))}</span>
+      </article>
+    `).join("")}
+  `;
 }
 
 function renderLowerData() {
@@ -748,11 +974,14 @@ function renderLowerData() {
 function renderAll() {
   renderTop();
   renderMetrics();
+  renderRequirements();
   renderFactoryOverview();
   renderSystemMonitor();
   renderMarketFeed();
   renderGlobalActivity();
   renderFactoryVisual();
+  renderBlenderReview();
+  renderStoryboardReview();
   renderPipeline();
   renderRecentOutputs();
   renderGenerationQueue();
@@ -775,7 +1004,7 @@ async function sendInstruction() {
   }
   appState.sendInFlight = true;
   button.disabled = true;
-  status.textContent = "Codex inboxへ送信中...";
+  status.textContent = "Codexへ送信中...";
   try {
     const response = await fetch("/api/send-to-codex", {
       method: "POST",
@@ -803,13 +1032,20 @@ async function sendInstruction() {
 
 document.getElementById("copyInstruction").addEventListener("click", async () => {
   await navigator.clipboard.writeText(document.getElementById("nextInstruction").value);
+  document.getElementById("sendStatus").textContent = "確認メモをコピーしました。";
 });
 
 document.getElementById("sendInstruction").addEventListener("click", sendInstruction);
+document.addEventListener("click", event => {
+  const button = event.target.closest("[data-video-action='fullscreen']");
+  if (!button) return;
+  const video = button.closest(".video-review-shell")?.querySelector("video");
+  if (video?.requestFullscreen) video.requestFullscreen();
+});
 
 loadFactoryData();
-setInterval(loadFactoryData, 1000);
+setInterval(loadFactoryData, 5000);
 setInterval(() => {
   appState.tick += 1;
-  renderAll();
-}, 1100);
+  document.getElementById("systemTime").textContent = nowJstParts();
+}, 1000);

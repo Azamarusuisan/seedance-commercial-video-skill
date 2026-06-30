@@ -1,9 +1,0 @@
-{
-  "checked_at": "2026-06-28",
-  "command": "Higgsfield MCP generate create seedance_2_0",
-  "status": "pending_mcp_execution",
-  "reason": "Run workspace/mcp-requests/seedance-generate.request.json with the host-provided Higgsfield MCP tool after final approval and cost confirmation.",
-  "job": null,
-  "local_output": null,
-  "security_note": "No API key, token, cookie, session, password, or payment credential was saved."
-}

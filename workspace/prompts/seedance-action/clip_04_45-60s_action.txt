@@ -1,7 +1,10 @@
 9:16 cinematic 3D action film, visual-only.
 
+Core rule:
+Use the Blender previs world as the primary source and turn it into the final cinematic ascension shot. Preserve the neon city/action identity, then add detailed skyline, clouds, debris, light beam, hero silhouette, lens atmosphere, and final-title safe composition.
+
 Reference:
-Use the storyboard structure of a lone figure at a high point, a beam rising into the sky, floating terrain, and a final title-safe frame. Use original 3D action design only.
+Use the Blender action previs as the world source. Use the storyboard only as support for the structure of a lone figure at a high point, a beam rising into the sky, floating terrain, and a final title-safe frame. Use original 3D action design only.
 
 Timing:
 45-52s: hero stands on the edge of a broken rooftop cliff, raises one hand, a vertical beam rises from the city.

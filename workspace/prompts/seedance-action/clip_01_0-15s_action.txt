@@ -1,5 +1,8 @@
 9:16 cinematic 3D action film, visual-only.
 
+Core rule:
+Use the Blender previs as the primary source and enrich it into a finished cinematic action shot. Keep the neon highway, lane geometry, drones, bike, and chase layout, but do not leave it looking like raw grey blockout or simple Blender preview.
+
 Reference:
 Use the provided Blender action previs image as the local layout reference: neon night city, wet highway, glowing lanes, drones, armored bike, black-suited hero. Use the storyboard reference only for structure: hero close-up, camera notes, shot-panel rhythm. Do not copy logos or text.
 

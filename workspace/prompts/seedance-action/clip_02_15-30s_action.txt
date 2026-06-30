@@ -1,5 +1,8 @@
 9:16 cinematic 3D action film, visual-only.
 
+Core rule:
+Use the Blender previs as the primary source and enrich it into a finished cinematic action shot. Preserve the chase geography and neon road layout, then add real surface detail, rain, sparks, smoke, hero/bike design, and dramatic lighting so it no longer feels like raw Blender blockout.
+
 Reference:
 Use the Blender action previs as the chase geography: neon highway, black city towers, cyan and magenta lane lights, drones and armored bike. Keep the camera dynamic but readable.
 

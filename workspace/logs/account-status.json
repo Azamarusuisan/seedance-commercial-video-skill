@@ -1,8 +1,0 @@
-{
-  "checked_at": "2026-06-30T09:49:23.386Z",
-  "command": "higgsfield account status --json",
-  "status": "checked",
-  "credits": 1266.8,
-  "subscription_plan_type": "ultra",
-  "security_note": "Email and credentials are not saved in this sanitized log."
-}

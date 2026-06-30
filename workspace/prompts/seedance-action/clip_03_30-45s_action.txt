@@ -1,7 +1,10 @@
 9:16 cinematic 3D action film, visual-only.
 
+Core rule:
+Use the Blender previs as the primary source for the local 3D action language, then expand it into the floating-realm sequence. Keep the same neon city/chase world, but enrich the simple previs forms into cinematic road fragments, portal light, hero costume detail, atmosphere, and scale.
+
 Reference:
-Blend the local Blender neon action style with a floating-realm storyboard structure: levitating road pieces, circular portal light, wide sense of scale.
+Use the Blender action previs as the visual source, with the generated storyboard only as support for the floating-realm structure: levitating road pieces, circular portal light, wide sense of scale.
 
 Timing:
 30-35s: road fragments float in slow motion while the hero opens a circular portal with one hand.

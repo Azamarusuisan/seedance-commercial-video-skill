@@ -1,7 +1,0 @@
-{
-  "checked_at": "2026-06-28T07:48:09.399726+00:00",
-  "command": "GPT Image reference generation",
-  "status": "blocked",
-  "reason": "OPENAI_API_KEY is not present in the shell environment.",
-  "security_note": "No API key, token, cookie, session, password, or payment credential was saved."
-}

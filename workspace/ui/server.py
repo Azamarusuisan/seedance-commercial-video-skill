@@ -11,7 +11,7 @@ import sys
 from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -23,6 +23,7 @@ ASSET_LIBRARY_PATH = STATE_DIR / "asset-library.json"
 ASSET_3D_DIR = REPO_ROOT / "workspace" / "assets" / "3d"
 MCP_REQUEST_DIR = REPO_ROOT / "workspace" / "mcp-requests"
 LOG_DIR = REPO_ROOT / "workspace" / "logs"
+LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1"}
 
 
 def now_label() -> str:
@@ -341,6 +342,30 @@ def factory_data(server_address: tuple[str, int]) -> dict[str, object]:
     }
 
 
+def is_local_bind(host: str) -> bool:
+    return host in LOCAL_HOSTS
+
+
+def is_allowed_origin(origin: str, server_address: tuple[str, int]) -> bool:
+    if not origin:
+        return True
+    parsed = urlparse(origin)
+    host, port = server_address
+    expected_port = port
+    origin_port = parsed.port or (443 if parsed.scheme == "https" else 80)
+    return parsed.scheme in {"http", "https"} and parsed.hostname in LOCAL_HOSTS and origin_port == expected_port
+
+
+def is_forbidden_static_path(route: str) -> bool:
+    parts = [part.lower() for part in Path(unquote(route)).parts]
+    if ".git" in parts:
+        return True
+    name = parts[-1] if parts else ""
+    blocked_names = {".env", ".env.local", ".env.production"}
+    blocked_words = ("cookie", "token", "secret", "session", "credential")
+    return name in blocked_names or any(word in name for word in blocked_words)
+
+
 def append_activity(message: str, source: str) -> None:
     if not STATE_PATH.exists():
         return
@@ -445,8 +470,13 @@ class CodexWorkflowHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_OPTIONS(self) -> None:
+        if not is_allowed_origin(self.headers.get("Origin", ""), self.server.server_address):
+            self.send_error(403, "Origin not allowed")
+            return
         self.send_response(204)
-        self.send_header("Access-Control-Allow-Origin", "*")
+        origin = self.headers.get("Origin", "")
+        if origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
         self.send_header("Access-Control-Allow-Headers", "content-type")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.end_headers()
@@ -454,7 +484,9 @@ class CodexWorkflowHandler(SimpleHTTPRequestHandler):
     def send_json(self, payload: dict[str, object], status: int = 200) -> None:
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
-        self.send_header("Access-Control-Allow-Origin", "*")
+        origin = self.headers.get("Origin", "")
+        if is_allowed_origin(origin, self.server.server_address) and origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
@@ -465,11 +497,18 @@ class CodexWorkflowHandler(SimpleHTTPRequestHandler):
         if route == "/api/factory-data":
             self.send_json(factory_data(self.server.server_address))
             return
+        if is_forbidden_static_path(route):
+            self.send_error(404, "Not found")
+            return
         super().do_GET()
 
     def do_POST(self) -> None:
         if self.path != "/api/send-to-codex":
             self.send_error(404, "Unknown endpoint")
+            return
+
+        if not is_allowed_origin(self.headers.get("Origin", ""), self.server.server_address):
+            self.send_error(403, "Origin not allowed")
             return
 
         try:
@@ -531,6 +570,9 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=8787)
     parser.add_argument("--bind", default="127.0.0.1")
     args = parser.parse_args()
+
+    if not is_local_bind(args.bind) and os.environ.get("ALLOW_NONLOCAL_UI", "0") != "1":
+        raise SystemExit("Refusing non-local bind. Set ALLOW_NONLOCAL_UI=1 only for a trusted network.")
 
     handler = functools.partial(CodexWorkflowHandler, directory=str(REPO_ROOT))
     server = ThreadingHTTPServer((args.bind, args.port), handler)

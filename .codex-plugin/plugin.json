@@ -3,11 +3,11 @@
   "version": "0.1.4",
   "description": "Plan and produce short videos with Seedance, including Hermes autonomous loops, TikTok ad ops, story scenes, cast-reference libraries, market-demand hooks, and external audio/subtitle handoff.",
   "author": {
-    "name": "Azamarusuisan",
-    "url": "https://github.com/Azamarusuisan"
+    "name": "azamaru",
+    "url": "https://github.com/azamaru"
   },
-  "homepage": "https://github.com/Azamarusuisan/seedance-commercial-video-skill",
-  "repository": "https://github.com/Azamarusuisan/seedance-commercial-video-skill",
+  "homepage": "https://github.com/azamaru/seedance-commercial-video-skill",
+  "repository": "https://github.com/azamaru/seedance-commercial-video-skill",
   "license": "MIT",
   "keywords": [
     "seedance",
@@ -20,7 +20,7 @@
     "displayName": "Seedance",
     "shortDescription": "Short-video workflow for Seedance.",
     "longDescription": "A generic short-video workflow for planning, image-to-video prompting, Hermes autonomous run loops, TikTok ad operations checks, cast-reference selection, TikTok story scenes, market-demand hook selection, external voice-over/subtitle handoff, reviewing, and packaging Seedance videos with rights, budget, retry, and delivery guardrails.",
-    "developerName": "Azamarusuisan",
+    "developerName": "azamaru",
     "category": "Productivity",
     "capabilities": [
       "Write"
