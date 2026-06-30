@@ -160,6 +160,10 @@ function estimatedCredits(jobs) {
   return values.reduce((sum, value) => sum + value, 0);
 }
 
+function scriptBeats() {
+  return appState.state.script?.beats || [];
+}
+
 function renderValue(value) {
   if (value === null || value === undefined || value === "") return "待機中";
   if (typeof value === "number") return value.toLocaleString("ja-JP");
@@ -610,6 +614,28 @@ function renderLowerData() {
         <strong>ブロック記録</strong>
         <span>${blocked.length}件 / 使用素材ではない</span>
       </div>
+    </div>
+  `;
+
+  const script = appState.state.script || {};
+  const beats = scriptBeats();
+  document.getElementById("script").innerHTML = `
+    <div class="panel-heading">
+      <div><span class="eyebrow">台本</span><h3>${escapeHtml(script.title || "60秒台本")}</h3></div>
+      <span class="thin-pill success">${escapeHtml(statusJa(script.status || "done"))}</span>
+    </div>
+    <div class="script-summary">
+      <strong>${escapeHtml(script.logline || "台本待ち")}</strong>
+      <span>${escapeHtml(script.voice || "Higgsfield ElevenLabs")} / ${escapeHtml(script.subtitles || "後編集テロップ")}</span>
+    </div>
+    <div class="script-beat-list">
+      ${beats.slice(0, 10).map(beat => `
+        <article class="script-beat-card">
+          <div><strong>${escapeHtml(beat.time || "")}</strong><span>${escapeHtml(beat.clip || "")}</span></div>
+          <p>${escapeHtml(beat.narration || "")}</p>
+          <em>${escapeHtml(beat.telop || "")}</em>
+        </article>
+      `).join("") || "<article class=\"script-beat-card\"><p>台本がまだ登録されていません。</p></article>"}
     </div>
   `;
 

@@ -7,6 +7,7 @@ const PAGE_NAV = [
   ["studio-lines", "制作ライン", "studio-lines.html"],
   ["assets", "素材", "assets.html"],
   ["cast-library", "演者ライブラリ", "cast-library.html"],
+  ["script", "台本", "script.html"],
   ["jobs", "ジョブ", "jobs.html"],
   ["gates", "ゲート", "gates.html"],
   ["activity", "履歴", "activity.html"],
@@ -33,6 +34,13 @@ const PAGE_META = {
     intent: "AI演者の名前、役割、利用範囲、権利ステータスを見て、次の動画の配役を決める。",
     source: "workspace/assets/cast/generated_20260629/cast-manifest.json",
     decision: "主参照に使う1人と、背景/カメオに回す演者を選ぶ。",
+  },
+  script: {
+    title: "台本",
+    subtitle: "60秒物語の秒割り・ナレーション・テロップ",
+    intent: "Seedance生成前に、映像、ナレーション、字幕の同期を確認する。",
+    source: "generation-state.json / script.beats[]",
+    decision: "この台本で音声生成と字幕編集へ進めるかを確認する。",
   },
   jobs: {
     title: "ジョブ",
@@ -339,6 +347,39 @@ function renderCastLibrary() {
   `;
 }
 
+function renderScript() {
+  const script = pageState.state.script || {};
+  const beats = script.beats || [];
+  const voiceLines = script.voice_script || beats.map(beat => beat.narration).filter(Boolean);
+  const telopLines = script.telop_plan || beats.map(beat => beat.telop).filter(Boolean);
+  return `
+    <section class="page-panel wide">
+      <div class="panel-heading">
+        <div><span class="eyebrow">60秒台本</span><h3>${html(script.title || "台本未登録")}</h3></div>
+        <span class="thin-pill success">${html(statusJa(script.status || "done"))}</span>
+      </div>
+      <div class="script-board">
+        ${beats.map(beat => `
+          <article class="script-row">
+            <div><strong>${html(beat.time || "")}</strong><span>${html(beat.clip || "")}</span></div>
+            <div><span>映像</span><p>${html(beat.visual || "")}</p></div>
+            <div><span>ナレーション</span><p>${html(beat.narration || "")}</p></div>
+            <div><span>テロップ</span><strong>${html(beat.telop || "")}</strong></div>
+          </article>
+        `).join("") || "<article class=\"script-row\"><p>台本がまだ登録されていません。</p></article>"}
+      </div>
+    </section>
+    <section class="page-panel">
+      <div class="panel-heading"><div><span class="eyebrow">音声台本</span><h3>${html(script.voice || "Higgsfield ElevenLabs")}</h3></div></div>
+      <div class="script-line-list">${voiceLines.map(line => `<p>${html(line)}</p>`).join("")}</div>
+    </section>
+    <section class="page-panel">
+      <div class="panel-heading"><div><span class="eyebrow">字幕テロップ</span><h3>${html(script.subtitles || "後編集")}</h3></div></div>
+      <div class="script-line-list">${telopLines.map(line => `<p>${html(line)}</p>`).join("")}</div>
+    </section>
+  `;
+}
+
 function renderJobs() {
   const jobs = pageState.state.jobs || [];
   return `
@@ -403,6 +444,7 @@ function renderPageContent() {
     "studio-lines": renderStudioLines,
     assets: renderAssets,
     "cast-library": renderCastLibrary,
+    script: renderScript,
     jobs: renderJobs,
     gates: renderGates,
     activity: renderActivity,

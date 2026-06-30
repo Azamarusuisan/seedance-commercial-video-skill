@@ -1,21 +1,21 @@
 {
   "meta": {
     "project": "Seedance Theater Cast 60s",
-    "updated_at": "2026-06-30 18:49:23 JST",
-    "active_stage": "cost_estimated",
-    "codex_status": "cost_estimate_completed",
-    "operator_message": "Seedance 4本分の費用見積もりが完了。生成は未実行で、人間承認までロック中です。",
+    "updated_at": "2026-06-30 19:47:41 JST",
+    "active_stage": "script_locked",
+    "codex_status": "script_visible_in_ui",
+    "operator_message": "60秒台本をUI表示用に構造化しました。映像、ナレーション、テロップを画面上で確認できます。",
     "next_terminal_instruction": "Seedance 4本の費用見積もりは合計540 creditsです。生成する場合は人間承認後に進めてください。まだ生成はしないでください。",
     "last_sent_to_codex_at": "2026-06-30T18:45:57+09:00",
     "last_sent_to_codex_message": "HiggsfieldのSeedance 4本分の費用見積もりを出して、UIのjobsをestimatedに更新してください。まだ生成はしないでください。"
   },
   "current_work": {
-    "title": "Seedance費用見積完了",
-    "summary": "Higgsfield Seedance 2.0で4本分のcost estimateを取得しました。各15秒、9:16、1080p、high bitrate、generate_audio=falseです。",
-    "owner": "Codex + Higgsfield CLI",
-    "input": "workspace/prompts/seedance-theater/*.txt / generated cast references",
-    "output": "workspace/logs/seedance-theater-cost-estimate.json / jobs[].cost_credits",
-    "status_text": "合計540 credits。生成・音声・投稿公開は未実行。"
+    "title": "60秒台本ロック",
+    "summary": "Seedance Theater Cast 60sの秒割り、ナレーション、後編集テロップをUIに表示する状態へ更新しました。",
+    "owner": "Codex",
+    "input": "workspace/briefs/seedance-theater-60s-final-script.md",
+    "output": "generation-state.json / script.beats[] / script.html",
+    "status_text": "台本は表示済み。生成・音声・投稿公開は未実行。"
   },
   "workflow": [
     {
@@ -31,8 +31,8 @@
       "label": "台本",
       "status": "done",
       "owner": "Codex",
-      "output": "tiktok-theater-cast-60s-script.md",
-      "note": "60s story split into 10 beats and 4 Seedance clips."
+      "output": "seedance-theater-60s-final-script.md / script.beats[]",
+      "note": "Final 60s script is visible in the Factory UI and script page."
     },
     {
       "id": "approval",
@@ -281,6 +281,11 @@
       "time": "2026-06-30 18:49:23 JST",
       "actor": "Codex + Higgsfield CLI",
       "event": "Estimated Seedance 2.0 cost for 4 visual-only clips: 135 credits each, 540 credits total. No generation executed."
+    },
+    {
+      "time": "2026-06-30 19:47:41 JST",
+      "actor": "Codex",
+      "event": "Wrote final 60s script and exposed script.beats[] in the Factory UI. No generation executed."
     }
   ],
   "cost_estimate": {
@@ -303,5 +308,141 @@
     "account_credits_after_if_generated": 726.8,
     "log_path": "workspace/logs/seedance-theater-cost-estimate.json",
     "paid_generation_executed": false
+  },
+  "script": {
+    "status": "done",
+    "title": "終電後、同じ地図を持つ人たち",
+    "logline": "終電後の雨の東京で、同じ地図を持つ人たちを追ったNanaが、最後に屋上で全員と再会する60秒ミステリーVlog。",
+    "path": "workspace/briefs/seedance-theater-60s-final-script.md",
+    "format": "60s / 4 x 15s / 9:16 / Seedance visual-only",
+    "voice": "Higgsfield ElevenLabs / Japanese narration / Leo default unless changed",
+    "subtitles": "Post-production Japanese telop, timed after voice is locked",
+    "generation_policy": "No Seedance audio, no generated subtitles, no paid generation without human approval.",
+    "beats": [
+      {
+        "time": "0-5s",
+        "clip": "Clip 1",
+        "cast": "Nana",
+        "primary_reference": "cast_f_beauty_03",
+        "visual": "雨の横断歩道。Nanaが自撮りで立ち止まり、画面奥に同じ折り地図を持つ人影が映る。",
+        "narration": "終電を逃した夜、改札の前で、同じ地図を持つ人を三人見た。",
+        "telop": "終電後、同じ地図",
+        "next": "Nanaが一番近い地図の持ち主を追う。"
+      },
+      {
+        "time": "5-10s",
+        "clip": "Clip 1",
+        "cast": "Emi / Daichi",
+        "primary_reference": "cast_f_ordinary_01",
+        "visual": "コンビニ入口でEmiが地図を畳む。Daichiが背後を横切り、同じ印を持っている。",
+        "narration": "偶然じゃない。みんな、地図にない場所へ向かっていた。",
+        "telop": "偶然じゃない",
+        "next": "地図の印が駅裏の細い路地を示す。"
+      },
+      {
+        "time": "10-15s",
+        "clip": "Clip 1",
+        "cast": "Nana / Ren",
+        "primary_reference": "cast_m_handsome_01",
+        "visual": "Renが横から入り、スマホ画面の同じ印を見せて、細い路地を指す。",
+        "narration": "レンが小さく言った。そこ、普通の地図には出ない路地だよ。",
+        "telop": "地図にない路地",
+        "next": "二人で路地に入る。"
+      },
+      {
+        "time": "15-22s",
+        "clip": "Clip 2",
+        "cast": "Yuri / Sho",
+        "primary_reference": "cast_f_beauty_02",
+        "visual": "オフィスビルのエレベーターが開き、YuriとShoが同じ折り地図を持って出てくる。",
+        "narration": "ビルの中からも、同じ印を持った人たちが出てきた。",
+        "telop": "ビルの中にも",
+        "next": "二人が隠れたカフェへ向かう。"
+      },
+      {
+        "time": "22-30s",
+        "clip": "Clip 2",
+        "cast": "Leo / Kaede",
+        "primary_reference": "cast_m_handsome_03",
+        "visual": "カフェカウンター。Leoがカップを滑らせ、湯気の向こうで次の角を指す。",
+        "narration": "カフェの店主は、地図を見ずに次の角を指した。",
+        "telop": "次の角へ",
+        "next": "湯気の形が次のルートになる。"
+      },
+      {
+        "time": "30-36s",
+        "clip": "Clip 3",
+        "cast": "Ami / Sota",
+        "primary_reference": "cast_f_ordinary_04",
+        "visual": "学生二人が夜の廊下を走りながら、Nanaに合図する。",
+        "narration": "学生たちは、ここを夜だけ開く街と呼んでいた。",
+        "telop": "夜だけ開く街",
+        "next": "学生の動画に古い店のシャッターが映る。"
+      },
+      {
+        "time": "36-43s",
+        "clip": "Clip 3",
+        "cast": "Kenji / Maki",
+        "primary_reference": "cast_m_ordinary_03",
+        "visual": "古い店のシャッターが開く。KenjiがNanaの地図に古いスタンプを押す。",
+        "narration": "古い店の奥で、地図は初めてひとつにつながった。",
+        "telop": "地図が完成",
+        "next": "完成した地図が屋上を示す。"
+      },
+      {
+        "time": "43-50s",
+        "clip": "Clip 4",
+        "cast": "Sara / Toru",
+        "primary_reference": "cast_f_beauty_04",
+        "visual": "ホテルの廊下。Saraが無言で待ち、Toruが屋上行きのエレベーターを開ける。",
+        "narration": "最後の案内人は、何も説明しなかった。ただ、上を指した。",
+        "telop": "上へ",
+        "next": "エレベーターが屋上へ開く。"
+      },
+      {
+        "time": "50-56s",
+        "clip": "Clip 4",
+        "cast": "Nana / Ren / All Cast",
+        "primary_reference": "cast_f_beauty_03",
+        "visual": "屋上の扉が開く。今夜出会った全員が、破れた地図の一部を持って並んでいる。",
+        "narration": "屋上には、今夜すれ違った全員がいた。",
+        "telop": "全員、ここにいた",
+        "next": "地図の一部が一つになり、空白の地図へ変わる。"
+      },
+      {
+        "time": "56-60s",
+        "clip": "Clip 4",
+        "cast": "Nana",
+        "primary_reference": "cast_f_beauty_03",
+        "visual": "Nanaの手元に、まっさらな地図が現れる。カメラ目線で少し笑う。",
+        "narration": "次に選ばれるのは、たぶんこの動画を見た人。",
+        "telop": "次は、あなた",
+        "next": "次回へつながるループフック。"
+      }
+    ],
+    "voice_script": [
+      "終電を逃した夜、改札の前で、同じ地図を持つ人を三人見た。",
+      "偶然じゃない。みんな、地図にない場所へ向かっていた。",
+      "レンが小さく言った。そこ、普通の地図には出ない路地だよ。",
+      "ビルの中からも、同じ印を持った人たちが出てきた。",
+      "カフェの店主は、地図を見ずに次の角を指した。",
+      "学生たちは、ここを夜だけ開く街と呼んでいた。",
+      "古い店の奥で、地図は初めてひとつにつながった。",
+      "最後の案内人は、何も説明しなかった。ただ、上を指した。",
+      "屋上には、今夜すれ違った全員がいた。",
+      "次に選ばれるのは、たぶんこの動画を見た人。"
+    ],
+    "telop_plan": [
+      "終電後、同じ地図",
+      "偶然じゃない",
+      "地図にない路地",
+      "ビルの中にも",
+      "次の角へ",
+      "夜だけ開く街",
+      "地図が完成",
+      "上へ",
+      "全員、ここにいた",
+      "次は、あなた"
+    ]
   }
 }
