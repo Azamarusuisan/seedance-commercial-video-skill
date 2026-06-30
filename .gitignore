@@ -11,6 +11,8 @@ workspace/**/secrets*.json
 workspace/tmp/
 workspace/logs/*.raw.json
 workspace/logs/*.err
+workspace/ui/state/codex-inbox.jsonl
+workspace/ui/**/__pycache__/
 workspace/outputs/*.mp4
 workspace/outputs/*.mov
 workspace/assets/cast/**/*.png

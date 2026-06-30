@@ -313,6 +313,25 @@
       width: fit-content;
     }
 
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .secondary-button {
+      border-color: var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .send-status {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 0;
+    }
+
     code {
       color: #2c3440;
       background: #f1f3f5;
@@ -383,12 +402,16 @@
         <div class="section-head">
           <div>
             <h3>次のターミナル指示</h3>
-            <p>この文をターミナル側のCodexへ渡すと、次の状態更新に進みます。</p>
+            <p>この文をターミナル側のCodexへ送ると、次の状態更新に進みます。</p>
           </div>
         </div>
         <div class="section-body copy-box">
           <textarea id="nextInstruction" readonly></textarea>
-          <button id="copyInstruction">指示をコピー</button>
+          <div class="button-row">
+            <button id="sendInstruction">この内容をCodexに送信</button>
+            <button class="secondary-button" id="copyInstruction">指示をコピー</button>
+          </div>
+          <p class="send-status" id="sendStatus">未送信</p>
         </div>
       </section>
 
@@ -578,6 +601,32 @@
     document.getElementById("copyInstruction").addEventListener("click", async () => {
       const text = document.getElementById("nextInstruction").value;
       await navigator.clipboard.writeText(text);
+    });
+
+    document.getElementById("sendInstruction").addEventListener("click", async () => {
+      const status = document.getElementById("sendStatus");
+      const message = document.getElementById("nextInstruction").value.trim();
+      if (!message) {
+        status.textContent = "送信する指示がありません。";
+        return;
+      }
+      status.textContent = "Codex inboxへ送信中...";
+      try {
+        const response = await fetch("/api/send-to-codex", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            source: "live-workflow-ui",
+            message
+          })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.message || `HTTP ${response.status}`);
+        status.textContent = `送信済み: ${result.queued_at}`;
+        await loadState();
+      } catch (error) {
+        status.textContent = "送信失敗: " + error.message;
+      }
     });
 
     loadState();

@@ -57,7 +57,7 @@ TikTok風の物語動画や劇団型のキャスト運用では、`workspace/ass
 
 生成前の人間確認には `workspace/ui/generation-checkpoint.html` を開きます。現在のキャスト素材、source refs、60秒台本、Seedance visual-only、Higgsfield ElevenLabs音声、後付け字幕、除外素材、権利確認をワークフローUIでチェックし、確認サマリーをコピーしてから費用見積もりと生成へ進みます。生成後は同じUIにresult URL、使用クレジット、OK/NG、再生成理由、編集対応メモを残します。
 
-ターミナル指示に応じてCodexが裏で状態を更新し、それをUIに反映するライブ運用では `workspace/ui/live-workflow.html` を使います。`bash workspace/scripts/serve-ui.sh` でローカルサーバーを起動し、Codexは `workspace/ui/state/generation-state.json` を更新します。ブラウザは数秒ごとに状態を読み直すため、ターミナルでの指示、生成見積、result URL、レビュー判断が画面に反映されます。
+ターミナル指示に応じてCodexが裏で状態を更新し、それをUIに反映するライブ運用では `workspace/ui/live-workflow.html` を使います。`bash workspace/scripts/serve-ui.sh` でローカルサーバーを起動し、Codexは `workspace/ui/state/generation-state.json` を更新します。ブラウザは数秒ごとに状態を読み直すため、ターミナルでの指示、生成見積、result URL、レビュー判断が画面に反映されます。UIの「この内容をCodexに送信」ボタンはローカルの `/api/send-to-codex` に送信し、ターミナルログと `workspace/ui/state/codex-inbox.jsonl` に指示を残します。
 
 市場・TikTok・UGC寄せの動画では、`references/public-demand-short-video-patterns.md` を使って、2秒フック、15秒商品広告、同一人物の旅Vlog、UGC広告バッチ、Virality Predictor後検証の型を先に選びます。公開投稿は需要シグナルとして分析し、映像素材そのものは権利確認なしに最終物へ使いません。
 
