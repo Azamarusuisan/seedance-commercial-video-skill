@@ -8,6 +8,7 @@ STATE="$LIVE_DIR/blender-screen-state.json"
 INTERVAL="${INTERVAL:-1}"
 LOOP="${LOOP:-0}"
 ACTIVATE_BLENDER="${ACTIVATE_BLENDER:-0}"
+WINDOW_KEYWORD="${WINDOW_KEYWORD:-}"
 CAPTURE_COUNT=0
 
 mkdir -p "$LIVE_DIR"
@@ -46,10 +47,11 @@ capture_once() {
   fi
 
   local window_info window_id rect window_name
-  window_info="$(swift - <<'SWIFT' 2>/dev/null || true
+  window_info="$(WINDOW_KEYWORD="$WINDOW_KEYWORD" swift - <<'SWIFT' 2>/dev/null || true
 import Foundation
 import CoreGraphics
 
+let keyword = ProcessInfo.processInfo.environment["WINDOW_KEYWORD"]?.lowercased() ?? ""
 let list = CGWindowListCopyWindowInfo(.optionAll, kCGNullWindowID) as? [[String: Any]] ?? []
 let windows = list.filter { window in
     let owner = window[kCGWindowOwnerName as String] as? String ?? ""
@@ -60,7 +62,12 @@ let windows = list.filter { window in
     return owner == "Blender" && layer == 0 && width > 600 && height > 400
 }
 
-guard let best = windows.max(by: { lhs, rhs in
+let preferred = keyword.isEmpty ? windows : windows.filter { window in
+    let name = (window[kCGWindowName as String] as? String ?? "").lowercased()
+    return name.contains(keyword)
+}
+
+guard let best = (preferred.isEmpty ? windows : preferred).max(by: { lhs, rhs in
     let lb = lhs[kCGWindowBounds as String] as? [String: Any] ?? [:]
     let rb = rhs[kCGWindowBounds as String] as? [String: Any] ?? [:]
     let la = (lb["Width"] as? Int ?? 0) * (lb["Height"] as? Int ?? 0)

@@ -1,0 +1,21 @@
+9:16 cinematic 3D action film, visual-only.
+
+Reference:
+Use the provided Blender action previs image as the local layout reference: neon night city, wet highway, glowing lanes, drones, armored bike, black-suited hero. Use the storyboard reference only for structure: hero close-up, camera notes, shot-panel rhythm. Do not copy logos or text.
+
+Timing:
+0-4s: extreme close-up of a black-suited hooded hero's eyes glowing with circular HUD light.
+4-8s: rain-slick neon highway at night, a golden energy line wakes under the city and shoots forward.
+8-15s: the hero turns, drones power on behind him, armored pursuit bike enters frame, chase begins.
+
+Motion:
+Slow push into eyes, hard cut to low road glide, then handheld chase camera.
+
+Text:
+No readable text. Leave space for post subtitles.
+
+Audio:
+Silent. ElevenLabs narration and sound design will be added later.
+
+Quality:
+High-end 3D action movie look, realistic wet reflections, stable hero silhouette, no logos, no long text, no distorted anatomy.

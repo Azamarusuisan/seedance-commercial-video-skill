@@ -1,6 +1,6 @@
 {
   "title": "Seedance Asset Library",
-  "updated_at": "2026-06-30 17:49 JST",
+  "updated_at": "2026-06-30 20:12 JST",
   "notes": "Reusable local library for generated cast references, workflow captures, Codex operation captures, and abstract blocked-source records.",
   "generated_cast_manifest": {
     "id": "generated_theater_cast_20260629",
@@ -10,6 +10,19 @@
     "use_scope": "internal draft, organic social draft, paid ad draft after review"
   },
   "blender_3d_assets": [
+    {
+      "id": "action_movie_previs",
+      "name": "3D Action Movie Previs",
+      "type": "blender_action_previs",
+      "path": "workspace/assets/3d/renders/action_movie_previs.png",
+      "thumbnail_path": "workspace/assets/3d/renders/action_movie_previs.png",
+      "blend_path": "workspace/assets/3d/blend/action_movie_previs.blend",
+      "script_path": "workspace/blender/action_movie_previs.py",
+      "manifest_path": "workspace/assets/3d/manifests/action_movie_previs.json",
+      "rights_status": "generated_local",
+      "use_scope": "Seedance reference plate, Palmier Pro edit reference, local factory UI",
+      "notes": "Local Blender 3D action movie previs. No paid generation, no external API, no publishing."
+    },
     {
       "id": "codex_factory_demo",
       "name": "Codex Factory Demo",
@@ -143,6 +156,14 @@
     }
   ],
   "external_references": [
+    {
+      "id": "seedance_4k_storyboard_structure_ref_20260630",
+      "url": "local:/Users/zettai/Downloads/S__85483625.jpg",
+      "path": "workspace/assets/source_refs/seedance_4k_storyboard_structure_ref.jpg",
+      "checked_at": "2026-06-30 20:10 JST",
+      "use_scope": "structure inspiration only; do not copy Higgsfield logo, text, footage, or exact storyboard drawings",
+      "extracted_pattern": "Top: finished cinematic hero shot. Bottom: storyboard panels with shot size, lens, camera move, subject action, location, and finale note."
+    },
     {
       "id": "x_saidstetic_2067186178168664097",
       "url": "https://x.com/saidstetic/status/2067186178168664097?s=46",

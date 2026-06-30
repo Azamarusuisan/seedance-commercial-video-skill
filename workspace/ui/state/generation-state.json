@@ -1,21 +1,21 @@
 {
   "meta": {
-    "project": "Seedance Theater Cast 60s",
-    "updated_at": "2026-06-30 19:52:02 JST",
-    "active_stage": "workflow_script_linked",
-    "codex_status": "workflow_data_linked",
-    "operator_message": "台本、ジョブ、費用見積、音声、字幕、レビューの状態をワークフロー内で連動表示するようにしました。",
-    "next_terminal_instruction": "Seedance 4本の費用見積もりは合計540 creditsです。生成する場合は人間承認後に進めてください。まだ生成はしないでください。",
+    "project": "天頂線 ASCENSION LINE / 3D Action Movie 60s",
+    "updated_at": "2026-06-30 20:12:00 JST",
+    "active_stage": "3d_action_previs_linked",
+    "codex_status": "action_movie_workflow_live",
+    "operator_message": "Blenderで3Dアクション映画プリビズを作成し、Seedance用4クリップ台本、Palmier Pro編集レーン、生成会話ログへ連動しました。",
+    "next_terminal_instruction": "3Dアクション映画「天頂線 ASCENSION LINE」のSeedance 4本分を、Blenderプリビズを参照素材として再見積してください。まだ有料生成はしないでください。",
     "last_sent_to_codex_at": "2026-06-30T18:45:57+09:00",
     "last_sent_to_codex_message": "HiggsfieldのSeedance 4本分の費用見積もりを出して、UIのjobsをestimatedに更新してください。まだ生成はしないでください。"
   },
   "current_work": {
-    "title": "ワークフロー連動完了",
-    "summary": "中央パイプライン、生成キュー、予定ジョブ、台本パネルが script.beats[] / jobs[] / workflow[] に連動しています。",
-    "owner": "Codex",
-    "input": "generation-state.json / script.beats[] / jobs[] / workflow[]",
-    "output": "live-workflow.html / script.html / factory-futuristic.js",
-    "status_text": "台本から生成、音声、字幕、レビューまでUI内で確認可能。生成は未実行。"
+    "title": "Blender素材plate表示中",
+    "summary": "Blenderで作成したaction_movie_previsを素材化し、Seedance 4本、ElevenLabs音声、字幕、Palmier Pro編集へつなぐ状態です。",
+    "owner": "Codex + Blender + Palmier Pro",
+    "input": "workspace/assets/3d/renders/action_movie_previs.png / storyboard structure ref / 3d-action script",
+    "output": "Seedance prompt files / Palmier Pro edit lane / live-workflow.html",
+    "status_text": "実画面ミラーがUntitledに戻ったため、作成済みのBlenderレンダーplateをUI中央へ表示しています。"
   },
   "workflow": [
     {
@@ -23,48 +23,48 @@
       "label": "素材",
       "status": "done",
       "owner": "Codex",
-      "output": "generated_20260629 cast + source captures",
-      "note": "17 generated cast, UI captures, and Codex operation sources are registered."
+      "output": "Blenderプリビズ + 構造参考 + 演者ライブラリ",
+      "note": "action_movie_previs.png and storyboard structure reference are registered."
+    },
+    {
+      "id": "blender",
+      "label": "Blenderプリビズ",
+      "status": "done",
+      "owner": "Codex + Blender",
+      "output": "workspace/assets/3d/renders/action_movie_previs.png",
+      "note": "Local 3D action movie previs created. No paid generation."
     },
     {
       "id": "script",
       "label": "台本",
       "status": "done",
       "owner": "Codex",
-      "output": "seedance-theater-60s-final-script.md / script.beats[]",
-      "note": "Final 60s script is visible in the Factory UI and script page."
+      "output": "3d-action-movie-ascension-60s-script.md / script.beats[]",
+      "note": "12 beats, Japanese narration, post telop plan."
     },
     {
-      "id": "approval",
-      "label": "生成前確認",
-      "status": "done",
-      "owner": "Human",
-      "output": "generation-checkpoint.html",
-      "note": "Visual-only Seedance, ElevenLabs narration, post subtitles confirmed as policy."
-    },
-    {
-      "id": "blender",
-      "label": "3Dプレビュー",
-      "status": "done",
-      "owner": "Codex + Blender",
-      "output": "workspace/assets/3d/renders/codex_factory_demo.png",
-      "note": "Local Blender live plate is rendered and projected into the workflow animation."
+      "id": "conversation",
+      "label": "生成会話",
+      "status": "active",
+      "owner": "Human + Codex",
+      "output": "generation_conversation[]",
+      "note": "Generation discussion and approval decisions are visible in UI."
     },
     {
       "id": "cost",
-      "label": "費用見積",
-      "status": "done",
+      "label": "費用再見積",
+      "status": "pending",
       "owner": "Codex + Higgsfield CLI",
-      "output": "540 credits total / 135 credits x 4 clips",
-      "note": "Cost estimate completed. Paid generation is still blocked until explicit human approval."
+      "output": "Need new estimate for action prompts",
+      "note": "Previous 4x15s estimate was 540 credits; action prompts need recheck before generation."
     },
     {
       "id": "seedance",
       "label": "映像生成",
       "status": "pending",
-      "owner": "Higgsfield",
+      "owner": "Higgsfield Seedance",
       "output": "4 x visual-only MP4",
-      "note": "Estimated at 540 credits total. Generate only after explicit approval."
+      "note": "Generate only after explicit approval."
     },
     {
       "id": "voice",
@@ -78,9 +78,17 @@
       "id": "subtitles",
       "label": "字幕編集",
       "status": "pending",
-      "owner": "Editor",
+      "owner": "Palmier Pro / Editor",
       "output": "Japanese telop overlays",
       "note": "Add after audio timing is locked."
+    },
+    {
+      "id": "palmier",
+      "label": "Palmier編集",
+      "status": "pending",
+      "owner": "Palmier Pro",
+      "output": "timeline assembly",
+      "note": "App running, MCP editor currently unavailable until project is opened."
     },
     {
       "id": "review",
@@ -88,7 +96,7 @@
       "status": "pending",
       "owner": "Human + Codex",
       "output": "OK/NG and retry plan",
-      "note": "Judge face stability, continuity, rights, claims, and final edit."
+      "note": "Judge action readability, continuity, rights, claims, and final edit."
     }
   ],
   "assets": {
@@ -126,123 +134,120 @@
     {
       "id": "clip_01",
       "title": "Clip 1 / 0-15s",
-      "primary_reference": "cast_f_beauty_03",
-      "status": "estimated",
-      "cost_credits": "135",
+      "primary_reference": "action_movie_previs",
+      "status": "planned",
+      "cost_credits": "",
       "result_url": "",
       "local_path": "",
       "review": "pending",
       "retry_reason": "",
-      "note": "Hook: rainy crosswalk, same map, Ren points to hidden alley. Cost estimate: 135 credits. No paid generation executed.",
-      "prompt_file": "workspace/prompts/seedance-theater/clip_01_0-15s_cost.txt",
-      "reference_image": "workspace/assets/cast/generated_20260629/cast_f_beauty_03.png",
+      "note": "Hook: glowing eyes, energy line, pursuit begins.",
+      "prompt_file": "workspace/prompts/seedance-action/clip_01_0-15s_action.txt",
+      "reference_image": "workspace/assets/3d/renders/action_movie_previs.png",
       "model": "seedance_2_0",
       "aspect_ratio": "9:16",
       "duration_seconds": 15,
       "resolution": "1080p",
       "bitrate_mode": "high",
-      "generate_audio": false,
-      "cost_credits_exact": 135,
-      "cost_checked_at": "2026-06-30T09:49:23.386Z"
+      "generate_audio": false
     },
     {
       "id": "clip_02",
       "title": "Clip 2 / 15-30s",
-      "primary_reference": "cast_f_beauty_02",
-      "status": "estimated",
-      "cost_credits": "135",
+      "primary_reference": "action_movie_previs",
+      "status": "planned",
+      "cost_credits": "",
       "result_url": "",
       "local_path": "",
       "review": "pending",
       "retry_reason": "",
-      "note": "Discovery: office lobby to hidden cafe. Cost estimate: 135 credits. No paid generation executed.",
-      "prompt_file": "workspace/prompts/seedance-theater/clip_02_15-30s_cost.txt",
-      "reference_image": "workspace/assets/cast/generated_20260629/cast_f_beauty_02.png",
+      "note": "Chase: armored bike, drones, explosion dodge.",
+      "prompt_file": "workspace/prompts/seedance-action/clip_02_15-30s_action.txt",
+      "reference_image": "workspace/assets/3d/renders/action_movie_previs.png",
       "model": "seedance_2_0",
       "aspect_ratio": "9:16",
       "duration_seconds": 15,
       "resolution": "1080p",
       "bitrate_mode": "high",
-      "generate_audio": false,
-      "cost_credits_exact": 135,
-      "cost_checked_at": "2026-06-30T09:49:23.386Z"
+      "generate_audio": false
     },
     {
       "id": "clip_03",
       "title": "Clip 3 / 30-45s",
-      "primary_reference": "cast_m_ordinary_03",
-      "status": "estimated",
-      "cost_credits": "135",
+      "primary_reference": "storyboard_structure_ref",
+      "status": "planned",
+      "cost_credits": "",
       "result_url": "",
       "local_path": "",
       "review": "pending",
       "retry_reason": "",
-      "note": "Threshold: students, old shop, stamp completes the map. Cost estimate: 135 credits. No paid generation executed.",
-      "prompt_file": "workspace/prompts/seedance-theater/clip_03_30-45s_cost.txt",
-      "reference_image": "workspace/assets/cast/generated_20260629/cast_m_ordinary_03.png",
+      "note": "Threshold: portal, floating realm, key reveal.",
+      "prompt_file": "workspace/prompts/seedance-action/clip_03_30-45s_action.txt",
+      "reference_image": "workspace/assets/source_refs/seedance_4k_storyboard_structure_ref.jpg",
       "model": "seedance_2_0",
       "aspect_ratio": "9:16",
       "duration_seconds": 15,
       "resolution": "1080p",
       "bitrate_mode": "high",
-      "generate_audio": false,
-      "cost_credits_exact": 135,
-      "cost_checked_at": "2026-06-30T09:49:23.386Z"
+      "generate_audio": false
     },
     {
       "id": "clip_04",
       "title": "Clip 4 / 45-60s",
-      "primary_reference": "cast_f_beauty_03",
-      "status": "estimated",
-      "cost_credits": "135",
+      "primary_reference": "storyboard_structure_ref",
+      "status": "planned",
+      "cost_credits": "",
       "result_url": "",
       "local_path": "",
       "review": "pending",
       "retry_reason": "",
-      "note": "Payoff: rooftop cast reveal and loop hook. Cost estimate: 135 credits. No paid generation executed.",
-      "prompt_file": "workspace/prompts/seedance-theater/clip_04_45-60s_cost.txt",
-      "reference_image": "workspace/assets/cast/generated_20260629/cast_f_beauty_03.png",
+      "note": "Finale: beam to sky, city ascension, title-safe frame.",
+      "prompt_file": "workspace/prompts/seedance-action/clip_04_45-60s_action.txt",
+      "reference_image": "workspace/assets/source_refs/seedance_4k_storyboard_structure_ref.jpg",
       "model": "seedance_2_0",
       "aspect_ratio": "9:16",
       "duration_seconds": 15,
       "resolution": "1080p",
       "bitrate_mode": "high",
-      "generate_audio": false,
-      "cost_credits_exact": 135,
-      "cost_checked_at": "2026-06-30T09:49:23.386Z"
+      "generate_audio": false
     }
   ],
   "audio": {
-    "policy": "Higgsfield ElevenLabs after video script approval",
+    "policy": "Higgsfield ElevenLabs after visual approval",
     "status": "pending",
-    "voice": "Leo default unless changed",
+    "voice": "Leo default unless changed / low cinematic Japanese narration",
     "result_url": "",
     "local_path": ""
   },
   "subtitles": {
-    "policy": "post-production Japanese telop",
+    "policy": "Palmier Pro post-production Japanese telop",
     "status": "pending",
-    "style": "bold white with dark stroke, short phrases, timed to VO"
+    "style": "bold white with dark stroke, cyan/amber accents for key words, short phrases timed to VO"
   },
   "gates": [
     {
       "id": "rights",
-      "label": "source refs and paid ad rights checked",
+      "label": "storyboard reference is structure-only; no logo/text/footage copy",
       "status": "pending"
     },
     {
       "id": "cost",
-      "label": "Higgsfield cost estimate reviewed: 540 credits total",
-      "status": "done"
+      "label": "new Higgsfield estimate required for action prompts",
+      "status": "pending"
     },
     {
       "id": "human_approval",
-      "label": "human approved paid generation after 540-credit estimate",
+      "label": "human approves paid Seedance generation after estimate",
+      "status": "pending"
+    },
+    {
+      "id": "palmier_project",
+      "label": "Palmier Pro project/timeline opened before edit assembly",
       "status": "pending"
     },
     {
       "id": "ad_publish",
-      "label": "ad publish remains blocked without separate permission",
+      "label": "external publish remains blocked without separate permission",
       "status": "blocked"
     }
   ],
@@ -291,11 +296,31 @@
       "time": "2026-06-30 19:52:02 JST",
       "actor": "Codex",
       "event": "Linked script beats, jobs, cost, voice, subtitle, and review gates into the live workflow UI. No generation executed."
+    },
+    {
+      "time": "2026-06-30 20:12:00 JST",
+      "actor": "Codex",
+      "event": "Created Blender 3D action previs, registered storyboard structure reference, switched Factory UI to action movie workflow, and added generation conversation visibility. No paid generation executed."
+    },
+    {
+      "time": "2026-06-30 20:20:00 JST",
+      "actor": "Codex",
+      "event": "Restarted Blender app-screen capture with WINDOW_KEYWORD=action_movie_previs. No paid generation executed."
+    },
+    {
+      "time": "2026-06-30 20:26:00 JST",
+      "actor": "Codex",
+      "event": "Restarted Blender with action_movie_previs.blend and restored app-screen mirror. No paid generation executed."
+    },
+    {
+      "time": "2026-06-30 20:32:00 JST",
+      "actor": "Codex",
+      "event": "Switched Factory projection to Blender render plate because Blender app returned to Untitled. action_movie_previs assets remain connected. No paid generation executed."
     }
   ],
   "cost_estimate": {
-    "status": "estimated",
-    "checked_at": "2026-06-30T09:49:23.386Z",
+    "status": "needs_reestimate",
+    "checked_at": "",
     "model": "seedance_2_0",
     "settings": {
       "model": "seedance_2_0",
@@ -307,152 +332,174 @@
       "generate_audio": false,
       "mode": "std"
     },
-    "per_clip_credits": 135,
-    "total_credits": 540,
-    "account_credits_before": 1266.8,
-    "account_credits_after_if_generated": 726.8,
-    "log_path": "workspace/logs/seedance-theater-cost-estimate.json",
+    "per_clip_credits": null,
+    "total_credits": null,
+    "previous_same_settings_total_credits": 540,
     "paid_generation_executed": false
   },
   "script": {
     "status": "done",
-    "title": "終電後、同じ地図を持つ人たち",
-    "logline": "終電後の雨の東京で、同じ地図を持つ人たちを追ったNanaが、最後に屋上で全員と再会する60秒ミステリーVlog。",
-    "path": "workspace/briefs/seedance-theater-60s-final-script.md",
-    "format": "60s / 4 x 15s / 9:16 / Seedance visual-only",
-    "voice": "Higgsfield ElevenLabs / Japanese narration / Leo default unless changed",
-    "subtitles": "Post-production Japanese telop, timed after voice is locked",
+    "title": "天頂線 ASCENSION LINE",
+    "logline": "夜の近未来都市で、黒い戦闘スーツのレンが追跡ドローンと装甲バイクをかわし、街を浮上させる天頂線を起動する60秒3Dアクション映画。",
+    "path": "workspace/briefs/3d-action-movie-ascension-60s-script.md",
+    "format": "60s / 4 x 15s / 9:16 / Seedance visual-only / Blender previs reference",
+    "voice": "Higgsfield ElevenLabs / Japanese narration / low cinematic tone",
+    "subtitles": "Palmier Pro post-production Japanese telop, timed after voice is locked",
     "generation_policy": "No Seedance audio, no generated subtitles, no paid generation without human approval.",
     "beats": [
       {
-        "time": "0-5s",
+        "time": "0-4s",
         "clip": "Clip 1",
-        "cast": "Nana",
-        "primary_reference": "cast_f_beauty_03",
-        "visual": "雨の横断歩道。Nanaが自撮りで立ち止まり、画面奥に同じ折り地図を持つ人影が映る。",
-        "narration": "終電を逃した夜、改札の前で、同じ地図を持つ人を三人見た。",
-        "telop": "終電後、同じ地図",
-        "next": "Nanaが一番近い地図の持ち主を追う。"
+        "cast": "Ren",
+        "primary_reference": "action_movie_previs",
+        "visual": "主人公レンの目が発光し、虹彩に円形HUDが浮かぶ。",
+        "narration": "その夜、街の下で眠っていた線が目を覚ました。",
+        "telop": "眠っていた線",
+        "next": "夜の高速道路へカット。"
       },
       {
-        "time": "5-10s",
+        "time": "4-8s",
         "clip": "Clip 1",
-        "cast": "Emi / Daichi",
-        "primary_reference": "cast_f_ordinary_01",
-        "visual": "コンビニ入口でEmiが地図を畳む。Daichiが背後を横切り、同じ印を持っている。",
-        "narration": "偶然じゃない。みんな、地図にない場所へ向かっていた。",
-        "telop": "偶然じゃない",
-        "next": "地図の印が駅裏の細い路地を示す。"
+        "cast": "Ren",
+        "primary_reference": "action_movie_previs",
+        "visual": "雨上がりの高速道路。ネオン車線に光が走り、遠くで天頂線が起動する。",
+        "narration": "天へ伸びる一本の光。人はそれを、天頂線と呼んだ。",
+        "telop": "天頂線",
+        "next": "背後のドローンが起動。"
       },
       {
-        "time": "10-15s",
+        "time": "8-15s",
         "clip": "Clip 1",
-        "cast": "Nana / Ren",
-        "primary_reference": "cast_m_handsome_01",
-        "visual": "Renが横から入り、スマホ画面の同じ印を見せて、細い路地を指す。",
-        "narration": "レンが小さく言った。そこ、普通の地図には出ない路地だよ。",
-        "telop": "地図にない路地",
-        "next": "二人で路地に入る。"
+        "cast": "Ren / Drones",
+        "primary_reference": "action_movie_previs",
+        "visual": "フードをかぶったレンが振り返り、背後で追跡ドローンが赤く光る。",
+        "narration": "レンが見た瞬間、追跡は始まった。",
+        "telop": "追跡開始",
+        "next": "装甲バイクが迫る。"
       },
       {
-        "time": "15-22s",
+        "time": "15-20s",
         "clip": "Clip 2",
-        "cast": "Yuri / Sho",
-        "primary_reference": "cast_f_beauty_02",
-        "visual": "オフィスビルのエレベーターが開き、YuriとShoが同じ折り地図を持って出てくる。",
-        "narration": "ビルの中からも、同じ印を持った人たちが出てきた。",
-        "telop": "ビルの中にも",
-        "next": "二人が隠れたカフェへ向かう。"
+        "cast": "Ren / Pursuer",
+        "primary_reference": "action_movie_previs",
+        "visual": "低いカメラで装甲バイクが迫る。濡れた路面に火花が散る。",
+        "narration": "ドローンは空から、装甲バイクは地面から迫る。",
+        "telop": "上から、下から",
+        "next": "レンが車線を滑る。"
       },
       {
-        "time": "22-30s",
+        "time": "20-25s",
         "clip": "Clip 2",
-        "cast": "Leo / Kaede",
-        "primary_reference": "cast_m_handsome_03",
-        "visual": "カフェカウンター。Leoがカップを滑らせ、湯気の向こうで次の角を指す。",
-        "narration": "カフェの店主は、地図を見ずに次の角を指した。",
-        "telop": "次の角へ",
-        "next": "湯気の形が次のルートになる。"
+        "cast": "Ren",
+        "primary_reference": "action_movie_previs",
+        "visual": "レンがネオン車線を滑り、爆発を紙一重でかわす。",
+        "narration": "逃げ道はない。ただ、前に飛ぶしかない。",
+        "telop": "前に飛べ",
+        "next": "都市全体が傾く。"
       },
       {
-        "time": "30-36s",
+        "time": "25-30s",
+        "clip": "Clip 2",
+        "cast": "Ren",
+        "primary_reference": "action_movie_previs",
+        "visual": "ビルの間をジャンプ。カメラが高速回転し、街が重力を失う。",
+        "narration": "街は少しずつ、地面を失っていった。",
+        "telop": "重力が壊れる",
+        "next": "ポータルが開く。"
+      },
+      {
+        "time": "30-35s",
         "clip": "Clip 3",
-        "cast": "Ami / Sota",
-        "primary_reference": "cast_f_ordinary_04",
-        "visual": "学生二人が夜の廊下を走りながら、Nanaに合図する。",
-        "narration": "学生たちは、ここを夜だけ開く街と呼んでいた。",
-        "telop": "夜だけ開く街",
-        "next": "学生の動画に古い店のシャッターが映る。"
+        "cast": "Ren",
+        "primary_reference": "storyboard_structure_ref",
+        "visual": "浮遊する道路片の中で、レンの手元に円形ポータルが開く。",
+        "narration": "扉は外にはなかった。開いたのは、レンの内側だった。",
+        "telop": "内側の扉",
+        "next": "目の中の都市へ。"
       },
       {
-        "time": "36-43s",
+        "time": "35-40s",
         "clip": "Clip 3",
-        "cast": "Kenji / Maki",
-        "primary_reference": "cast_m_ordinary_03",
-        "visual": "古い店のシャッターが開く。KenjiがNanaの地図に古いスタンプを押す。",
-        "narration": "古い店の奥で、地図は初めてひとつにつながった。",
-        "telop": "地図が完成",
-        "next": "完成した地図が屋上を示す。"
+        "cast": "Ren",
+        "primary_reference": "storyboard_structure_ref",
+        "visual": "発光する瞳孔から、浮遊都市の景色へマッチカット。",
+        "narration": "目の奥に、もう一つの都市がある。",
+        "telop": "もう一つの都市",
+        "next": "ドローンが変化。"
       },
       {
-        "time": "43-50s",
-        "clip": "Clip 4",
-        "cast": "Sara / Toru",
-        "primary_reference": "cast_f_beauty_04",
-        "visual": "ホテルの廊下。Saraが無言で待ち、Toruが屋上行きのエレベーターを開ける。",
-        "narration": "最後の案内人は、何も説明しなかった。ただ、上を指した。",
-        "telop": "上へ",
-        "next": "エレベーターが屋上へ開く。"
+        "time": "40-45s",
+        "clip": "Clip 3",
+        "cast": "Drones",
+        "primary_reference": "storyboard_structure_ref",
+        "visual": "ドローン群が停止し、光の粒になってポータルへ吸い込まれる。",
+        "narration": "敵だと思っていたものは、鍵を守る影だった。",
+        "telop": "鍵を守る影",
+        "next": "天頂線へ向かう。"
       },
       {
-        "time": "50-56s",
+        "time": "45-52s",
         "clip": "Clip 4",
-        "cast": "Nana / Ren / All Cast",
-        "primary_reference": "cast_f_beauty_03",
-        "visual": "屋上の扉が開く。今夜出会った全員が、破れた地図の一部を持って並んでいる。",
-        "narration": "屋上には、今夜すれ違った全員がいた。",
-        "telop": "全員、ここにいた",
-        "next": "地図の一部が一つになり、空白の地図へ変わる。"
+        "cast": "Ren",
+        "primary_reference": "storyboard_structure_ref",
+        "visual": "壊れた屋上の先端に立つレン。都市から天へ光柱が伸びる。",
+        "narration": "レンは手を伸ばした。街を落とすためではなく、持ち上げるために。",
+        "telop": "持ち上げろ",
+        "next": "都市が浮上。"
       },
       {
-        "time": "56-60s",
+        "time": "52-57s",
         "clip": "Clip 4",
-        "cast": "Nana",
-        "primary_reference": "cast_f_beauty_03",
-        "visual": "Nanaの手元に、まっさらな地図が現れる。カメラ目線で少し笑う。",
-        "narration": "次に選ばれるのは、たぶんこの動画を見た人。",
-        "telop": "次は、あなた",
-        "next": "次回へつながるループフック。"
+        "cast": "Ren / City",
+        "primary_reference": "storyboard_structure_ref",
+        "visual": "都市全体が雲海の上へ浮上。破片とビルが光柱の周りを回る。",
+        "narration": "天頂線は武器じゃない。帰る場所をつくるための道だった。",
+        "telop": "帰る場所",
+        "next": "タイトル前の静寂。"
+      },
+      {
+        "time": "57-60s",
+        "clip": "Clip 4",
+        "cast": "Ren",
+        "primary_reference": "storyboard_structure_ref",
+        "visual": "主人公の目が閉じ、光だけが残る。タイトル用の余白を残す。",
+        "narration": "次に線を起こすのは、あなたかもしれない。",
+        "telop": "ASCENSION LINE",
+        "next": "Palmier Proでタイトル後付け。"
       }
     ],
     "voice_script": [
-      "終電を逃した夜、改札の前で、同じ地図を持つ人を三人見た。",
-      "偶然じゃない。みんな、地図にない場所へ向かっていた。",
-      "レンが小さく言った。そこ、普通の地図には出ない路地だよ。",
-      "ビルの中からも、同じ印を持った人たちが出てきた。",
-      "カフェの店主は、地図を見ずに次の角を指した。",
-      "学生たちは、ここを夜だけ開く街と呼んでいた。",
-      "古い店の奥で、地図は初めてひとつにつながった。",
-      "最後の案内人は、何も説明しなかった。ただ、上を指した。",
-      "屋上には、今夜すれ違った全員がいた。",
-      "次に選ばれるのは、たぶんこの動画を見た人。"
+      "その夜、街の下で眠っていた線が目を覚ました。",
+      "天へ伸びる一本の光。人はそれを、天頂線と呼んだ。",
+      "レンが見た瞬間、追跡は始まった。",
+      "ドローンは空から、装甲バイクは地面から迫る。",
+      "逃げ道はない。ただ、前に飛ぶしかない。",
+      "街は少しずつ、地面を失っていった。",
+      "扉は外にはなかった。開いたのは、レンの内側だった。",
+      "目の奥に、もう一つの都市がある。",
+      "敵だと思っていたものは、鍵を守る影だった。",
+      "レンは手を伸ばした。街を落とすためではなく、持ち上げるために。",
+      "天頂線は武器じゃない。帰る場所をつくるための道だった。",
+      "次に線を起こすのは、あなたかもしれない。"
     ],
     "telop_plan": [
-      "終電後、同じ地図",
-      "偶然じゃない",
-      "地図にない路地",
-      "ビルの中にも",
-      "次の角へ",
-      "夜だけ開く街",
-      "地図が完成",
-      "上へ",
-      "全員、ここにいた",
-      "次は、あなた"
+      "眠っていた線",
+      "天頂線",
+      "追跡開始",
+      "上から、下から",
+      "前に飛べ",
+      "重力が壊れる",
+      "内側の扉",
+      "もう一つの都市",
+      "鍵を守る影",
+      "持ち上げろ",
+      "帰る場所",
+      "ASCENSION LINE"
     ]
   },
   "ui_bindings": {
     "status": "linked",
-    "updated_at": "2026-06-30T10:52:02.841Z",
+    "updated_at": "2026-06-30T11:12:00.000Z",
     "sources": [
       "workflow[]",
       "script.beats[]",
@@ -460,14 +507,112 @@
       "cost_estimate",
       "audio",
       "subtitles",
-      "gates[]"
+      "gates[]",
+      "generation_conversation[]",
+      "real_links[]",
+      "blender.render_path",
+      "palmier"
     ],
     "surfaces": [
       "live-workflow.html central pipeline",
       "generation queue",
       "active jobs",
       "lower script panel",
+      "conversation panel",
+      "library real data ledger",
       "script.html"
     ]
-  }
+  },
+  "blender": {
+    "status": "ready",
+    "projection_mode": "render_plate",
+    "render_path": "workspace/assets/3d/renders/action_movie_previs.png",
+    "blend_path": "workspace/assets/3d/blend/action_movie_previs.blend",
+    "manifest_path": "workspace/assets/3d/manifests/action_movie_previs.json",
+    "local_only": true,
+    "paid_generation_executed": false,
+    "window_keyword": "action_movie_previs",
+    "updated_at": "2026-06-30 20:32:00 JST"
+  },
+  "palmier": {
+    "app_status": "running",
+    "mcp_status": "unavailable",
+    "timeline_status": "Editor not available。Palmier Proのプロジェクトを開くと、素材配置と字幕編集へ進めます。",
+    "intended_role": "Seedance clips, ElevenLabs narration, Japanese subtitles, SFX, title, final review",
+    "project_state": "home_or_file_dialog"
+  },
+  "real_links": [
+    {
+      "label": "状態JSON",
+      "status": "connected",
+      "path": "workspace/ui/state/generation-state.json"
+    },
+    {
+      "label": "Blender PNG",
+      "status": "connected",
+      "path": "workspace/assets/3d/renders/action_movie_previs.png"
+    },
+    {
+      "label": "Blender BLEND",
+      "status": "connected",
+      "path": "workspace/assets/3d/blend/action_movie_previs.blend"
+    },
+    {
+      "label": "Seedance prompts",
+      "status": "connected",
+      "path": "workspace/prompts/seedance-action/*.txt"
+    },
+    {
+      "label": "Higgsfield生成",
+      "status": "pending",
+      "note": "未実行。見積と人間承認が必要。"
+    },
+    {
+      "label": "Palmier MCP",
+      "status": "unavailable",
+      "note": "Editor not available。プロジェクトを開いたら再接続。"
+    }
+  ],
+  "generation_conversation": [
+    {
+      "time": "20:05",
+      "speaker": "User",
+      "type": "brief",
+      "status": "done",
+      "message": "3Dアクション映画を作成したい。Blenderでまず作成して、それも素材にしたい。",
+      "decision": "Blenderプリビズを先に作成"
+    },
+    {
+      "time": "20:07",
+      "speaker": "Codex",
+      "type": "plan",
+      "status": "done",
+      "message": "ローカルBlenderで夜の近未来都市、追跡ドローン、装甲バイク、爆発、主人公のプリビズを作成。",
+      "decision": "有料生成なし"
+    },
+    {
+      "time": "20:10",
+      "speaker": "User",
+      "type": "reference",
+      "status": "done",
+      "message": "完成映像＋下段絵コンテ＋カメラ指定の参考画像が良い。",
+      "decision": "構造だけ参照。ロゴや既存素材はコピーしない"
+    },
+    {
+      "time": "20:11",
+      "speaker": "Codex",
+      "type": "workflow",
+      "status": "active",
+      "message": "Seedance 4クリップ、ElevenLabs音声、Palmier Pro字幕・編集、レビューゲートへ連動。",
+      "decision": "生成前に再見積と人間承認"
+    },
+    {
+      "time": "next",
+      "speaker": "Codex",
+      "type": "question",
+      "status": "pending",
+      "message": "次の会話は、Seedance 4本を再見積するか、先にPalmier Proの空プロジェクトへBlender素材と字幕ラフを置くか。",
+      "decision": "ユーザー確認待ち"
+    }
+  ]
 }

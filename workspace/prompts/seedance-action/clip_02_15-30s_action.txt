@@ -1,0 +1,21 @@
+9:16 cinematic 3D action film, visual-only.
+
+Reference:
+Use the Blender action previs as the chase geography: neon highway, black city towers, cyan and magenta lane lights, drones and armored bike. Keep the camera dynamic but readable.
+
+Timing:
+15-20s: armored bike rushes toward camera on wet highway, sparks and red warning lights.
+20-25s: hero slides across the glowing lane and dodges a compact explosion blast.
+25-30s: hero jumps between buildings as the camera rotates upward, revealing the city losing gravity.
+
+Motion:
+Fast tracking shot, low angle, speed ramp, controlled handheld shake.
+
+Text:
+No readable text. Leave lower safe area for subtitles.
+
+Audio:
+Silent. ElevenLabs narration and sound design will be added later.
+
+Quality:
+Sharp action choreography, readable subject, cinematic lighting, no clutter, no logo or brand text.

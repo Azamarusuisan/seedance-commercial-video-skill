@@ -1,0 +1,21 @@
+9:16 cinematic 3D action film, visual-only.
+
+Reference:
+Use the storyboard structure of a lone figure at a high point, a beam rising into the sky, floating terrain, and a final title-safe frame. Use original 3D action design only.
+
+Timing:
+45-52s: hero stands on the edge of a broken rooftop cliff, raises one hand, a vertical beam rises from the city.
+52-57s: the entire city lifts above clouds, debris and floating towers orbit the beam, cyan and gold light fills the frame.
+57-60s: hero's eyes close, the beam remains, final clean dark frame with empty space for editor title.
+
+Motion:
+Wide crane pullback, extreme wide finale, then calm close-up.
+
+Text:
+No generated text. Palmier Pro will add the title ASCENSION LINE in post.
+
+Audio:
+Silent. ElevenLabs narration and sound design will be added later.
+
+Quality:
+4K-style epic action finale, awe and scale, readable silhouette, clean final frame, no logos, no long text.

@@ -20,6 +20,9 @@ const STATUS_JA = {
   waiting: "待機中",
   waiting_for_render: "レンダー待ち",
   ready: "準備完了",
+  planned: "計画済み",
+  connected: "接続済み",
+  unavailable: "未接続",
 };
 
 function statusJa(value) {
@@ -175,6 +178,8 @@ function workflowDetail(phase) {
   if (key === "seedance") return `${jobs.filter(job => job.status === "estimated").length}/${jobs.length}本 見積済み / 生成待機`;
   if (key === "voice") return `${appState.state.script?.voice_script?.length || beats.length}行 / ElevenLabs待機`;
   if (key === "subtitles") return `${appState.state.script?.telop_plan?.length || beats.length}本 / 後編集`;
+  if (key === "palmier") return appState.state.palmier?.timeline_status || "Palmier Pro編集レーン待機";
+  if (key === "conversation") return `${(appState.state.generation_conversation || []).length}件 / 生成判断ログ`;
   if (key === "review") return `${appState.state.gates?.filter(gate => gate.status === "pending").length || 0}ゲート確認待ち`;
   return phase.output || phase.note || "";
 }
@@ -182,7 +187,7 @@ function workflowDetail(phase) {
 function pipelineClass(status) {
   const key = String(status || "").toLowerCase();
   if (["done", "completed", "approved"].includes(key)) return "complete";
-  if (["active", "generating", "rendering", "processing", "estimated"].includes(key)) return "active";
+  if (["active", "generating", "rendering", "processing", "estimated", "planned", "connected"].includes(key)) return "active";
   if (["blocked", "locked"].includes(key)) return "locked";
   return "pending";
 }
@@ -357,8 +362,9 @@ function renderFactoryVisual() {
   const latestLive = appState.runtime?.blender_assets?.latest_live_frame;
   const latestRender = appState.runtime?.blender_assets?.latest_render;
   const liveState = appState.runtime?.blender_assets?.live_state || {};
-  const projectedFrame = screenCapture?.exists ? screenCapture : (latestLive || latestRender);
-  const isAppScreen = Boolean(screenCapture?.exists);
+  const preferRenderPlate = appState.state.blender?.projection_mode === "render_plate";
+  const projectedFrame = preferRenderPlate ? (latestRender || latestLive || screenCapture) : (screenCapture?.exists ? screenCapture : (latestLive || latestRender));
+  const isAppScreen = Boolean(screenCapture?.exists && !preferRenderPlate);
   const blenderStatus = screenState.status || liveState.status || appState.runtime?.blender_assets?.status || "waiting";
   const frame = liveState.frame || (latestLive ? 1 : 0);
   const frameCount = liveState.frame_count || (latestLive ? appState.runtime?.counts?.blender_live_frames : 0) || 0;
@@ -615,6 +621,7 @@ function renderLowerData() {
   const screenCapture = appState.runtime?.blender_assets?.screen_capture;
   const references = appState.library?.external_references || [];
   const blocked = appState.library?.blocked_assets || appState.library?.removed_assets || [];
+  const sourceTruth = appState.state.real_links || [];
   document.getElementById("library").innerHTML = `
     <div class="panel-heading">
       <div><span class="eyebrow">制作ライブラリ</span><h3>${(appState.castManifest?.cast || []).length || 0} 演者 / ${captures.length} キャプチャ</h3></div>
@@ -646,6 +653,10 @@ function renderLowerData() {
       <div>
         <strong>ブロック記録</strong>
         <span>${blocked.length}件 / 使用素材ではない</span>
+      </div>
+      <div>
+        <strong>実データ連動</strong>
+        ${sourceTruth.slice(0, 4).map(item => `<span>${escapeHtml(item.label)} / ${escapeHtml(statusJa(item.status))}</span>`).join("") || "<span>状態確認待ち</span>"}
       </div>
     </div>
   `;
@@ -689,6 +700,36 @@ function renderLowerData() {
       `;}).join("")}
     </div>
   `;
+
+  const conversation = appState.state.generation_conversation || [];
+  const palmier = appState.state.palmier || {};
+  const conversationEl = document.getElementById("conversation");
+  if (conversationEl) {
+    conversationEl.innerHTML = `
+      <div class="panel-heading">
+        <div><span class="eyebrow">生成会話</span><h3>判断ログ / 次の会話</h3></div>
+        <span class="thin-pill ${palmier.mcp_status === "connected" ? "success" : "warning"}">${escapeHtml(statusJa(palmier.mcp_status || "waiting"))}</span>
+      </div>
+      <div class="conversation-list">
+        ${conversation.map(item => `
+          <article class="conversation-card ${escapeHtml(cls(item.status || item.type))}">
+            <div><strong>${escapeHtml(item.speaker || item.type || "system")}</strong><span>${escapeHtml(item.time || "")}</span></div>
+            <p>${escapeHtml(item.message || "")}</p>
+            ${item.decision ? `<em>${escapeHtml(item.decision)}</em>` : ""}
+          </article>
+        `).join("") || "<article class=\"conversation-card\"><p>生成会話はまだありません。</p></article>"}
+      </div>
+      <div class="source-truth-grid">
+        ${(appState.state.real_links || []).map(item => `
+          <div class="${escapeHtml(cls(item.status))}">
+            <strong>${escapeHtml(item.label)}</strong>
+            <span>${escapeHtml(item.path || item.note || "")}</span>
+            <em>${escapeHtml(statusJa(item.status))}</em>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
 
   const gates = appState.state.gates || [];
   document.getElementById("gates").innerHTML = `

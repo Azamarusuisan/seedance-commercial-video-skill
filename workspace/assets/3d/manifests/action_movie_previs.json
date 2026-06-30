@@ -1,0 +1,12 @@
+{
+  "id": "action_movie_previs",
+  "title": "3Dアクション映画プリビズ",
+  "status": "ready",
+  "local_only": true,
+  "paid_generation_executed": false,
+  "blend_path": "workspace/assets/3d/blend/action_movie_previs.blend",
+  "render_path": "workspace/assets/3d/renders/action_movie_previs.png",
+  "scene": "Night cyber city chase, hero stunt, drones, armored bike, explosion light.",
+  "use_scope": "Seedance/Higgsfield visual reference and local Factory UI preview only.",
+  "updated_at": "2026-06-30T11:01:29Z"
+}

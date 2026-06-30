@@ -1,0 +1,21 @@
+9:16 cinematic 3D action film, visual-only.
+
+Reference:
+Blend the local Blender neon action style with a floating-realm storyboard structure: levitating road pieces, circular portal light, wide sense of scale.
+
+Timing:
+30-35s: road fragments float in slow motion while the hero opens a circular portal with one hand.
+35-40s: match cut from the hero's glowing eye into a vast floating city inside the iris.
+40-45s: drones stop midair, break into light particles, and flow into the portal as if becoming a key.
+
+Motion:
+Slow crane up, iris match cut, particle pull into portal.
+
+Text:
+No readable text. Leave space for post subtitles.
+
+Audio:
+Silent. ElevenLabs narration and sound design will be added later.
+
+Quality:
+Epic 3D fantasy-action scale, luminous cyan and gold energy, stable hero face/silhouette, no copied IP, no logos.
