@@ -2,20 +2,6 @@ const FACTORY_API = "/api/factory-data";
 const STATE_PATH = "state/generation-state.json";
 const LIBRARY_PATH = "state/asset-library.json";
 
-// UI演出専用のmock telemetry。本物の市場データ、広告配信、生成結果ではない。
-// 本番KPI、ジョブ、キュー、成果物は state/API の実データを使う。
-const MOCK_GENERATION_DATA_UI_ONLY = {
-  pipeline: [
-    ["取込", "完了", "complete"],
-    ["解析", "完了", "complete"],
-    ["Blender", "実画面投影", "active"],
-    ["生成", "待機中", "active"],
-    ["レンダー", "76%", "active"],
-    ["後編集", "待機中", "pending"],
-    ["納品", "ロック中", "locked"],
-  ],
-};
-
 const STATUS_JA = {
   done: "完了",
   completed: "完了",
@@ -162,6 +148,43 @@ function estimatedCredits(jobs) {
 
 function scriptBeats() {
   return appState.state.script?.beats || [];
+}
+
+function clipNumberFrom(value) {
+  const text = String(value || "");
+  const match = text.match(/clip[_\s-]?0?(\d+)/i);
+  return match ? Number.parseInt(match[1], 10) : null;
+}
+
+function clipLabelFromJob(job) {
+  const number = clipNumberFrom(job?.id) || clipNumberFrom(job?.title);
+  return number ? `Clip ${number}` : "";
+}
+
+function beatsForJob(job) {
+  const label = clipLabelFromJob(job);
+  return scriptBeats().filter(beat => String(beat.clip || "").toLowerCase() === label.toLowerCase());
+}
+
+function workflowDetail(phase) {
+  const jobs = appState.state.jobs || [];
+  const beats = scriptBeats();
+  const key = phase.id || "";
+  if (key === "script") return `${beats.length}ビート / ナレ${beats.filter(beat => beat.narration).length}行 / テロップ${beats.filter(beat => beat.telop).length}本`;
+  if (key === "cost") return `見積 ${estimatedCredits(jobs)?.toFixed(0) || "未見積"} credits / ${jobs.length}本`;
+  if (key === "seedance") return `${jobs.filter(job => job.status === "estimated").length}/${jobs.length}本 見積済み / 生成待機`;
+  if (key === "voice") return `${appState.state.script?.voice_script?.length || beats.length}行 / ElevenLabs待機`;
+  if (key === "subtitles") return `${appState.state.script?.telop_plan?.length || beats.length}本 / 後編集`;
+  if (key === "review") return `${appState.state.gates?.filter(gate => gate.status === "pending").length || 0}ゲート確認待ち`;
+  return phase.output || phase.note || "";
+}
+
+function pipelineClass(status) {
+  const key = String(status || "").toLowerCase();
+  if (["done", "completed", "approved"].includes(key)) return "complete";
+  if (["active", "generating", "rendering", "processing", "estimated"].includes(key)) return "active";
+  if (["blocked", "locked"].includes(key)) return "locked";
+  return "pending";
 }
 
 function renderValue(value) {
@@ -404,10 +427,17 @@ function renderFactoryVisual() {
 }
 
 function renderPipeline() {
-  document.getElementById("productionPipeline").innerHTML = MOCK_GENERATION_DATA_UI_ONLY.pipeline.map(([label, status, state]) => `
-    <article class="pipeline-node ${escapeHtml(state)}">
-      <strong>${escapeHtml(label)}</strong>
-      <span>${escapeHtml(status)}</span>
+  const workflow = appState.state.workflow || [];
+  const fallback = [
+    { id: "assets", label: "素材", status: "pending", output: "状態読み込み待ち" },
+    { id: "script", label: "台本", status: "pending", output: "script.beats[]待ち" },
+    { id: "seedance", label: "映像生成", status: "pending", output: "jobs[]待ち" },
+  ];
+  document.getElementById("productionPipeline").innerHTML = (workflow.length ? workflow : fallback).map(phase => `
+    <article class="pipeline-node ${escapeHtml(pipelineClass(phase.status))} ${escapeHtml(cls(phase.id || phase.status))}">
+      <strong>${escapeHtml(phase.label || phase.id || "工程")}</strong>
+      <span>${escapeHtml(statusJa(phase.status))}</span>
+      <small>${escapeHtml(displayText(workflowDetail(phase)))}</small>
     </article>
   `).join("");
 }
@@ -437,7 +467,7 @@ function renderRecentOutputs() {
         <div class="output-thumb">${imageHtml}</div>
         <div class="output-body">
           <strong>${escapeHtml(displayText(job.title || job.id))}</strong>
-          <span>${escapeHtml(job.id || `clip_${index + 1}`)} / ${escapeHtml(statusJa(job.status))} / ${escapeHtml(displayText(job.review || "review pending"))}</span>
+          <span>${escapeHtml(job.id || `clip_${index + 1}`)} / ${escapeHtml(statusJa(job.status))} / ${beatsForJob(job).length}ビート連動</span>
           <div class="progress" style="--progress:${progress}%"><i></i></div>
         </div>
       </article>
@@ -455,11 +485,13 @@ function renderGenerationQueue() {
     <div class="queue-list">
       ${jobs.map((job, index) => {
         const progress = statusProgress(job.status);
+        const beatCount = beatsForJob(job).length;
         return `
         <div class="queue-item">
           <strong class="queue-id">#${String(index + 1).padStart(2, "0")}</strong>
           <div>
             <strong>${escapeHtml(displayText(job.title || job.id))}</strong>
+            <span>${escapeHtml(beatCount)}ビート / ${escapeHtml(job.cost_credits || "未見積")} credits / 台本連動</span>
             <div class="progress" style="--progress:${progress}%"><i></i></div>
           </div>
           <span class="queue-status">${escapeHtml(statusJa(job.status))}</span>
@@ -479,14 +511,15 @@ function renderActiveGenerations() {
       ${active.map((job, index) => {
         const image = images[(index + 2) % Math.max(1, images.length)];
         const progress = statusProgress(job.status);
+        const linkedBeats = beatsForJob(job);
         return `
           <article class="active-card">
             <div class="active-thumb">${image?.src ? `<img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.name)}">` : ""}</div>
             <div>
               <strong>${escapeHtml(displayText(job.title || job.id))}</strong>
-              <span>${escapeHtml(job.id || "-")} / ${escapeHtml(statusJa(job.status))} / Seedance映像のみ / 承認待ち</span>
+              <span>${escapeHtml(job.id || "-")} / ${escapeHtml(statusJa(job.status))} / ${linkedBeats.length}ビート / Seedance映像のみ</span>
               <div class="progress" style="--progress:${progress}%"><i></i></div>
-              <span>${escapeHtml(displayText(job.note || "No paid generation executed"))}</span>
+              <span>${escapeHtml(linkedBeats.map(beat => beat.telop).filter(Boolean).join(" -> ") || displayText(job.note || "No paid generation executed"))}</span>
             </div>
           </article>
         `;
@@ -643,13 +676,17 @@ function renderLowerData() {
   document.getElementById("jobs").innerHTML = `
     <div class="panel-heading"><div><span class="eyebrow">Seedanceジョブ</span><h3>${jobs.length}本のクリップ</h3></div></div>
     <div class="overview-list">
-      ${jobs.map(job => `
+      ${jobs.map(job => {
+        const linkedBeats = beatsForJob(job);
+        return `
         <article class="job-mini-card ${cls(job.status)}">
           <strong>${escapeHtml(displayText(job.title))}</strong>
-          <span>${escapeHtml(statusJa(job.status))} / ${escapeHtml(job.primary_reference || "-")}</span>
-          <span>${escapeHtml(displayText(job.note || ""))}</span>
+          <span>${escapeHtml(statusJa(job.status))} / ${escapeHtml(job.primary_reference || "-")} / ${linkedBeats.length}ビート</span>
+          <div class="job-linked-beats">
+            ${linkedBeats.map(beat => `<b>${escapeHtml(beat.time || "")}</b><em>${escapeHtml(beat.telop || "")}</em>`).join("")}
+          </div>
         </article>
-      `).join("")}
+      `;}).join("")}
     </div>
   `;
 

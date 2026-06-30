@@ -1,21 +1,21 @@
 {
   "meta": {
     "project": "Seedance Theater Cast 60s",
-    "updated_at": "2026-06-30 19:47:41 JST",
-    "active_stage": "script_locked",
-    "codex_status": "script_visible_in_ui",
-    "operator_message": "60秒台本をUI表示用に構造化しました。映像、ナレーション、テロップを画面上で確認できます。",
+    "updated_at": "2026-06-30 19:52:02 JST",
+    "active_stage": "workflow_script_linked",
+    "codex_status": "workflow_data_linked",
+    "operator_message": "台本、ジョブ、費用見積、音声、字幕、レビューの状態をワークフロー内で連動表示するようにしました。",
     "next_terminal_instruction": "Seedance 4本の費用見積もりは合計540 creditsです。生成する場合は人間承認後に進めてください。まだ生成はしないでください。",
     "last_sent_to_codex_at": "2026-06-30T18:45:57+09:00",
     "last_sent_to_codex_message": "HiggsfieldのSeedance 4本分の費用見積もりを出して、UIのjobsをestimatedに更新してください。まだ生成はしないでください。"
   },
   "current_work": {
-    "title": "60秒台本ロック",
-    "summary": "Seedance Theater Cast 60sの秒割り、ナレーション、後編集テロップをUIに表示する状態へ更新しました。",
+    "title": "ワークフロー連動完了",
+    "summary": "中央パイプライン、生成キュー、予定ジョブ、台本パネルが script.beats[] / jobs[] / workflow[] に連動しています。",
     "owner": "Codex",
-    "input": "workspace/briefs/seedance-theater-60s-final-script.md",
-    "output": "generation-state.json / script.beats[] / script.html",
-    "status_text": "台本は表示済み。生成・音声・投稿公開は未実行。"
+    "input": "generation-state.json / script.beats[] / jobs[] / workflow[]",
+    "output": "live-workflow.html / script.html / factory-futuristic.js",
+    "status_text": "台本から生成、音声、字幕、レビューまでUI内で確認可能。生成は未実行。"
   },
   "workflow": [
     {
@@ -286,6 +286,11 @@
       "time": "2026-06-30 19:47:41 JST",
       "actor": "Codex",
       "event": "Wrote final 60s script and exposed script.beats[] in the Factory UI. No generation executed."
+    },
+    {
+      "time": "2026-06-30 19:52:02 JST",
+      "actor": "Codex",
+      "event": "Linked script beats, jobs, cost, voice, subtitle, and review gates into the live workflow UI. No generation executed."
     }
   ],
   "cost_estimate": {
@@ -443,6 +448,26 @@
       "上へ",
       "全員、ここにいた",
       "次は、あなた"
+    ]
+  },
+  "ui_bindings": {
+    "status": "linked",
+    "updated_at": "2026-06-30T10:52:02.841Z",
+    "sources": [
+      "workflow[]",
+      "script.beats[]",
+      "jobs[]",
+      "cost_estimate",
+      "audio",
+      "subtitles",
+      "gates[]"
+    ],
+    "surfaces": [
+      "live-workflow.html central pipeline",
+      "generation queue",
+      "active jobs",
+      "lower script panel",
+      "script.html"
     ]
   }
 }
