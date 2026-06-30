@@ -1,0 +1,10 @@
+Vertical 9:16, 15-second visual-only Higgsfield Seedance clip.
+Use the provided primary reference image as the visual anchor for Yuri Hayashi, a fictional adult Japanese office worker.
+
+Story: the same folded map clue appears inside an office building and leads toward a small hidden cafe.
+Action: elevator doors open, Yuri walks out holding a folded map, a business man follows, then the scene cuts to a warm cafe where a friendly cafe owner points toward the next route.
+Camera: realistic smartphone story footage, handheld follow shot, elevator reveal, close-up of coffee steam and the map, quick pan toward the next street corner.
+Look: clean office lobby lighting, warm cafe interior, natural skin texture, believable human motion, cinematic mystery Vlog pacing.
+Text policy: no readable generated text, no subtitles, no logos, no brand marks.
+Audio policy: generate_audio false. Japanese narration, ElevenLabs voice, SFX, music, and telop are added later in editing.
+Safety: fictional adult cast only, no celebrity likeness, no third-party brands, no unsupported claims.

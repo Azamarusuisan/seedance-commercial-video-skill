@@ -1,0 +1,10 @@
+Vertical 9:16, 15-second visual-only Higgsfield Seedance clip.
+Use the provided primary reference image as the visual anchor for Nana Kwon, a fictional adult Korean-Japanese travel vlogger.
+
+Story: after missing the last train, Nana films herself at a rainy Tokyo crosswalk and notices several strangers holding the same folded paper map.
+Action: Nana records a handheld selfie at a wet crosswalk, follows a woman near a convenience store entrance, then a streetwear male friend steps into frame and points toward a narrow backstreet.
+Camera: realistic smartphone Vlog, shaky but readable handheld motion, quick push-in on the folded map, fast tracking move into the backstreet.
+Look: rainy Tokyo night, reflections on asphalt, practical streetlights, natural faces, realistic crowd movement, cinematic but not glossy.
+Text policy: no readable generated text, no subtitles, no logos, no brand marks.
+Audio policy: generate_audio false. Japanese narration, ElevenLabs voice, SFX, music, and telop are added later in editing.
+Safety: fictional adult cast only, no celebrity likeness, no third-party brands, no unsupported claims.

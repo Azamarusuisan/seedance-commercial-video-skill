@@ -1,21 +1,21 @@
 {
   "meta": {
     "project": "Seedance Theater Cast 60s",
-    "updated_at": "2026-06-30 17:49 JST",
-    "active_stage": "blender_live_plate",
-    "codex_status": "terminal_instruction_received",
-    "operator_message": "AI Movie Generation Factoryの管制室。Blender live plateを中央ワークフローに投影し、Seedance / Higgsfield / ElevenLabs / subtitle post edit と同じ生成ラインで可視化します。",
-    "next_terminal_instruction": "HiggsfieldのSeedance 4本分の費用見積もりを出して、UIのjobsをestimatedに更新してください。まだ生成はしないでください。",
-    "last_sent_to_codex_at": "2026-06-30T16:45:53+09:00",
-    "last_sent_to_codex_message": "X投稿用デモ。生成工場UIの送信導線を確認してください。実生成はまだしないでください。"
+    "updated_at": "2026-06-30 18:49:23 JST",
+    "active_stage": "cost_estimated",
+    "codex_status": "cost_estimate_completed",
+    "operator_message": "Seedance 4本分の費用見積もりが完了。生成は未実行で、人間承認までロック中です。",
+    "next_terminal_instruction": "Seedance 4本の費用見積もりは合計540 creditsです。生成する場合は人間承認後に進めてください。まだ生成はしないでください。",
+    "last_sent_to_codex_at": "2026-06-30T18:45:57+09:00",
+    "last_sent_to_codex_message": "HiggsfieldのSeedance 4本分の費用見積もりを出して、UIのjobsをestimatedに更新してください。まだ生成はしないでください。"
   },
   "current_work": {
-    "title": "Blender Live Plate連結",
-    "summary": "ローカルBlenderで生成した3D factory plateを、Factory中央のワークフローアニメーションへリアルタイム投影する導線を接続しています。",
-    "owner": "Codex",
-    "input": "workspace/ui/state/*.json / asset-library / cast manifest",
-    "output": "workspace/assets/3d/renders/codex_factory_demo.png / projected factory workflow",
-    "status_text": "有料生成・投稿公開は止めたまま、UI表示のみ更新中"
+    "title": "Seedance費用見積完了",
+    "summary": "Higgsfield Seedance 2.0で4本分のcost estimateを取得しました。各15秒、9:16、1080p、high bitrate、generate_audio=falseです。",
+    "owner": "Codex + Higgsfield CLI",
+    "input": "workspace/prompts/seedance-theater/*.txt / generated cast references",
+    "output": "workspace/logs/seedance-theater-cost-estimate.json / jobs[].cost_credits",
+    "status_text": "合計540 credits。生成・音声・投稿公開は未実行。"
   },
   "workflow": [
     {
@@ -53,10 +53,10 @@
     {
       "id": "cost",
       "label": "費用見積",
-      "status": "active",
-      "owner": "Codex",
-      "output": "pending cost log",
-      "note": "Run cost estimate before any paid generation."
+      "status": "done",
+      "owner": "Codex + Higgsfield CLI",
+      "output": "540 credits total / 135 credits x 4 clips",
+      "note": "Cost estimate completed. Paid generation is still blocked until explicit human approval."
     },
     {
       "id": "seedance",
@@ -64,7 +64,7 @@
       "status": "pending",
       "owner": "Higgsfield",
       "output": "4 x visual-only MP4",
-      "note": "Generate only after explicit approval."
+      "note": "Estimated at 540 credits total. Generate only after explicit approval."
     },
     {
       "id": "voice",
@@ -127,49 +127,89 @@
       "id": "clip_01",
       "title": "Clip 1 / 0-15s",
       "primary_reference": "cast_f_beauty_03",
-      "status": "not_started",
-      "cost_credits": "",
+      "status": "estimated",
+      "cost_credits": "135",
       "result_url": "",
       "local_path": "",
       "review": "pending",
       "retry_reason": "",
-      "note": "Hook: rainy crosswalk, same map, Ren points to hidden alley."
+      "note": "Hook: rainy crosswalk, same map, Ren points to hidden alley. Cost estimate: 135 credits. No paid generation executed.",
+      "prompt_file": "workspace/prompts/seedance-theater/clip_01_0-15s_cost.txt",
+      "reference_image": "workspace/assets/cast/generated_20260629/cast_f_beauty_03.png",
+      "model": "seedance_2_0",
+      "aspect_ratio": "9:16",
+      "duration_seconds": 15,
+      "resolution": "1080p",
+      "bitrate_mode": "high",
+      "generate_audio": false,
+      "cost_credits_exact": 135,
+      "cost_checked_at": "2026-06-30T09:49:23.386Z"
     },
     {
       "id": "clip_02",
       "title": "Clip 2 / 15-30s",
       "primary_reference": "cast_f_beauty_02",
-      "status": "not_started",
-      "cost_credits": "",
+      "status": "estimated",
+      "cost_credits": "135",
       "result_url": "",
       "local_path": "",
       "review": "pending",
       "retry_reason": "",
-      "note": "Discovery: office lobby to hidden cafe."
+      "note": "Discovery: office lobby to hidden cafe. Cost estimate: 135 credits. No paid generation executed.",
+      "prompt_file": "workspace/prompts/seedance-theater/clip_02_15-30s_cost.txt",
+      "reference_image": "workspace/assets/cast/generated_20260629/cast_f_beauty_02.png",
+      "model": "seedance_2_0",
+      "aspect_ratio": "9:16",
+      "duration_seconds": 15,
+      "resolution": "1080p",
+      "bitrate_mode": "high",
+      "generate_audio": false,
+      "cost_credits_exact": 135,
+      "cost_checked_at": "2026-06-30T09:49:23.386Z"
     },
     {
       "id": "clip_03",
       "title": "Clip 3 / 30-45s",
       "primary_reference": "cast_m_ordinary_03",
-      "status": "not_started",
-      "cost_credits": "",
+      "status": "estimated",
+      "cost_credits": "135",
       "result_url": "",
       "local_path": "",
       "review": "pending",
       "retry_reason": "",
-      "note": "Threshold: students, old shop, stamp completes the map."
+      "note": "Threshold: students, old shop, stamp completes the map. Cost estimate: 135 credits. No paid generation executed.",
+      "prompt_file": "workspace/prompts/seedance-theater/clip_03_30-45s_cost.txt",
+      "reference_image": "workspace/assets/cast/generated_20260629/cast_m_ordinary_03.png",
+      "model": "seedance_2_0",
+      "aspect_ratio": "9:16",
+      "duration_seconds": 15,
+      "resolution": "1080p",
+      "bitrate_mode": "high",
+      "generate_audio": false,
+      "cost_credits_exact": 135,
+      "cost_checked_at": "2026-06-30T09:49:23.386Z"
     },
     {
       "id": "clip_04",
       "title": "Clip 4 / 45-60s",
       "primary_reference": "cast_f_beauty_03",
-      "status": "not_started",
-      "cost_credits": "",
+      "status": "estimated",
+      "cost_credits": "135",
       "result_url": "",
       "local_path": "",
       "review": "pending",
       "retry_reason": "",
-      "note": "Payoff: rooftop cast reveal and loop hook."
+      "note": "Payoff: rooftop cast reveal and loop hook. Cost estimate: 135 credits. No paid generation executed.",
+      "prompt_file": "workspace/prompts/seedance-theater/clip_04_45-60s_cost.txt",
+      "reference_image": "workspace/assets/cast/generated_20260629/cast_f_beauty_03.png",
+      "model": "seedance_2_0",
+      "aspect_ratio": "9:16",
+      "duration_seconds": 15,
+      "resolution": "1080p",
+      "bitrate_mode": "high",
+      "generate_audio": false,
+      "cost_credits_exact": 135,
+      "cost_checked_at": "2026-06-30T09:49:23.386Z"
     }
   ],
   "audio": {
@@ -192,12 +232,12 @@
     },
     {
       "id": "cost",
-      "label": "Higgsfield cost estimate reviewed",
-      "status": "pending"
+      "label": "Higgsfield cost estimate reviewed: 540 credits total",
+      "status": "done"
     },
     {
       "id": "human_approval",
-      "label": "human approved paid generation",
+      "label": "human approved paid generation after 540-credit estimate",
       "status": "pending"
     },
     {
@@ -226,6 +266,42 @@
       "time": "2026-06-30T16:45:53+09:00",
       "actor": "factory-ui-demo",
       "event": "Sent instruction to Codex inbox."
+    },
+    {
+      "time": "2026-06-30T18:45:43+09:00",
+      "actor": "live-workflow-ui",
+      "event": "Sent instruction to Codex inbox."
+    },
+    {
+      "time": "2026-06-30T18:45:57+09:00",
+      "actor": "live-workflow-ui",
+      "event": "Sent instruction to Codex inbox."
+    },
+    {
+      "time": "2026-06-30 18:49:23 JST",
+      "actor": "Codex + Higgsfield CLI",
+      "event": "Estimated Seedance 2.0 cost for 4 visual-only clips: 135 credits each, 540 credits total. No generation executed."
     }
-  ]
+  ],
+  "cost_estimate": {
+    "status": "estimated",
+    "checked_at": "2026-06-30T09:49:23.386Z",
+    "model": "seedance_2_0",
+    "settings": {
+      "model": "seedance_2_0",
+      "display_name": "Seedance 2.0",
+      "aspect_ratio": "9:16",
+      "duration": 15,
+      "resolution": "1080p",
+      "bitrate_mode": "high",
+      "generate_audio": false,
+      "mode": "std"
+    },
+    "per_clip_credits": 135,
+    "total_credits": 540,
+    "account_credits_before": 1266.8,
+    "account_credits_after_if_generated": 726.8,
+    "log_path": "workspace/logs/seedance-theater-cost-estimate.json",
+    "paid_generation_executed": false
+  }
 }

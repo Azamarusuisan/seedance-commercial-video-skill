@@ -1,0 +1,10 @@
+Vertical 9:16, 15-second visual-only Higgsfield Seedance clip.
+Use the provided primary reference image as the visual anchor for Nana Kwon, a fictional adult Korean-Japanese travel vlogger.
+
+Story: the route ends on a rooftop where every person Nana passed tonight is waiting with one piece of the same map. A new blank map appears, implying the viewer is next.
+Action: an elegant woman waits in a hallway, an older salaryman holds the elevator door, rooftop doors open, the full cast gathers in a semicircle holding torn map pieces, Nana looks into camera with a new blank map in her hand.
+Camera: cinematic handheld smartphone finale, elevator push-in, door reveal, slow pan across the cast, final close-up on Nana's expression and the blank map.
+Look: rooftop night city, wind, soft practical lights, realistic group blocking, dramatic reveal, loop-ready final moment.
+Text policy: no readable generated text, no subtitles, no logos, no brand marks.
+Audio policy: generate_audio false. Japanese narration, ElevenLabs voice, SFX, music, and telop are added later in editing.
+Safety: fictional adult cast only, no celebrity likeness, no third-party brands, no unsupported claims.

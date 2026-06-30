@@ -1,0 +1,10 @@
+Vertical 9:16, 15-second visual-only Higgsfield Seedance clip.
+Use the provided primary reference image as the visual anchor for Kenji Mori, a fictional adult Japanese local shop owner.
+
+Story: students reveal that the route is known as a city that opens only at night; the old shop keeper completes the map.
+Action: two university students run through a corridor filming the clue, then an old neighborhood shop shutter opens. Kenji places a stamp on the folded map while a trusted teacher-like woman watches.
+Camera: realistic TikTok mystery Vlog, fast handheld chase, low-angle shutter opening, close-up of stamp hitting paper, subtle glow from inside the shop.
+Look: late-night campus corridor, old neighborhood shop, tactile paper map, grounded realistic faces, energetic but coherent motion.
+Text policy: no readable generated text, no subtitles, no logos, no brand marks.
+Audio policy: generate_audio false. Japanese narration, ElevenLabs voice, SFX, music, and telop are added later in editing.
+Safety: fictional adult cast only, no celebrity likeness, no third-party brands, no unsupported claims.
