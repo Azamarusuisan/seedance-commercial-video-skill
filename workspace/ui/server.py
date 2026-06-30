@@ -18,6 +18,7 @@ STATE_DIR = REPO_ROOT / "workspace" / "ui" / "state"
 INBOX_PATH = STATE_DIR / "codex-inbox.jsonl"
 STATE_PATH = STATE_DIR / "generation-state.json"
 ASSET_LIBRARY_PATH = STATE_DIR / "asset-library.json"
+ASSET_3D_DIR = REPO_ROOT / "workspace" / "assets" / "3d"
 
 
 def now_label() -> str:
@@ -114,12 +115,70 @@ def git_summary() -> dict[str, object]:
 def blender_summary() -> dict[str, object]:
     cli = shutil.which("blender")
     app_paths = sorted(Path("/Applications").glob("Blender*")) if Path("/Applications").exists() else []
+    executable = ""
+    if app_paths:
+        app_executable = app_paths[0] / "Contents" / "MacOS" / "Blender"
+        if app_executable.exists():
+            executable = str(app_executable)
+    if not executable:
+        executable = cli
+    version = ""
+    if executable:
+        try:
+            version = subprocess.run(
+                [executable, "--version"],
+                cwd=REPO_ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+                timeout=2.0,
+            ).stdout.splitlines()[0]
+        except (OSError, subprocess.TimeoutExpired, IndexError):
+            version = ""
     return {
         "available": bool(cli or app_paths),
         "cli": cli or "",
+        "executable": executable or "",
+        "version": version,
         "applications": [str(path) for path in app_paths],
         "mode": "local-only",
         "note": "Use only for local 3D preview/render plates; never trigger paid generation.",
+    }
+
+
+def blender_assets() -> dict[str, object]:
+    render_dir = ASSET_3D_DIR / "renders"
+    blend_dir = ASSET_3D_DIR / "blend"
+    manifest_dir = ASSET_3D_DIR / "manifests"
+    renders = [
+        file_record(path)
+        for path in sorted(render_dir.glob("*"))
+        if path.is_file() and path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp", ".mp4", ".mov"}
+    ]
+    blends = [
+        file_record(path)
+        for path in sorted(blend_dir.glob("*.blend"))
+        if path.is_file()
+    ]
+    manifests = []
+    for path in sorted(manifest_dir.glob("*.json")):
+        record = read_json(path, {})
+        if isinstance(record, dict):
+            record["_file"] = file_record(path)
+            manifests.append(record)
+
+    renders.sort(key=lambda item: str(item.get("mtime", "")), reverse=True)
+    latest = renders[0] if renders else None
+    return {
+        "root": rel(ASSET_3D_DIR),
+        "render_dir": rel(render_dir),
+        "blend_dir": rel(blend_dir),
+        "manifest_dir": rel(manifest_dir),
+        "renders": renders,
+        "blends": blends,
+        "manifests": manifests,
+        "latest_render": latest,
+        "status": "ready" if latest else "waiting_for_render",
     }
 
 
@@ -159,6 +218,7 @@ def factory_data(server_address: tuple[str, int]) -> dict[str, object]:
     workflow = state.get("workflow", []) if isinstance(state, dict) else []
     gates = state.get("gates", []) if isinstance(state, dict) else []
     inbox = tail_jsonl(INBOX_PATH)
+    blender_asset_data = blender_assets()
 
     host, port = server_address
     return {
@@ -184,6 +244,9 @@ def factory_data(server_address: tuple[str, int]) -> dict[str, object]:
             "generated_cast_files": len(generated_cast_files),
             "library_source_captures": len(library.get("source_captures", [])) if isinstance(library, dict) else 0,
             "library_page_renders": len(library.get("page_renders", [])) if isinstance(library, dict) else 0,
+            "blender_renders": len(blender_asset_data["renders"]),
+            "blender_blends": len(blender_asset_data["blends"]),
+            "blender_manifests": len(blender_asset_data["manifests"]),
             "source_capture_files": len(source_capture_files),
             "render_outputs": len(render_outputs),
             "inbox_messages": len(inbox),
@@ -197,6 +260,7 @@ def factory_data(server_address: tuple[str, int]) -> dict[str, object]:
         },
         "git": git_summary(),
         "blender": blender_summary(),
+        "blender_assets": blender_asset_data,
     }
 
 

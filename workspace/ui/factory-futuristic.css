@@ -772,6 +772,83 @@ body::before {
   text-shadow: 0 0 25px rgba(34, 211, 238, 0.88);
 }
 
+.blender-projection {
+  position: absolute;
+  right: 10%;
+  top: 13%;
+  z-index: 7;
+  width: min(36%, 380px);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid rgba(34, 211, 238, 0.52);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.12), rgba(244, 114, 255, 0.10)),
+    rgba(2, 6, 23, 0.86);
+  box-shadow: 0 0 35px rgba(34, 211, 238, 0.20), inset 0 0 28px rgba(34, 211, 238, 0.10);
+  transform: perspective(900px) rotateY(-11deg) rotateX(3deg);
+}
+
+.blender-projection::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mix-blend-mode: screen;
+  opacity: 0.45;
+}
+
+.blender-projection img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(1.22) contrast(1.1);
+}
+
+.projection-frame,
+.projection-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  align-content: end;
+  gap: 3px;
+  padding: 12px;
+  background: linear-gradient(to top, rgba(2, 6, 23, 0.84), transparent 62%);
+}
+
+.projection-frame {
+  align-content: center;
+  text-align: center;
+}
+
+.projection-frame span,
+.projection-overlay span,
+.projection-frame small,
+.projection-overlay small {
+  color: #a8c8d9;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.projection-frame strong,
+.projection-overlay strong {
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 18px;
+  text-transform: uppercase;
+  text-shadow: 0 0 16px rgba(34, 211, 238, 0.65);
+}
+
 .floating-monitor {
   position: absolute;
   z-index: 7;
@@ -1434,6 +1511,44 @@ button:disabled {
   font-family: var(--mono);
   font-size: 11px;
   overflow-wrap: anywhere;
+}
+
+.render-shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.render-card {
+  overflow: hidden;
+  border: 1px solid rgba(34, 211, 238, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.render-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+
+.render-card div {
+  padding: 10px 12px 12px;
+}
+
+.render-card strong,
+.render-card span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.render-card span {
+  margin-top: 4px;
+  color: var(--muted);
 }
 
 .cast-library-grid {

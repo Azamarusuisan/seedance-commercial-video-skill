@@ -24,8 +24,8 @@ const PAGE_META = {
     title: "Assets",
     subtitle: "Local source shelves and 3D lanes",
     intent: "生成前に、使える素材、source captures、Blender/3Dレーン、ブロック済み記録を確認する。",
-    source: "asset-library.json / cast manifest / videos/**/source-captures / blender status",
-    decision: "Seedanceへ渡す素材と、ローカル3D previewを使うかを決める。",
+    source: "asset-library.json / cast manifest / videos/**/source-captures / workspace/assets/3d / blender status",
+    decision: "Seedanceへ渡す素材と、ローカル3D preview plateを使うかを決める。",
   },
   "cast-library": {
     title: "Cast Library",
@@ -210,6 +210,9 @@ function renderAssets() {
   const refs = lib.external_references || [];
   const blocked = lib.blocked_assets || lib.removed_assets || [];
   const blender = pageState.runtime?.blender || {};
+  const blenderAssets = pageState.runtime?.blender_assets || {};
+  const blenderRenders = blenderAssets.renders || [];
+  const blenderManifests = blenderAssets.manifests || [];
   return `
     <section class="page-panel">
       <div class="panel-heading"><div><span class="eyebrow">Asset Shelves</span><h3>Local source inventory</h3></div></div>
@@ -219,13 +222,31 @@ function renderAssets() {
         <div><span>Page Renders</span><strong>${pageRenders.length}</strong></div>
         <div><span>External References</span><strong>${refs.length}</strong></div>
         <div><span>Blocked Records</span><strong>${blocked.length}</strong></div>
+        <div><span>Blender Plates</span><strong>${blenderRenders.length}</strong></div>
       </div>
     </section>
     <section class="page-panel">
       <span class="eyebrow">Blender / 3D Preview Lane</span>
       <h3>${blender.available ? "available" : "unavailable"}</h3>
       <p>${html(blender.note || "Local-only Blender lane for 3D preview plates.")}</p>
-      <div class="kv-grid"><span>CLI</span><strong>${html(blender.cli || "not found")}</strong><span>Mode</span><strong>${html(blender.mode || "local-only")}</strong></div>
+      <div class="kv-grid"><span>Executable</span><strong>${html(blender.executable || blender.cli || "not found")}</strong><span>Version</span><strong>${html(blender.version || "-")}</strong><span>Mode</span><strong>${html(blender.mode || "local-only")}</strong><span>Status</span><strong>${html(blenderAssets.status || "waiting")}</strong></div>
+    </section>
+    <section class="page-panel wide">
+      <div class="panel-heading"><div><span class="eyebrow">Blender Live Plates</span><h3>Projected into workflow animation</h3></div></div>
+      <div class="render-shelf">
+        ${blenderRenders.map(item => `
+          <article class="render-card">
+            ${item.path && item.path.match(/\.(png|jpe?g|webp)$/i) ? `<img src="${html(toProjectPath(item.path))}?t=${encodeURIComponent(item.mtime || "")}" alt="${html(item.path)}">` : ""}
+            <div>
+              <strong>${html(item.path)}</strong>
+              <span>${html(item.mtime || "")} / ${html(item.bytes || 0)} bytes</span>
+            </div>
+          </article>
+        `).join("") || "<article class=\"render-card\"><div><strong>No Blender render yet</strong><span>Run workspace/scripts/render-blender-demo.sh</span></div></article>"}
+      </div>
+      <div class="data-list">
+        ${blenderManifests.map(item => `<article><strong>${html(item.name || item.id)}</strong><span>${html(item.path || "")} / ${html(item.review_status || "")}</span></article>`).join("") || "<article><strong>No manifest</strong><span>Render script writes workspace/assets/3d/manifests/*.json</span></article>"}
+      </div>
     </section>
     <section class="page-panel wide">
       <div class="panel-heading"><div><span class="eyebrow">Page Renders</span><h3>Download-ready local renders</h3></div></div>

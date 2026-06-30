@@ -221,6 +221,8 @@ workspace/ui/server.py
 6. Blender / 3D Preview Lane
    - Blenderがある場合のみローカルで3D preview / render plate / GLB確認を行う
    - Blenderがない場合は `unavailable` と表示し、CSS/Three.js/Higgsfield 3D代替を検討する
+   - `workspace/assets/3d/renders` の最新plateを中央の `LIVE FACTORY FLOOR` に投影する
+   - `bash workspace/scripts/render-blender-demo.sh` でCodexからローカルBlenderレンダーを更新できる
    - 有料生成や外部API実行とは切り離す
 
 本番用ライブラリに追加したい項目:

@@ -8,6 +8,7 @@ const MOCK_GENERATION_DATA_UI_ONLY = {
   pipeline: [
     ["INGEST", "Complete", "complete"],
     ["ANALYZE", "Complete", "complete"],
+    ["BLENDER", "Live Plate", "active"],
     ["GENERATE", "Processing", "active"],
     ["RENDER", "76%", "active"],
     ["POST", "Pending", "pending"],
@@ -157,7 +158,7 @@ function renderMetrics() {
     ["Active Stage", appState.state.meta?.active_stage || "pending", "state.meta.active_stage"],
     ["Planned Jobs", counts.jobs ?? jobs.length, "state.jobs.length"],
     ["Estimated Credits", credits === null ? "not estimated" : credits.toFixed(1), "jobs[].cost_credits"],
-    ["Render Outputs", counts.render_outputs ?? 0, "local output files"],
+    ["Blender Plates", counts.blender_renders ?? 0, "workspace/assets/3d/renders"],
     ["Cast Assets", counts.generated_cast_files ?? appState.state.assets?.generated_cast_count ?? 0, "cast manifest files"],
     ["Approval Gates", `${blocked} blocked`, "human approval required"],
   ];
@@ -201,12 +202,13 @@ function renderFactoryOverview() {
 }
 
 function renderSystemMonitor() {
+  const blenderReady = appState.runtime?.blender?.available ? 100 : 0;
   const rows = [
     ["State JSON", appState.runtime?.files?.state?.exists ? 100 : 0],
     ["Asset Library", appState.runtime?.files?.asset_library?.exists ? 100 : 0],
     ["Codex Inbox", appState.runtime?.files?.codex_inbox?.exists ? 100 : 0],
     ["Cast Files", Math.min(100, ((appState.runtime?.counts?.generated_cast_files ?? 0) / 17) * 100)],
-    ["Blender Lane", 0],
+    ["Blender Lane", blenderReady],
   ];
   document.getElementById("systemMonitorPanel").innerHTML = `
     <div class="panel-heading"><div><span class="eyebrow">System Monitor</span><h3>Local Data Health</h3></div></div>
@@ -281,6 +283,32 @@ function renderGlobalActivity() {
 }
 
 function renderFactoryVisual() {
+  const projection = document.getElementById("blenderProjection");
+  const latestRender = appState.runtime?.blender_assets?.latest_render;
+  const blenderStatus = appState.runtime?.blender_assets?.status || "waiting";
+  if (projection) {
+    if (latestRender?.path) {
+      projection.innerHTML = `
+        <img src="${escapeHtml(toProjectPath(latestRender.path))}?t=${encodeURIComponent(latestRender.mtime || Date.now())}" alt="Latest Blender factory render">
+        <div class="projection-overlay">
+          <span>BLENDER LIVE PLATE</span>
+          <strong>${escapeHtml(blenderStatus)}</strong>
+          <small>${escapeHtml(latestRender.path)}</small>
+        </div>
+      `;
+      projection.classList.add("is-ready");
+    } else {
+      projection.innerHTML = `
+        <div class="projection-frame">
+          <span>BLENDER LIVE PLATE</span>
+          <strong>waiting</strong>
+          <small>workspace/assets/3d/renders</small>
+        </div>
+      `;
+      projection.classList.remove("is-ready");
+    }
+  }
+
   ["conveyorLaneA", "conveyorLaneB", "conveyorLaneC"].forEach((id, laneIndex) => {
     const lane = document.getElementById(id);
     if (!lane || lane.children.length) return;
@@ -390,7 +418,7 @@ function renderActiveGenerations() {
 function renderSystemPerformance() {
   const phase = appState.tick / 1.7;
   const counts = appState.runtime?.counts || {};
-  const status = counts.render_outputs ? "OUTPUTS" : "LOCKED";
+  const status = counts.blender_renders ? "3D READY" : "LOCKED";
   document.getElementById("systemPerformancePanel").innerHTML = `
     <div class="panel-heading"><div><span class="eyebrow">System Performance</span><h3>Local Render State</h3></div></div>
     <div class="performance-grid">
@@ -401,7 +429,7 @@ function renderSystemPerformance() {
         <polyline points="${chartPoints(32, 270, 118, phase + 12, 14)}" fill="none" stroke="#fbbf24" stroke-width="2"/>
       </svg>
       <div class="big-speed">
-        <div><strong>${escapeHtml(status)}</strong><span>${counts.render_outputs ?? 0} files</span></div>
+        <div><strong>${escapeHtml(status)}</strong><span>${counts.blender_renders ?? 0} Blender plates</span></div>
       </div>
     </div>
   `;
@@ -445,6 +473,7 @@ function renderTerminal() {
 function renderLowerData() {
   const images = castImages().slice(0, 8);
   const captures = appState.library?.source_captures || [];
+  const blenderRenders = appState.runtime?.blender_assets?.renders || [];
   const references = appState.library?.external_references || [];
   const blocked = appState.library?.blocked_assets || appState.library?.removed_assets || [];
   document.getElementById("library").innerHTML = `
@@ -462,6 +491,10 @@ function renderLowerData() {
       `).join("")}
     </div>
     <div class="library-ledger">
+      <div>
+        <strong>Blender Plates</strong>
+        ${blenderRenders.slice(0, 5).map(item => `<span>${escapeHtml(item.path)} / ${escapeHtml(item.mtime || "")}</span>`).join("") || "<span>waiting for local render</span>"}
+      </div>
       <div>
         <strong>Source Captures</strong>
         ${captures.slice(0, 5).map(item => `<span>${escapeHtml(item.name || item.id)} / ${escapeHtml(item.type || "capture")}</span>`).join("") || "<span>none</span>"}

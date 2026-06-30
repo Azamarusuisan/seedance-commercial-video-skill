@@ -1,6 +1,6 @@
 {
   "title": "Seedance Asset Library",
-  "updated_at": "2026-06-30 17:28 JST",
+  "updated_at": "2026-06-30 17:49 JST",
   "notes": "Reusable local library for generated cast references, workflow captures, Codex operation captures, and abstract blocked-source records.",
   "generated_cast_manifest": {
     "id": "generated_theater_cast_20260629",
@@ -9,6 +9,21 @@
     "rights_status": "generated",
     "use_scope": "internal draft, organic social draft, paid ad draft after review"
   },
+  "blender_3d_assets": [
+    {
+      "id": "codex_factory_demo",
+      "name": "Codex Factory Demo",
+      "type": "blender_live_plate",
+      "path": "workspace/assets/3d/renders/codex_factory_demo.png",
+      "thumbnail_path": "workspace/assets/3d/renders/codex_factory_demo.png",
+      "blend_path": "workspace/assets/3d/blend/codex_factory_demo.blend",
+      "script_path": "workspace/blender/codex_factory_demo.py",
+      "manifest_path": "workspace/assets/3d/manifests/codex_factory_demo.json",
+      "rights_status": "generated",
+      "use_scope": "local factory UI, Seedance reference plate, internal docs",
+      "notes": "Local Blender render projected into the Factory workflow animation. No paid generation, no external API, no publishing."
+    }
+  ],
   "source_captures": [
     {
       "id": "source_capture_live_workflow_ui_20260630",

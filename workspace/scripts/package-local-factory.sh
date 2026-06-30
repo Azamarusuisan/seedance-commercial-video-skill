@@ -42,9 +42,12 @@ zip -rq "$OUT" \
   workspace/ui \
   workspace/scripts/serve-ui.sh \
   workspace/scripts/package-local-factory.sh \
+  workspace/scripts/render-blender-demo.sh \
   workspace/assets/cast/README.md \
   workspace/assets/cast/generated_20260629 \
   workspace/assets/cast/source_refs_20260629/source-manifest.json \
+  workspace/assets/3d \
+  workspace/blender \
   workspace/briefs \
   workspace/prompts \
   videos/codex-inbox-x-demo/assets \

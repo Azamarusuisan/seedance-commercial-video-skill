@@ -101,8 +101,23 @@ Blender laneを使う場合、UIでは次のように出す。
 - `3D Preview: pending / rendering / ready / blocked`
 - `Local render only`
 - `No paid generation executed`
+- `workspace/assets/3d/renders` の最新plateをFactory中央のワークフローアニメーションに投影する
 
 Blenderがない場合も、UIには `Blender unavailable` と出し、代替のCSS/Three.js/Higgsfield 3D案を提示する。
+
+ローカルデモレンダー:
+
+```bash
+bash workspace/scripts/render-blender-demo.sh
+```
+
+出力:
+
+```text
+workspace/assets/3d/renders/codex_factory_demo.png
+workspace/assets/3d/blend/codex_factory_demo.blend
+workspace/assets/3d/manifests/codex_factory_demo.json
+```
 
 ## Safety
 

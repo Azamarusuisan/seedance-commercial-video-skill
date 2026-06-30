@@ -63,7 +63,7 @@ TikTok風の物語動画や劇団型のキャスト運用では、`workspace/ass
 
 Factory UIは個別ページも持ちます。`studio-lines.html`、`assets.html`、`cast-library.html`、`jobs.html`、`gates.html`、`activity.html` はすべて `/api/factory-data` を読み、ページごとに「意図」「実データ」「次の判断」を表示します。
 
-Blender/3D previewを使う場合は `references/blender-3d-preview-workflow.md` を参照します。Blenderはローカル処理だけに使い、有料生成や外部投稿とは切り離します。
+Blender/3D previewを使う場合は `references/blender-3d-preview-workflow.md` を参照します。Blenderはローカル処理だけに使い、有料生成や外部投稿とは切り離します。`bash workspace/scripts/render-blender-demo.sh` を実行すると `workspace/assets/3d/renders/codex_factory_demo.png` が更新され、Factory中央の `LIVE FACTORY FLOOR` に最新Blender plateとして投影されます。
 
 ローカル配布パッケージを作る場合は次を実行します。
 

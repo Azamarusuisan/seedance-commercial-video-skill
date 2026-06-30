@@ -1,0 +1,13 @@
+{
+  "id": "codex_factory_demo",
+  "name": "Codex Factory Demo",
+  "type": "render",
+  "path": "workspace/assets/3d/renders/codex_factory_demo.png",
+  "blend_path": "workspace/assets/3d/blend/codex_factory_demo.blend",
+  "script_path": "workspace/blender/codex_factory_demo.py",
+  "rights_status": "generated",
+  "use_scope": "local factory UI, Seedance reference plate, internal docs",
+  "created_at": "2026-06-30T08:46:38Z",
+  "review_status": "pending",
+  "notes": "Local Blender render. No paid generation, no external API, no publishing."
+}
