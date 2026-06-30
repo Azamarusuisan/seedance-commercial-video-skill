@@ -1,0 +1,194 @@
+{
+  "meta": {
+    "project": "Seedance Theater Cast 60s",
+    "updated_at": "2026-06-30 00:00 JST",
+    "active_stage": "cost_estimate",
+    "codex_status": "waiting_for_terminal_instruction",
+    "operator_message": "素材、台本、生成前チェックは準備済み。次はHiggsfieldの費用見積もりと生成承認。",
+    "next_terminal_instruction": "HiggsfieldのSeedance 4本分の費用見積もりを出して、UIのjobsをestimatedに更新してください。まだ生成はしないでください。"
+  },
+  "workflow": [
+    {
+      "id": "assets",
+      "label": "素材",
+      "status": "done",
+      "owner": "Codex",
+      "output": "generated_20260629 cast + source refs",
+      "note": "17 generated cast and 2 source refs registered. Removed blond male guide excluded."
+    },
+    {
+      "id": "script",
+      "label": "台本",
+      "status": "done",
+      "owner": "Codex",
+      "output": "tiktok-theater-cast-60s-script.md",
+      "note": "60s story split into 10 beats and 4 Seedance clips."
+    },
+    {
+      "id": "approval",
+      "label": "生成前確認",
+      "status": "done",
+      "owner": "Human",
+      "output": "generation-checkpoint.html",
+      "note": "Visual-only Seedance, ElevenLabs narration, post subtitles confirmed as policy."
+    },
+    {
+      "id": "cost",
+      "label": "費用見積",
+      "status": "active",
+      "owner": "Codex",
+      "output": "pending cost log",
+      "note": "Run cost estimate before any paid generation."
+    },
+    {
+      "id": "seedance",
+      "label": "映像生成",
+      "status": "pending",
+      "owner": "Higgsfield",
+      "output": "4 x visual-only MP4",
+      "note": "Generate only after explicit approval."
+    },
+    {
+      "id": "voice",
+      "label": "音声",
+      "status": "pending",
+      "owner": "Higgsfield ElevenLabs",
+      "output": "Japanese VO audio",
+      "note": "Use exact Japanese narration. Do not rely on Seedance audio."
+    },
+    {
+      "id": "subtitles",
+      "label": "字幕編集",
+      "status": "pending",
+      "owner": "Editor",
+      "output": "Japanese telop overlays",
+      "note": "Add after audio timing is locked."
+    },
+    {
+      "id": "review",
+      "label": "レビュー",
+      "status": "pending",
+      "owner": "Human + Codex",
+      "output": "OK/NG and retry plan",
+      "note": "Judge face stability, continuity, rights, claims, and final edit."
+    }
+  ],
+  "assets": {
+    "generated_cast_count": 17,
+    "source_ref_count": 2,
+    "excluded": [
+      "first blond male guide"
+    ],
+    "primary_cast": [
+      {
+        "id": "cast_f_beauty_03",
+        "name": "Nana Kwon",
+        "role": "main lead",
+        "path": "workspace/assets/cast/generated_20260629/cast_f_beauty_03.png"
+      },
+      {
+        "id": "cast_m_handsome_01",
+        "name": "Ren Takahashi",
+        "role": "co-lead",
+        "path": "workspace/assets/cast/generated_20260629/cast_m_handsome_01.png"
+      },
+      {
+        "id": "cast_m_ordinary_03",
+        "name": "Kenji Mori",
+        "role": "local guide",
+        "path": "workspace/assets/cast/generated_20260629/cast_m_ordinary_03.png"
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "clip_01",
+      "title": "Clip 1 / 0-15s",
+      "primary_reference": "cast_f_beauty_03",
+      "status": "not_started",
+      "cost_credits": "",
+      "result_url": "",
+      "local_path": "",
+      "review": "pending",
+      "retry_reason": "",
+      "note": "Hook: rainy crosswalk, same map, Ren points to hidden alley."
+    },
+    {
+      "id": "clip_02",
+      "title": "Clip 2 / 15-30s",
+      "primary_reference": "cast_f_beauty_02",
+      "status": "not_started",
+      "cost_credits": "",
+      "result_url": "",
+      "local_path": "",
+      "review": "pending",
+      "retry_reason": "",
+      "note": "Discovery: office lobby to hidden cafe."
+    },
+    {
+      "id": "clip_03",
+      "title": "Clip 3 / 30-45s",
+      "primary_reference": "cast_m_ordinary_03",
+      "status": "not_started",
+      "cost_credits": "",
+      "result_url": "",
+      "local_path": "",
+      "review": "pending",
+      "retry_reason": "",
+      "note": "Threshold: students, old shop, stamp completes the map."
+    },
+    {
+      "id": "clip_04",
+      "title": "Clip 4 / 45-60s",
+      "primary_reference": "cast_f_beauty_03",
+      "status": "not_started",
+      "cost_credits": "",
+      "result_url": "",
+      "local_path": "",
+      "review": "pending",
+      "retry_reason": "",
+      "note": "Payoff: rooftop cast reveal and loop hook."
+    }
+  ],
+  "audio": {
+    "policy": "Higgsfield ElevenLabs after video script approval",
+    "status": "pending",
+    "voice": "Leo default unless changed",
+    "result_url": "",
+    "local_path": ""
+  },
+  "subtitles": {
+    "policy": "post-production Japanese telop",
+    "status": "pending",
+    "style": "bold white with dark stroke, short phrases, timed to VO"
+  },
+  "gates": [
+    {
+      "id": "rights",
+      "label": "source refs and paid ad rights checked",
+      "status": "pending"
+    },
+    {
+      "id": "cost",
+      "label": "Higgsfield cost estimate reviewed",
+      "status": "pending"
+    },
+    {
+      "id": "human_approval",
+      "label": "human approved paid generation",
+      "status": "pending"
+    },
+    {
+      "id": "ad_publish",
+      "label": "ad publish remains blocked without separate permission",
+      "status": "blocked"
+    }
+  ],
+  "activity": [
+    {
+      "time": "2026-06-30 00:00 JST",
+      "actor": "Codex",
+      "event": "Live workflow state initialized."
+    }
+  ]
+}
