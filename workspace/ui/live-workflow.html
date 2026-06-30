@@ -3,634 +3,210 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Seedance Live Workflow</title>
-  <style>
-    :root {
-      --bg: #f5f6f7;
-      --panel: #ffffff;
-      --ink: #171a1f;
-      --muted: #626a73;
-      --line: #d8dde3;
-      --soft: #edf0f3;
-      --green: #1e755b;
-      --green-soft: #dff2eb;
-      --amber: #a85f12;
-      --amber-soft: #fff2df;
-      --red: #b42318;
-      --red-soft: #fff0ef;
-      --blue: #235789;
-      --blue-soft: #e6f0fb;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Yu Gothic UI", sans-serif;
-      font-size: 14px;
-      line-height: 1.5;
-      letter-spacing: 0;
-    }
-
-    .app {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 300px minmax(0, 1fr);
-    }
-
-    .rail {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow: auto;
-      border-right: 1px solid var(--line);
-      background: #fbfcfd;
-      padding: 18px;
-    }
-
-    .rail h1 {
-      margin: 0 0 4px;
-      font-size: 18px;
-      line-height: 1.2;
-    }
-
-    .rail p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .nav {
-      display: grid;
-      gap: 8px;
-      margin: 18px 0;
-    }
-
-    .nav a {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 9px 10px;
-      color: var(--ink);
-      text-decoration: none;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: var(--panel);
-    }
-
-    .nav span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .content {
-      padding: 24px;
-      display: grid;
-      gap: 18px;
-      align-content: start;
-    }
-
-    .hero,
-    section {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
-      overflow: hidden;
-    }
-
-    .hero {
-      padding: 18px;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 260px;
-      gap: 18px;
-      align-items: start;
-    }
-
-    .hero h2 {
-      margin: 0 0 8px;
-      font-size: 24px;
-      line-height: 1.25;
-    }
-
-    .hero p {
-      margin: 0;
-      color: var(--muted);
-      max-width: 760px;
-    }
-
-    .live-box {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 12px;
-      background: #fbfcfd;
-      display: grid;
-      gap: 8px;
-    }
-
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 15px 18px;
-      border-bottom: 1px solid var(--line);
-      background: #fbfcfd;
-    }
-
-    .section-head h3 {
-      margin: 0;
-      font-size: 16px;
-    }
-
-    .section-head p {
-      margin: 3px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .section-body {
-      padding: 18px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      width: fit-content;
-      min-height: 26px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--soft);
-      color: var(--ink);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .pill.done,
-    .pill.completed,
-    .pill.approved {
-      background: var(--green-soft);
-      border-color: #b9dfcf;
-      color: var(--green);
-    }
-
-    .pill.active,
-    .pill.estimated,
-    .pill.generating,
-    .pill.pending {
-      background: var(--amber-soft);
-      border-color: #f2c9ad;
-      color: var(--amber);
-    }
-
-    .pill.blocked,
-    .pill.needs_retry,
-    .pill.retry,
-    .pill.discard {
-      background: var(--red-soft);
-      border-color: #f2b8b5;
-      color: var(--red);
-    }
-
-    .pill.not_started,
-    .pill.minor_edit {
-      background: var(--blue-soft);
-      border-color: #bdd5ef;
-      color: var(--blue);
-    }
-
-    .workflow {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(180px, 1fr));
-      gap: 12px;
-      overflow-x: auto;
-    }
-
-    .phase,
-    .job,
-    .asset,
-    .gate,
-    .activity {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-      padding: 12px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .phase h4,
-    .job h4,
-    .asset h4 {
-      margin: 0;
-      font-size: 14px;
-    }
-
-    .phase p,
-    .job p,
-    .asset p,
-    .gate p,
-    .activity p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .job-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .asset img {
-      width: 100%;
-      max-width: 120px;
-      aspect-ratio: 9 / 16;
-      object-fit: cover;
-      border-radius: 6px;
-      border: 1px solid var(--line);
-    }
-
-    .asset {
-      grid-template-columns: 120px minmax(0, 1fr);
-      align-items: start;
-    }
-
-    .kv {
-      display: grid;
-      grid-template-columns: 110px minmax(0, 1fr);
-      gap: 8px;
-      font-size: 12px;
-    }
-
-    .kv span:first-child {
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    .copy-box {
-      display: grid;
-      gap: 10px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 150px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 12px;
-      resize: vertical;
-      color: var(--ink);
-      background: #fbfcfd;
-      font: inherit;
-    }
-
-    button {
-      border: 1px solid #176149;
-      border-radius: 8px;
-      background: var(--green);
-      color: #fff;
-      min-height: 38px;
-      padding: 8px 12px;
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
-      width: fit-content;
-    }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .secondary-button {
-      border-color: var(--line);
-      background: #fff;
-      color: var(--ink);
-    }
-
-    .send-status {
-      color: var(--muted);
-      font-size: 12px;
-      margin: 0;
-    }
-
-    code {
-      color: #2c3440;
-      background: #f1f3f5;
-      padding: 2px 5px;
-      border-radius: 4px;
-      overflow-wrap: anywhere;
-    }
-
-    @media (max-width: 980px) {
-      .app,
-      .hero,
-      .workflow,
-      .grid-2,
-      .grid-3,
-      .job-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .rail {
-        position: static;
-        height: auto;
-      }
-
-      .asset {
-        grid-template-columns: 90px minmax(0, 1fr);
-      }
-
-      .asset img {
-        max-width: 90px;
-      }
-    }
-  </style>
+  <title>Generation Factory | Seedance Theater</title>
+  <link rel="stylesheet" href="factory-futuristic.css">
 </head>
 <body>
-  <div class="app">
-    <aside class="rail">
-      <h1>Live Workflow</h1>
-      <p>Codex state driven UI</p>
-      <nav class="nav" aria-label="Live workflow sections">
-        <a href="#status">状態 <span>Status</span></a>
-        <a href="#workflow">工程 <span>Workflow</span></a>
-        <a href="#assets">素材 <span>Assets</span></a>
-        <a href="#jobs">生成 <span>Jobs</span></a>
-        <a href="#gates">ゲート <span>Gates</span></a>
-        <a href="#activity">履歴 <span>Activity</span></a>
-      </nav>
-      <div class="live-box">
-        <strong>State file</strong>
-        <code>workspace/ui/state/generation-state.json</code>
-        <p id="loadStatus">読み込み中</p>
+  <div class="scanline" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="app-shell">
+    <aside class="left-rail" aria-label="Generation Factory navigation">
+      <div class="brand-lockup">
+        <span class="brand-mark"></span>
+        <div>
+          <h1>GENERATION FACTORY</h1>
+          <p>AI Video Production Studio</p>
+        </div>
       </div>
+      <nav class="rail-nav" aria-label="Factory sections">
+        <a href="live-workflow.html" class="active">Factory</a>
+        <a href="studio-lines.html">Studio Lines</a>
+        <a href="assets.html">Assets</a>
+        <a href="cast-library.html">Cast Library</a>
+        <a href="jobs.html">Jobs</a>
+        <a href="gates.html">Gates</a>
+        <a href="activity.html">Activity</a>
+      </nav>
+      <section class="rail-card">
+        <span class="eyebrow">State file</span>
+        <code>workspace/ui/state/generation-state.json</code>
+        <p id="loadStatus">connecting...</p>
+      </section>
+      <section class="rail-card compact">
+        <span class="eyebrow">Connection</span>
+        <strong id="connectionStatus">LOCAL ONLY</strong>
+        <p>No external generation executed</p>
+      </section>
     </aside>
 
-    <main class="content">
-      <div class="hero" id="status">
-        <div>
-          <h2 id="projectTitle">Seedance Workflow</h2>
-          <p id="operatorMessage">状態を読み込んでいます。</p>
+    <main class="factory-page" id="factory">
+      <header class="top-command-bar">
+        <div class="top-title">
+          <h2>GENERATION FACTORY</h2>
+          <p>AI Movie Generation Factory / Realtime Local Command Center</p>
         </div>
-        <div class="live-box">
-          <span class="pill" id="codexStatus">loading</span>
-          <div class="kv"><span>Active</span><span id="activeStage">-</span></div>
-          <div class="kv"><span>Updated</span><span id="updatedAt">-</span></div>
+        <div class="top-status-grid">
+          <div class="status-tile">
+            <span>System Time</span>
+            <strong id="systemTime">--:--:--</strong>
+            <small>JST</small>
+          </div>
+          <div class="status-tile live">
+            <span>Live Status</span>
+            <strong>ALL SYSTEMS OPERATIONAL</strong>
+            <small>local package mode</small>
+          </div>
+          <div class="status-tile">
+            <span>Queue Status</span>
+            <strong id="queueStatus">LOCKED</strong>
+            <small>human approval required</small>
+          </div>
         </div>
+        <div class="theater-lockup">
+          <h2>SEEDANCE THEATER</h2>
+          <p>Real-time Generation Command Center</p>
+        </div>
+      </header>
+
+      <div class="status-strip" id="statusStrip" aria-label="Safety status"></div>
+
+      <section class="metric-row" id="metricRow" aria-label="Generation metrics"></section>
+
+      <div class="dashboard-grid">
+        <aside class="side-stack left-stack" aria-label="Factory monitoring panels">
+          <section class="glass-panel" id="factoryOverviewPanel"></section>
+          <section class="glass-panel" id="systemMonitorPanel"></section>
+          <section class="glass-panel" id="marketFeedPanel"></section>
+          <section class="glass-panel" id="globalActivityPanel"></section>
+        </aside>
+
+        <section class="center-stage">
+          <article class="factory-floor-panel" aria-label="Live factory floor">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">LIVE FACTORY FLOOR</span>
+                <h3>SEEDANCE THEATER</h3>
+              </div>
+              <span class="live-badge"><i></i> LIVE</span>
+            </div>
+            <div class="factory-visual" id="factoryVisual">
+              <div class="beam beam-a"></div>
+              <div class="beam beam-b"></div>
+              <div class="holo-grid"></div>
+              <div class="depth-hall" aria-hidden="true">
+                <div class="ceiling-rig">
+                  <i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div class="machine-bay bay-left">
+                  <span></span><span></span><span></span>
+                </div>
+                <div class="machine-bay bay-mid">
+                  <span></span><span></span><span></span>
+                </div>
+                <div class="machine-bay bay-right">
+                  <span></span><span></span><span></span>
+                </div>
+                <div class="robot-arm arm-left">
+                  <i></i><b></b><em></em>
+                </div>
+                <div class="robot-arm arm-right">
+                  <i></i><b></b><em></em>
+                </div>
+                <div class="render-core">
+                  <span>LINE</span>
+                  <strong>04</strong>
+                  <small>render core</small>
+                </div>
+                <div class="floating-monitor monitor-a">
+                  <strong>#1287</strong>
+                  <span>76%</span>
+                </div>
+                <div class="floating-monitor monitor-b">
+                  <strong>VOICE</strong>
+                  <span>armed</span>
+                </div>
+                <div class="floating-monitor monitor-c">
+                  <strong>SUB</strong>
+                  <span>post</span>
+                </div>
+              </div>
+              <div class="studio-sign">
+                <span>SEEDANCE</span>
+                <span>THEATER</span>
+                <small>STUDIO LINE 04</small>
+              </div>
+              <div class="line-number">04</div>
+              <div class="conveyor-lane lane-a" id="conveyorLaneA"></div>
+              <div class="conveyor-lane lane-b" id="conveyorLaneB"></div>
+              <div class="conveyor-lane lane-c" id="conveyorLaneC"></div>
+            </div>
+          </article>
+
+          <section class="glass-panel pipeline-panel" id="pipeline">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">Production Pipeline</span>
+                <h3>Studio Line 04</h3>
+              </div>
+              <span class="thin-pill warning">Cost estimate active</span>
+            </div>
+            <div class="pipeline" id="productionPipeline"></div>
+          </section>
+
+          <section class="glass-panel outputs-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">Local Render Queue</span>
+                <h3>Planned Clips / Real State</h3>
+              </div>
+              <span class="thin-pill">state driven</span>
+            </div>
+            <div class="output-strip" id="recentOutputs"></div>
+          </section>
+
+          <section class="glass-panel inbox-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">Codex Inbox Bridge</span>
+                <h3>Next Terminal Instruction</h3>
+              </div>
+              <span class="thin-pill danger">No paid generation executed</span>
+            </div>
+            <textarea id="nextInstruction" readonly></textarea>
+            <div class="button-row">
+              <button id="sendInstruction" type="button">この内容をCodexに送信</button>
+              <button id="copyInstruction" class="ghost-button" type="button">指示をコピー</button>
+              <span id="sendStatus">未送信</span>
+            </div>
+          </section>
+        </section>
+
+        <aside class="side-stack right-stack" aria-label="Generation queue and active jobs">
+          <section class="glass-panel" id="generationQueuePanel"></section>
+          <section class="glass-panel" id="activeGenerationsPanel"></section>
+          <section class="glass-panel" id="systemPerformancePanel"></section>
+        </aside>
       </div>
 
-      <section>
-        <div class="section-head">
-          <div>
-            <h3>次のターミナル指示</h3>
-            <p>この文をターミナル側のCodexへ送ると、次の状態更新に進みます。</p>
-          </div>
+      <section class="terminal-dock" aria-label="Terminal log tape">
+        <div class="terminal-head">
+          <span>System Log</span>
+          <div class="terminal-ticker" id="terminalTicker"></div>
         </div>
-        <div class="section-body copy-box">
-          <textarea id="nextInstruction" readonly></textarea>
-          <div class="button-row">
-            <button id="sendInstruction">この内容をCodexに送信</button>
-            <button class="secondary-button" id="copyInstruction">指示をコピー</button>
-          </div>
-          <p class="send-status" id="sendStatus">未送信</p>
+        <div class="terminal-grid">
+          <pre id="terminalLog"></pre>
+          <div class="activity-panel" id="activity"></div>
         </div>
       </section>
 
-      <section id="workflow">
-        <div class="section-head">
-          <div>
-            <h3>工程</h3>
-            <p>Codexが状態ファイルを更新するたびにここが切り替わります。</p>
-          </div>
-        </div>
-        <div class="section-body">
-          <div class="workflow" id="workflowGrid"></div>
-        </div>
-      </section>
-
-      <section id="assets">
-        <div class="section-head">
-          <div>
-            <h3>素材</h3>
-            <p>生成に使う素材と、除外素材を確認します。</p>
-          </div>
-        </div>
-        <div class="section-body">
-          <div class="grid-3" id="assetSummary"></div>
-          <div class="grid-3" id="primaryCast" style="margin-top: 12px;"></div>
-        </div>
-      </section>
-
-      <section id="jobs">
-        <div class="section-head">
-          <div>
-            <h3>生成ジョブ</h3>
-            <p>Seedanceの各クリップの見積、結果URL、レビュー状態を追います。</p>
-          </div>
-        </div>
-        <div class="section-body">
-          <div class="job-grid" id="jobGrid"></div>
-        </div>
-      </section>
-
-      <section id="gates">
-        <div class="section-head">
-          <div>
-            <h3>停止ゲート</h3>
-            <p>有料生成、権利、広告公開などの停止条件です。</p>
-          </div>
-        </div>
-        <div class="section-body">
-          <div class="grid-2" id="gateGrid"></div>
-        </div>
-      </section>
-
-      <section id="activity">
-        <div class="section-head">
-          <div>
-            <h3>活動履歴</h3>
-            <p>Codexが裏で何を更新したかを残します。</p>
-          </div>
-        </div>
-        <div class="section-body">
-          <div class="grid-2" id="activityGrid"></div>
-        </div>
+      <section class="lower-data-grid" id="assets">
+        <article class="glass-panel" id="library"></article>
+        <article class="glass-panel" id="jobs"></article>
+        <article class="glass-panel" id="gates"></article>
       </section>
     </main>
   </div>
 
-  <script>
-    const statePath = "state/generation-state.json";
-
-    function cls(value) {
-      return String(value || "pending").replace(/[^a-zA-Z0-9_-]/g, "_");
-    }
-
-    function el(tag, className, html) {
-      const node = document.createElement(tag);
-      if (className) node.className = className;
-      if (html !== undefined) node.innerHTML = html;
-      return node;
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "").replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        "\"": "&quot;",
-        "'": "&#39;"
-      }[char]));
-    }
-
-    function render(state) {
-      document.getElementById("projectTitle").textContent = state.meta?.project || "Seedance Workflow";
-      document.getElementById("operatorMessage").textContent = state.meta?.operator_message || "";
-      document.getElementById("activeStage").textContent = state.meta?.active_stage || "-";
-      document.getElementById("updatedAt").textContent = state.meta?.updated_at || "-";
-      const codexStatus = document.getElementById("codexStatus");
-      codexStatus.textContent = state.meta?.codex_status || "unknown";
-      codexStatus.className = `pill ${cls(state.meta?.codex_status)}`;
-      document.getElementById("nextInstruction").value = state.meta?.next_terminal_instruction || "";
-
-      const workflowGrid = document.getElementById("workflowGrid");
-      workflowGrid.innerHTML = "";
-      (state.workflow || []).forEach((phase, index) => {
-        workflowGrid.appendChild(el("article", "phase", `
-          <span class="pill ${cls(phase.status)}">${escapeHtml(phase.status)}</span>
-          <h4>${String(index + 1).padStart(2, "0")}. ${escapeHtml(phase.label)}</h4>
-          <p>${escapeHtml(phase.note)}</p>
-          <div class="kv"><span>Owner</span><span>${escapeHtml(phase.owner)}</span></div>
-          <div class="kv"><span>Output</span><span>${escapeHtml(phase.output)}</span></div>
-        `));
-      });
-
-      const assetSummary = document.getElementById("assetSummary");
-      assetSummary.innerHTML = "";
-      const assets = state.assets || {};
-      [
-        ["Generated cast", assets.generated_cast_count ?? 0],
-        ["Source refs", assets.source_ref_count ?? 0],
-        ["Excluded", (assets.excluded || []).join(", ") || "none"]
-      ].forEach(([label, value]) => {
-        assetSummary.appendChild(el("article", "gate", `<p>${escapeHtml(label)}</p><h4>${escapeHtml(value)}</h4>`));
-      });
-
-      const primaryCast = document.getElementById("primaryCast");
-      primaryCast.innerHTML = "";
-      (assets.primary_cast || []).forEach(asset => {
-        const imgPath = "../../" + asset.path;
-        primaryCast.appendChild(el("article", "asset", `
-          <img src="${escapeHtml(imgPath)}" alt="${escapeHtml(asset.name)}">
-          <div>
-            <h4>${escapeHtml(asset.name)}</h4>
-            <p>${escapeHtml(asset.id)}</p>
-            <p>${escapeHtml(asset.role)}</p>
-          </div>
-        `));
-      });
-
-      const jobGrid = document.getElementById("jobGrid");
-      jobGrid.innerHTML = "";
-      (state.jobs || []).forEach(job => {
-        jobGrid.appendChild(el("article", "job", `
-          <span class="pill ${cls(job.status)}">${escapeHtml(job.status)}</span>
-          <h4>${escapeHtml(job.title)}</h4>
-          <p>${escapeHtml(job.note)}</p>
-          <div class="kv"><span>Reference</span><span>${escapeHtml(job.primary_reference)}</span></div>
-          <div class="kv"><span>Credits</span><span>${escapeHtml(job.cost_credits || "-")}</span></div>
-          <div class="kv"><span>Result</span><span>${job.result_url ? `<a href="${escapeHtml(job.result_url)}">${escapeHtml(job.result_url)}</a>` : "-"}</span></div>
-          <div class="kv"><span>Review</span><span><span class="pill ${cls(job.review)}">${escapeHtml(job.review)}</span></span></div>
-          <div class="kv"><span>Retry</span><span>${escapeHtml(job.retry_reason || "-")}</span></div>
-        `));
-      });
-
-      const gateGrid = document.getElementById("gateGrid");
-      gateGrid.innerHTML = "";
-      (state.gates || []).forEach(gate => {
-        gateGrid.appendChild(el("article", "gate", `
-          <span class="pill ${cls(gate.status)}">${escapeHtml(gate.status)}</span>
-          <h4>${escapeHtml(gate.label)}</h4>
-          <p>${escapeHtml(gate.id)}</p>
-        `));
-      });
-
-      const activityGrid = document.getElementById("activityGrid");
-      activityGrid.innerHTML = "";
-      (state.activity || []).slice().reverse().forEach(item => {
-        activityGrid.appendChild(el("article", "activity", `
-          <h4>${escapeHtml(item.actor || "System")}</h4>
-          <p>${escapeHtml(item.time || "")}</p>
-          <p>${escapeHtml(item.event || "")}</p>
-        `));
-      });
-    }
-
-    async function loadState() {
-      const loadStatus = document.getElementById("loadStatus");
-      try {
-        const response = await fetch(`${statePath}?t=${Date.now()}`, { cache: "no-store" });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const state = await response.json();
-        render(state);
-        loadStatus.textContent = "live: " + new Date().toLocaleTimeString();
-      } catch (error) {
-        loadStatus.textContent = "state load failed: " + error.message;
-      }
-    }
-
-    document.getElementById("copyInstruction").addEventListener("click", async () => {
-      const text = document.getElementById("nextInstruction").value;
-      await navigator.clipboard.writeText(text);
-    });
-
-    document.getElementById("sendInstruction").addEventListener("click", async () => {
-      const status = document.getElementById("sendStatus");
-      const message = document.getElementById("nextInstruction").value.trim();
-      if (!message) {
-        status.textContent = "送信する指示がありません。";
-        return;
-      }
-      status.textContent = "Codex inboxへ送信中...";
-      try {
-        const response = await fetch("/api/send-to-codex", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            source: "live-workflow-ui",
-            message
-          })
-        });
-        const result = await response.json();
-        if (!response.ok || !result.ok) throw new Error(result.message || `HTTP ${response.status}`);
-        status.textContent = `送信済み: ${result.queued_at}`;
-        await loadState();
-      } catch (error) {
-        status.textContent = "送信失敗: " + error.message;
-      }
-    });
-
-    loadState();
-    setInterval(loadState, 2500);
-  </script>
+  <script src="factory-futuristic.js"></script>
 </body>
 </html>

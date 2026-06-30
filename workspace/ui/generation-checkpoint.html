@@ -722,7 +722,7 @@
       <div class="hero" id="overview">
         <div class="page-title">
           <h2>この素材を元に生成します。内容を確認してください。</h2>
-          <p>生成済みキャスト、ユーザー提供source refs、60秒台本、ElevenLabs音声、後付け字幕の方針をここでロックします。すべての確認が終わるまで生成ボタンは準備完了になりません。</p>
+          <p>生成済みキャスト、UI/Codex操作ソース、60秒台本、ElevenLabs音声、後付け字幕の方針をここでロックします。すべての確認が終わるまで生成ボタンは準備完了になりません。</p>
         </div>
         <div class="status-panel">
           <div>
@@ -731,8 +731,8 @@
           </div>
           <div class="pill-row">
             <span class="pill ok">17 generated cast</span>
-            <span class="pill warn">2 source refs</span>
-            <span class="pill stop">金髪男性は除外</span>
+            <span class="pill ok">0 source refs</span>
+            <span class="pill stop">支給人物画像は削除済み</span>
           </div>
         </div>
       </div>
@@ -751,7 +751,7 @@
             <span class="pill ok">Higgsfield ElevenLabs</span>
             <span class="pill ok">字幕は後編集</span>
             <span class="pill ok">1クリップ1主参照</span>
-            <span class="pill warn">source refsは権利確認前</span>
+            <span class="pill ok">source refsは未使用</span>
             <span class="pill stop">広告公開は別承認</span>
           </div>
         </div>
@@ -771,8 +771,8 @@
             <div class="handoff">
               <strong>生成に進む条件</strong>
               <code>チェックが全てOK
-source refsの扱い確認
-金髪男性ガイド除外
+source refs未使用確認
+支給人物画像の除外確認
 Higgsfield cost estimate確認
 人間の明示承認</code>
             </div>
@@ -791,7 +791,7 @@ Subtitles = post-production telop</code>
         <div class="section-head">
           <div>
             <h3>使用予定キャスト</h3>
-            <p>生成済みキャストはfictional actorsとして利用。source refsは内部ドラフトのみ。</p>
+            <p>生成済みキャストはfictional actorsとして利用。支給人物画像は削除済みで使用しません。</p>
           </div>
           <span class="pill ok">画像込み</span>
         </div>
@@ -834,7 +834,7 @@ Subtitles = post-production telop</code>
           <div class="steps">
             <div class="step">
               <strong>1. 素材確認</strong>
-              <p>generated castを選び、source refsは権利状態を確認。金髪男性は選択しない。</p>
+              <p>generated castを選び、削除済みの支給人物画像を混ぜない。</p>
             </div>
             <div class="step">
               <strong>2. 台本ロック</strong>
@@ -936,9 +936,7 @@ Subtitles = post-production telop</code>
       ["cast_m_ordinary_01", "Daichi Suzuki", "office worker / customer", "generated", "../assets/cast/generated_20260629/cast_m_ordinary_01.png"],
       ["cast_m_ordinary_02", "Toru Yamamoto", "father / salaryman / trust actor", "generated", "../assets/cast/generated_20260629/cast_m_ordinary_02.png"],
       ["cast_m_ordinary_03", "Kenji Mori", "shop owner / local guide", "generated", "../assets/cast/generated_20260629/cast_m_ordinary_03.png"],
-      ["cast_m_ordinary_04", "Sota Ito", "student / younger friend", "generated", "../assets/cast/generated_20260629/cast_m_ordinary_04.png"],
-      ["source_blond_woman_01", "Source Woman 01", "source ref / internal draft only", "source", "../assets/cast/source_refs_20260629/source_blond_woman_01.jpeg"],
-      ["source_black_hair_red_top_01", "Source Woman 02", "source ref / internal draft only", "source", "../assets/cast/source_refs_20260629/source_black_hair_red_top_01.jpeg"]
+      ["cast_m_ordinary_04", "Sota Ito", "student / younger friend", "generated", "../assets/cast/generated_20260629/cast_m_ordinary_04.png"]
     ];
 
     const scriptBeats = [
@@ -955,7 +953,7 @@ Subtitles = post-production telop</code>
     ];
 
     const workflowPhases = [
-      ["01", "素材", "generated cast 17人とsource refs 2枚を確認。除外素材を混ぜない。", "cast manifest / source manifest", "done"],
+      ["01", "素材", "generated cast 17人とsource capturesを確認。アクティブ素材だけを使う。", "cast manifest / asset library", "done"],
       ["02", "配役", "主役、共演、証言役、案内役、カメオを台本へ割り当てる。", "cast assignment", "done"],
       ["03", "台本", "60秒を10ビートに分解し、セリフとテロップを固定する。", "storyboard script", "done"],
       ["04", "見積", "Seedance生成前にモデル、尺、解像度、費用を確認する。", "cost estimate", "active"],
@@ -973,14 +971,14 @@ Subtitles = post-production telop</code>
     ];
 
     const checks = [
-      ["assets", "素材確認", "generated cast 17人を使用。source refsは内部ドラフト扱い。"],
-      ["removed", "除外確認", "最初の金髪男性ガイドは使用しない。"],
+      ["assets", "素材確認", "generated cast 17人とsource capturesを使用。アクティブ素材だけを使う。"],
+      ["blocked", "ブロック確認", "blocked source recordsは生成・公開素材に混ぜない。"],
       ["script", "台本確認", "60秒台本と10個のテロップを確認済み。"],
       ["references", "主参照確認", "Seedanceは1クリップ1主参照で進める。"],
       ["visualOnly", "映像のみ", "Seedanceでは音声・字幕を生成しない。"],
       ["voice", "音声方針", "日本語ナレーションはHiggsfield ElevenLabsで生成する。"],
       ["subtitles", "字幕方針", "字幕/テロップは後編集で入れる。"],
-      ["rights", "権利確認", "source refsと広告本番利用は人間確認を通す。"],
+      ["rights", "権利確認", "広告本番利用は人間確認を通す。"],
       ["cost", "費用確認", "生成前にHiggsfieldのcost estimateを確認する。"],
       ["approval", "実行承認", "この内容で生成に進む人間承認を取る。"]
     ];

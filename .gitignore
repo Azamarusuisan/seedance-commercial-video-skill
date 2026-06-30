@@ -25,3 +25,5 @@ workspace/assets/cast/**/*.webp
 node_modules/
 playwright-report/
 test-results/
+videos/**/x-reference-*.png
+dist/

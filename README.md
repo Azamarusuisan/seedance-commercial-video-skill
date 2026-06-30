@@ -16,6 +16,7 @@ Higgsfield / Seedance short-video production skill and MCP-first workflow packag
 - `references/public-demand-short-video-patterns.md`
 - `references/tiktok-ad-ops-workflow.md`
 - `references/hermes-autonomous-loop.md`
+- `references/blender-3d-preview-workflow.md`
 - `skills/seedance/references/seedance-cm-workflow.md`
 - `skills/seedance/references/image-to-video-handoff.md`
 - `skills/seedance/references/tiktok-story-cast-workflow.md`
@@ -23,6 +24,7 @@ Higgsfield / Seedance short-video production skill and MCP-first workflow packag
 - `skills/seedance/references/public-demand-short-video-patterns.md`
 - `skills/seedance/references/tiktok-ad-ops-workflow.md`
 - `skills/seedance/references/hermes-autonomous-loop.md`
+- `skills/seedance/references/blender-3d-preview-workflow.md`
 
 ## Cross-Agent Operation
 
@@ -55,9 +57,21 @@ TikTok風の物語動画や劇団型のキャスト運用では、`workspace/ass
 
 60秒の物語動画は、生成前に `workspace/prompts/tiktok-storyboard-60s-template.md` を使って8〜12コマの台本を作り、映像・セリフ・字幕・素材・次の展開理由を固定してから4本前後のSeedanceプロンプトへ分解します。外部のX投稿やHIGGSFIELDMCP-demoは `references/higgsfield-mcp-demo-patterns.md` に制作パターンとして記録し、素材そのものは権利確認なしに最終物へ使いません。
 
-生成前の人間確認には `workspace/ui/generation-checkpoint.html` を開きます。現在のキャスト素材、source refs、60秒台本、Seedance visual-only、Higgsfield ElevenLabs音声、後付け字幕、除外素材、権利確認をワークフローUIでチェックし、確認サマリーをコピーしてから費用見積もりと生成へ進みます。生成後は同じUIにresult URL、使用クレジット、OK/NG、再生成理由、編集対応メモを残します。
+生成前の人間確認には `workspace/ui/generation-checkpoint.html` を開きます。現在のキャスト素材、source captures、60秒台本、Seedance visual-only、Higgsfield ElevenLabs音声、後付け字幕、権利確認をワークフローUIでチェックし、確認サマリーをコピーしてから費用見積もりと生成へ進みます。生成後は同じUIにresult URL、使用クレジット、OK/NG、再生成理由、編集対応メモを残します。
 
-ターミナル指示に応じてCodexが裏で状態を更新し、それをUIに反映するライブ運用では `workspace/ui/live-workflow.html` を使います。`bash workspace/scripts/serve-ui.sh` でローカルサーバーを起動し、Codexは `workspace/ui/state/generation-state.json` を更新します。ブラウザは数秒ごとに状態を読み直すため、ターミナルでの指示、生成見積、result URL、レビュー判断が画面に反映されます。UIの「この内容をCodexに送信」ボタンはローカルの `/api/send-to-codex` に送信し、ターミナルログと `workspace/ui/state/codex-inbox.jsonl` に指示を残します。
+ターミナル指示に応じてCodexが裏で状態を更新し、それをUIに反映するライブ運用では `workspace/ui/live-workflow.html` を使います。`bash workspace/scripts/serve-ui.sh` でPC上に `127.0.0.1` 限定のローカルサーバーを起動し、Codexは `workspace/ui/state/generation-state.json` と `workspace/ui/state/asset-library.json` を更新します。ブラウザは `/api/factory-data` から、状態JSON、素材ライブラリ、Codex inbox、素材フォルダ、source captures、生成結果フォルダ、Blender有無の実データを読みます。UIの「この内容をCodexに送信」ボタンはローカルの `/api/send-to-codex` に送信し、ターミナルログと `workspace/ui/state/codex-inbox.jsonl` に指示を残します。工場風の表示では、AIの作業場を人間が覗くように、素材、台本、生成キュー、音声、字幕、レビューを1本の生成ラインとして確認できます。
+
+Factory UIは個別ページも持ちます。`studio-lines.html`、`assets.html`、`cast-library.html`、`jobs.html`、`gates.html`、`activity.html` はすべて `/api/factory-data` を読み、ページごとに「意図」「実データ」「次の判断」を表示します。
+
+Blender/3D previewを使う場合は `references/blender-3d-preview-workflow.md` を参照します。Blenderはローカル処理だけに使い、有料生成や外部投稿とは切り離します。
+
+ローカル配布パッケージを作る場合は次を実行します。
+
+```bash
+bash workspace/scripts/package-local-factory.sh
+```
+
+生成されるZIPは `dist/seedance-local-factory-*.zip` に保存されます。デフォルトでは外部参照スクリーンショットと個人のCodex inboxログは含めません。inboxログも含めたい場合だけ `INCLUDE_INBOX=1 bash workspace/scripts/package-local-factory.sh` を使います。
 
 市場・TikTok・UGC寄せの動画では、`references/public-demand-short-video-patterns.md` を使って、2秒フック、15秒商品広告、同一人物の旅Vlog、UGC広告バッチ、Virality Predictor後検証の型を先に選びます。公開投稿は需要シグナルとして分析し、映像素材そのものは権利確認なしに最終物へ使いません。
 

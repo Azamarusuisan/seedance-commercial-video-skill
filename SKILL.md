@@ -21,6 +21,8 @@ When the user asks for TikTok Ads, Spark Ads, Non-Spark Ads, ad review, Pixel, E
 
 When the user asks Hermes to run autonomously, keep iterating, run many variants, manage paid generation loops, or operate ad/launch tasks with permission, read `references/hermes-autonomous-loop.md` before executing. Autonomous execution requires a run-permission manifest with scope, caps, allowed actions, stop conditions, and logging.
 
+When the user asks to use Blender, GLB/OBJ/3D assets, local 3D previews, 3D factory floors, camera paths, lighting/material checks, or Blender-rendered plates before Seedance/Higgsfield generation, read `references/blender-3d-preview-workflow.md`. Blender work is local-only and must not trigger paid generation or external publishing.
+
 ## Supported Use Cases
 
 Choose the closest use case before writing prompts:

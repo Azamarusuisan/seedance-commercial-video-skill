@@ -28,8 +28,8 @@ Format:
 - Trust adults: `cast_f_ordinary_03` Maki Shimizu, `cast_m_ordinary_02` Toru Yamamoto
 - Premium adults: `cast_f_beauty_04` Sara Okamoto, `cast_m_handsome_02` Sho Kameda
 - Everyday crowd/cameos: `cast_f_beauty_01`, `cast_f_ordinary_02`, `cast_m_ordinary_01`
-- Source-only references: `source_blond_woman_01`, `source_black_hair_red_top_01` may be used for internal drafts only after checking `workspace/assets/cast/source_refs_20260629/source-manifest.json`
-- Excluded: the first blond male guide is not part of this script or active cast library
+- Source-only references: none active. Removed source references are not part of this script or active cast library.
+- Excluded: previously removed guide/source references are not part of this script or active cast library.
 
 ## 60s Storyboard
 

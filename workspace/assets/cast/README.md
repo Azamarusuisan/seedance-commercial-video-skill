@@ -30,13 +30,11 @@ workspace/assets/cast/generated_20260629/
 
 workspace/assets/cast/source_refs_20260629/
   source-manifest.json
-  source_blond_woman_01.jpeg
-  source_black_hair_red_top_01.jpeg
 ```
 
 Use `generated_20260629/cast-manifest.json` when writing TikTok story scripts or Seedance prompts that need a theater-like cast. The images in that folder are intentionally committed even though cast images are normally ignored.
 
-The first blond male guide has been intentionally removed from active cast/source use. Do not add it back as a default guide unless the user explicitly re-approves it.
+Previously removed guide/source references are intentionally excluded from active cast/source use. Do not add them back as default guides or source references unless the user explicitly re-approves them.
 
 Important:
 

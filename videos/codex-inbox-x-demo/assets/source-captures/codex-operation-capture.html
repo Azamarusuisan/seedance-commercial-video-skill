@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codex Operation Capture</title>
+  <style>
+    :root {
+      --bg: #0e1116;
+      --panel: #151a21;
+      --panel-2: #1c232c;
+      --ink: #eef3f8;
+      --muted: #9aa8b7;
+      --line: #33404d;
+      --green: #36d399;
+      --lime: #b9ff42;
+      --amber: #f0b35a;
+      --blue: #7cc4ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      width: 1080px;
+      min-height: 1920px;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(185, 255, 66, 0.20), rgba(185, 255, 66, 0) 26%),
+        radial-gradient(circle at 86% 80%, rgba(124, 196, 255, 0.18), rgba(124, 196, 255, 0) 30%),
+        linear-gradient(180deg, #0e1116 0%, #11171d 100%);
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      letter-spacing: 0;
+    }
+
+    .frame {
+      width: 100%;
+      min-height: 1920px;
+      padding: 72px 64px;
+      display: grid;
+      align-content: start;
+      gap: 34px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      padding: 12px 18px;
+      border: 1px solid rgba(185, 255, 66, 0.55);
+      border-radius: 999px;
+      color: var(--lime);
+      background: rgba(185, 255, 66, 0.08);
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 930px;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      font-size: 72px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin: -12px 0 0;
+      max-width: 860px;
+      color: var(--muted);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      font-size: 30px;
+      line-height: 1.5;
+    }
+
+    .terminal {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(21, 26, 33, 0.92);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.44);
+    }
+
+    .topbar {
+      height: 62px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 24px;
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: #ff5f57;
+    }
+
+    .dot:nth-child(2) {
+      background: #febc2e;
+    }
+
+    .dot:nth-child(3) {
+      background: #28c840;
+    }
+
+    .title {
+      margin-left: 14px;
+      color: var(--muted);
+      font-size: 20px;
+    }
+
+    pre {
+      margin: 0;
+      padding: 28px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 25px;
+      line-height: 1.48;
+    }
+
+    .prompt {
+      color: var(--green);
+    }
+
+    .cmd {
+      color: var(--ink);
+    }
+
+    .url {
+      color: var(--blue);
+    }
+
+    .ok {
+      color: var(--lime);
+    }
+
+    .warn {
+      color: var(--amber);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      min-height: 170px;
+      padding: 22px;
+      border: 1px solid rgba(124, 196, 255, 0.24);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .card strong {
+      display: block;
+      margin-bottom: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      font-size: 28px;
+    }
+
+    .card span {
+      color: var(--muted);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      font-size: 23px;
+      line-height: 1.45;
+    }
+
+    .ghost {
+      position: absolute;
+      right: 40px;
+      bottom: 26px;
+      color: rgba(255, 255, 255, 0.06);
+      font-size: 148px;
+      font-weight: 900;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="frame">
+    <div class="eyebrow">SOURCE CAPTURE / CODEX</div>
+    <h1>UIのボタンからCodexへ指示が届く</h1>
+    <p class="lead">X投稿用の説明動画で使う、Codex操作画面の素材。実際の送信ログを見せて、裏側で何が起きているかを短く伝える。</p>
+
+    <section class="terminal">
+      <div class="topbar">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="title">Codex terminal / seedance-commercial-video-skill</span>
+      </div>
+      <pre><span class="prompt">zettai@ZettAInoMac-mini</span> <span class="cmd">seedance-commercial-video-skill % bash workspace/scripts/serve-ui.sh</span>
+Seedance live workflow UI:
+  <span class="url">http://127.0.0.1:8787/workspace/ui/live-workflow.html</span>
+Codex inbox endpoint:
+  <span class="url">http://127.0.0.1:8787/api/send-to-codex</span>
+
+========================================================================
+<span class="ok">[Codex inbox] instruction received</span>
+time: 2026-06-30T16:27:41+09:00
+source: live-workflow-ui
+------------------------------------------------------------------------
+HiggsfieldのSeedance 4本分の費用見積もりを出して、
+UIのjobsをestimatedに更新してください。
+まだ生成はしないでください。
+========================================================================
+
+127.0.0.1 - - "POST /api/send-to-codex HTTP/1.1" <span class="ok">200</span>
+127.0.0.1 - - "GET /workspace/ui/state/generation-state.json" <span class="ok">200</span></pre>
+    </section>
+
+    <section class="cards">
+      <div class="card">
+        <strong>1. UIで確認</strong>
+        <span>素材、台本、生成前チェック、ジョブ状態を同じ画面で見る。</span>
+      </div>
+      <div class="card">
+        <strong>2. Codexへ送信</strong>
+        <span>ボタンで指示をローカルinboxへ送り、ターミナルに表示。</span>
+      </div>
+      <div class="card">
+        <strong>3. 状態を更新</strong>
+        <span>generation-state.jsonを更新して、UIが数秒ごとに反映。</span>
+      </div>
+      <div class="card">
+        <strong>4. 次の生成へ</strong>
+        <span>費用見積、生成、音声、字幕、レビューまで同じ流れで進める。</span>
+      </div>
+    </section>
+    <div class="ghost">CODEX</div>
+  </main>
+</body>
+</html>

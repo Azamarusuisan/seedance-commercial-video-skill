@@ -1,7 +1,7 @@
 {
   "name": "user_supplied_source_refs_20260629",
   "updated_at": "2026-06-29",
-  "notes": "User-supplied source references saved for internal drafting. The initial blond male guide is intentionally excluded from this folder and should not be used as a default cast member.",
+  "notes": "User-supplied source references were removed from this folder on 2026-06-30. Do not use removed guide/source references as active cast/source material.",
   "default_policy": {
     "rights_status": "unknown",
     "use_scope": "internal draft only until the user/client confirms rights for publication and advertising",
@@ -9,28 +9,19 @@
   },
   "excluded_assets": [
     {
-      "id": "removed_blond_male_guide",
-      "reason": "User requested removal of the first blond male guide from the active cast/source library."
-    }
-  ],
-  "source_refs": [
-    {
-      "id": "source_blond_woman_01",
-      "role": "source_character",
-      "asset_path": "workspace/assets/cast/source_refs_20260629/source_blond_woman_01.jpeg",
-      "rights_status": "unknown",
-      "use_scope": "internal draft only until rights are confirmed",
-      "prompt_identity": "user-supplied blonde woman source reference",
-      "notes": "Rights-sensitive source. Do not publish or use commercially without confirmation."
+      "id": "removed_guide_ref_01",
+      "reason": "User requested removal from the active cast/source library."
     },
     {
-      "id": "source_black_hair_red_top_01",
-      "role": "source_character",
-      "asset_path": "workspace/assets/cast/source_refs_20260629/source_black_hair_red_top_01.jpeg",
-      "rights_status": "unknown",
-      "use_scope": "internal draft only until rights are confirmed",
-      "prompt_identity": "user-supplied black-haired woman source reference wearing a red top",
-      "notes": "Rights-sensitive source. Do not publish or use commercially without confirmation."
+      "id": "excluded_ref_01",
+      "original_path": "workspace/assets/cast/source_refs_20260629/excluded_ref_01.jpeg",
+      "reason": "User requested removal from the asset library."
+    },
+    {
+      "id": "excluded_ref_02",
+      "original_path": "workspace/assets/cast/source_refs_20260629/excluded_ref_02.jpeg",
+      "reason": "User requested removal from the asset library."
     }
-  ]
+  ],
+  "source_refs": []
 }

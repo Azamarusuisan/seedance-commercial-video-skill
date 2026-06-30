@@ -1,11 +1,21 @@
 {
   "meta": {
     "project": "Seedance Theater Cast 60s",
-    "updated_at": "2026-06-30 00:00 JST",
+    "updated_at": "2026-06-30 17:08 JST",
     "active_stage": "cost_estimate",
-    "codex_status": "waiting_for_terminal_instruction",
-    "operator_message": "素材、台本、生成前チェックは準備済み。次はHiggsfieldの費用見積もりと生成承認。",
-    "next_terminal_instruction": "HiggsfieldのSeedance 4本分の費用見積もりを出して、UIのjobsをestimatedに更新してください。まだ生成はしないでください。"
+    "codex_status": "terminal_instruction_received",
+    "operator_message": "AI Movie Generation Factoryの管制室。Seedance / Higgsfield / ElevenLabs / subtitle post edit を、ローカル状態だけで高速稼働しているように可視化します。",
+    "next_terminal_instruction": "HiggsfieldのSeedance 4本分の費用見積もりを出して、UIのjobsをestimatedに更新してください。まだ生成はしないでください。",
+    "last_sent_to_codex_at": "2026-06-30T16:45:53+09:00",
+    "last_sent_to_codex_message": "X投稿用デモ。生成工場UIの送信導線を確認してください。実生成はまだしないでください。"
+  },
+  "current_work": {
+    "title": "近未来Factory UI実装",
+    "summary": "ローカル状態を読みながら、生成工場・映画スタジオ・トレーダー端末が合体したUIへ全面リデザインしています。",
+    "owner": "Codex",
+    "input": "workspace/ui/state/*.json / asset-library / cast manifest",
+    "output": "futuristic live-workflow UI / local-only dashboard",
+    "status_text": "有料生成・投稿公開は止めたまま、UI表示のみ更新中"
   },
   "workflow": [
     {
@@ -13,8 +23,8 @@
       "label": "素材",
       "status": "done",
       "owner": "Codex",
-      "output": "generated_20260629 cast + source refs",
-      "note": "17 generated cast and 2 source refs registered. Removed blond male guide excluded."
+      "output": "generated_20260629 cast + source captures",
+      "note": "17 generated cast, UI captures, and Codex operation sources are registered."
     },
     {
       "id": "script",
@@ -75,9 +85,11 @@
   ],
   "assets": {
     "generated_cast_count": 17,
-    "source_ref_count": 2,
+    "source_ref_count": 0,
     "excluded": [
-      "first blond male guide"
+      "legacy guide ref",
+      "blocked external source ref 01",
+      "blocked external source ref 02"
     ],
     "primary_cast": [
       {
@@ -189,6 +201,16 @@
       "time": "2026-06-30 00:00 JST",
       "actor": "Codex",
       "event": "Live workflow state initialized."
+    },
+    {
+      "time": "2026-06-30 16:45 JST",
+      "actor": "Codex",
+      "event": "Added asset library view and switched the UI into local factory-server mode."
+    },
+    {
+      "time": "2026-06-30T16:45:53+09:00",
+      "actor": "factory-ui-demo",
+      "event": "Sent instruction to Codex inbox."
     }
   ]
 }
