@@ -204,6 +204,15 @@ function jobMediaHtml(job, className = "") {
   return image ? `<img class="${escapeHtml(className)}" src="${escapeHtml(toProjectPath(image))}" alt="${escapeHtml(job.title || job.id)}">` : "";
 }
 
+function queueMediaHtml(job) {
+  if (job?.local_path) {
+    const src = toProjectPath(job.local_path);
+    return `<video src="${escapeHtml(src)}" muted playsinline preload="metadata"></video>`;
+  }
+  const image = jobReviewImage(job);
+  return image ? `<img src="${escapeHtml(toProjectPath(image))}" alt="${escapeHtml(job.title || job.id)}">` : "";
+}
+
 function videoActionsHtml(src, label) {
   const cleanSrc = escapeHtml(src);
   const filename = String(label || "seedance-video").replace(/[^a-zA-Z0-9_-]+/g, "_").toLowerCase() + ".mp4";
@@ -272,14 +281,17 @@ function renderMetrics() {
   const jobs = appState.state.jobs || [];
   const credits = estimatedCredits(jobs);
   const blocked = counts.blocked_gates ?? (appState.state.gates || []).filter(gate => gate.status === "blocked").length;
+  const phase = String(appState.state.current_work?.title || appState.state.meta?.active_stage || "待機中")
+    .replace("Workflow locked: ", "")
+    .replace("Blenderプリビズ肉付けレビュー", "肉付けレビュー");
   const metrics = [
-    ["現在工程", appState.state.current_work?.title || appState.state.meta?.active_stage || "待機中", "generation-state.json"],
+    ["現在工程", phase, "generation-state.json"],
     ["予定ジョブ", counts.jobs ?? jobs.length, "state.jobs.length"],
     ["見積クレジット", credits === null ? "未見積" : credits.toFixed(1), "jobs[].cost_credits"],
     ["MCP要求", counts.higgsfield_mcp_requests ?? 0, "workspace/mcp-requests"],
     ["Blender画面", counts.blender_screen_captures ?? counts.blender_live_frames ?? counts.blender_renders ?? 0, "workspace/assets/3d/live"],
     ["演者素材", counts.generated_cast_files ?? appState.state.assets?.generated_cast_count ?? 0, "cast manifest"],
-    ["承認ゲート", `${blocked}件停止中`, "人間承認必須"],
+    ["承認ゲート", `${blocked}停止`, "人間承認必須"],
   ];
   const row = document.getElementById("metricRow");
   row.innerHTML = metrics.map(([label, value, note]) => `
@@ -549,7 +561,7 @@ function renderRecentOutputs() {
     const progress = statusProgress(job.status);
     return `
       <article class="output-card">
-        <div class="output-thumb">${jobMediaHtml(job)}</div>
+        <div class="output-thumb">${queueMediaHtml(job)}</div>
         <div class="output-body">
           <strong>${escapeHtml(displayText(job.title || job.id))}</strong>
           <span>${escapeHtml(job.id || `clip_${index + 1}`)} / ${escapeHtml(statusJa(job.status))} / ${job.local_path ? "MP4保存済み" : `${beatsForJob(job).length}ビート連動`}</span>
@@ -1036,6 +1048,12 @@ document.getElementById("copyInstruction").addEventListener("click", async () =>
 });
 
 document.getElementById("sendInstruction").addEventListener("click", sendInstruction);
+document.getElementById("lowerDataToggle")?.addEventListener("click", event => {
+  const section = document.getElementById("lowerDataSection");
+  const collapsed = section?.classList.toggle("collapsed");
+  event.currentTarget.setAttribute("aria-expanded", String(!collapsed));
+  event.currentTarget.querySelector("strong").textContent = collapsed ? "開く" : "閉じる";
+});
 document.addEventListener("click", event => {
   const button = event.target.closest("[data-video-action='fullscreen']");
   if (!button) return;
