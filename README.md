@@ -55,7 +55,7 @@ TikTok風の物語動画や劇団型のキャスト運用では、`workspace/ass
 
 60秒の物語動画は、生成前に `workspace/prompts/tiktok-storyboard-60s-template.md` を使って8〜12コマの台本を作り、映像・セリフ・字幕・素材・次の展開理由を固定してから4本前後のSeedanceプロンプトへ分解します。外部のX投稿やHIGGSFIELDMCP-demoは `references/higgsfield-mcp-demo-patterns.md` に制作パターンとして記録し、素材そのものは権利確認なしに最終物へ使いません。
 
-生成前の人間確認には `workspace/ui/generation-checkpoint.html` を開きます。現在のキャスト素材、source refs、60秒台本、Seedance visual-only、Higgsfield ElevenLabs音声、後付け字幕、除外素材、権利確認をワークフローUIでチェックし、確認サマリーをコピーしてから費用見積もりと生成へ進みます。
+生成前の人間確認には `workspace/ui/generation-checkpoint.html` を開きます。現在のキャスト素材、source refs、60秒台本、Seedance visual-only、Higgsfield ElevenLabs音声、後付け字幕、除外素材、権利確認をワークフローUIでチェックし、確認サマリーをコピーしてから費用見積もりと生成へ進みます。生成後は同じUIにresult URL、使用クレジット、OK/NG、再生成理由、編集対応メモを残します。
 
 市場・TikTok・UGC寄せの動画では、`references/public-demand-short-video-patterns.md` を使って、2秒フック、15秒商品広告、同一人物の旅Vlog、UGC広告バッチ、Virality Predictor後検証の型を先に選びます。公開投稿は需要シグナルとして分析し、映像素材そのものは権利確認なしに最終物へ使いません。
 

@@ -372,6 +372,101 @@
       overflow-wrap: anywhere;
     }
 
+    .job-grid,
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .job-card,
+    .review-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      display: grid;
+      gap: 10px;
+    }
+
+    .job-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .job-title strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .job-title span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .field {
+      display: grid;
+      gap: 4px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 7px 8px;
+      background: #fbfcfd;
+      color: var(--ink);
+      width: 100%;
+    }
+
+    .field textarea {
+      min-height: 68px;
+      resize: vertical;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
     .asset {
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -581,6 +676,10 @@
       .steps,
       .workflow-board,
       .handoff-grid,
+      .job-grid,
+      .review-grid,
+      .field-grid,
+      .metrics,
       .checklist {
         grid-template-columns: 1fr;
       }
@@ -611,6 +710,8 @@
         <a href="#assets">素材 <span>Assets</span></a>
         <a href="#script">台本 <span>Script</span></a>
         <a href="#flow">生成フロー <span>Flow</span></a>
+        <a href="#jobs">生成 <span>Jobs</span></a>
+        <a href="#review">レビュー <span>Review</span></a>
         <a href="#approval">確認 <span>Approval</span></a>
       </nav>
 
@@ -751,6 +852,50 @@ Subtitles = post-production telop</code>
         </div>
       </section>
 
+      <section id="jobs">
+        <div class="section-head">
+          <div>
+            <h3>生成ジョブ管理</h3>
+            <p>4本のSeedanceクリップごとに、見積・生成状況・result URL・使用クレジットを残します。</p>
+          </div>
+          <span class="pill warn">手動記録</span>
+        </div>
+        <div class="section-body">
+          <div class="metrics">
+            <div class="metric">
+              <span>Jobs</span>
+              <strong id="jobMetricTotal">4</strong>
+            </div>
+            <div class="metric">
+              <span>Completed</span>
+              <strong id="jobMetricDone">0</strong>
+            </div>
+            <div class="metric">
+              <span>NG / Retry</span>
+              <strong id="jobMetricRetry">0</strong>
+            </div>
+            <div class="metric">
+              <span>Credits</span>
+              <strong id="jobMetricCredits">0</strong>
+            </div>
+          </div>
+          <div class="job-grid" id="jobGrid"></div>
+        </div>
+      </section>
+
+      <section id="review">
+        <div class="section-head">
+          <div>
+            <h3>生成後レビュー</h3>
+            <p>完成動画をそのまま採用するか、どこを再生成するかを判断します。</p>
+          </div>
+          <span class="pill ok">改善ログ</span>
+        </div>
+        <div class="section-body">
+          <div class="review-grid" id="reviewGrid"></div>
+        </div>
+      </section>
+
       <section id="approval">
         <div class="section-head">
           <div>
@@ -820,6 +965,13 @@ Subtitles = post-production telop</code>
       ["08", "レビュー", "権利、AIGC表示、NG表現、画崩れ、尺を確認する。", "delivery check", "pending"]
     ];
 
+    const generationJobs = [
+      ["clip_01", "Clip 1 / 0-15s", "Hook", "cast_f_beauty_03", "雨の交差点、同じ地図、Renが路地へ誘導"],
+      ["clip_02", "Clip 2 / 15-30s", "Discovery", "cast_f_beauty_02", "ビルとカフェ。Yuri、Sho、Leoが次の角へ導く"],
+      ["clip_03", "Clip 3 / 30-45s", "Threshold", "cast_m_ordinary_03", "学生、古い店、Kenjiのスタンプで地図が完成"],
+      ["clip_04", "Clip 4 / 45-60s", "Payoff", "cast_f_beauty_03", "屋上で全員集合。空白の地図で次回へループ"]
+    ];
+
     const checks = [
       ["assets", "素材確認", "generated cast 17人を使用。source refsは内部ドラフト扱い。"],
       ["removed", "除外確認", "最初の金髪男性ガイドは使用しない。"],
@@ -870,6 +1022,96 @@ Subtitles = post-production telop</code>
       workflowBoard.appendChild(phase);
     });
 
+    const jobGrid = document.getElementById("jobGrid");
+    const reviewGrid = document.getElementById("reviewGrid");
+    const savedJobs = loadJobState();
+
+    generationJobs.forEach(([id, title, phase, reference, beat]) => {
+      const state = savedJobs[id] || {};
+      const job = document.createElement("article");
+      job.className = "job-card";
+      job.innerHTML = `
+        <div class="job-title">
+          <div>
+            <strong>${title}</strong>
+            <span>${phase} / primary: ${reference}</span>
+          </div>
+          <span class="pill warn">${id}</span>
+        </div>
+        <div class="phase-output">${beat}</div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="${id}-status">Status</label>
+            <select id="${id}-status" data-job-id="${id}" data-job-field="status">
+              <option value="not_started">未生成</option>
+              <option value="estimated">見積済</option>
+              <option value="generating">生成中</option>
+              <option value="completed">完了</option>
+              <option value="needs_retry">NG / 再生成</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="${id}-credits">Credits</label>
+            <input id="${id}-credits" inputmode="decimal" placeholder="例: 12" data-job-id="${id}" data-job-field="credits">
+          </div>
+        </div>
+        <div class="field">
+          <label for="${id}-url">Result URL / local path</label>
+          <input id="${id}-url" placeholder="https://... または workspace/outputs/..." data-job-id="${id}" data-job-field="url">
+        </div>
+        <div class="field">
+          <label for="${id}-note">Generation note</label>
+          <textarea id="${id}-note" placeholder="使ったプロンプト、崩れ、良かった点、再生成理由" data-job-id="${id}" data-job-field="note"></textarea>
+        </div>
+      `;
+      jobGrid.appendChild(job);
+
+      const review = document.createElement("article");
+      review.className = "review-card";
+      review.innerHTML = `
+        <div class="job-title">
+          <div>
+            <strong>${title}</strong>
+            <span>${beat}</span>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="${id}-decision">Review</label>
+            <select id="${id}-decision" data-job-id="${id}" data-job-field="decision">
+              <option value="pending">未確認</option>
+              <option value="approved">採用</option>
+              <option value="minor_edit">編集で対応</option>
+              <option value="retry">再生成</option>
+              <option value="discard">不採用</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="${id}-issue">Main issue</label>
+            <select id="${id}-issue" data-job-id="${id}" data-job-field="issue">
+              <option value="">なし</option>
+              <option value="face">顔崩れ</option>
+              <option value="motion">動きが弱い</option>
+              <option value="continuity">話がつながらない</option>
+              <option value="rights">権利/表現リスク</option>
+              <option value="text">文字が出た</option>
+              <option value="audio">音声方針違い</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="${id}-reviewNote">Review note</label>
+          <textarea id="${id}-reviewNote" placeholder="OK理由、編集で直す点、次の再生成プロンプト方針" data-job-id="${id}" data-job-field="reviewNote"></textarea>
+        </div>
+      `;
+      reviewGrid.appendChild(review);
+
+      Object.entries(state).forEach(([field, value]) => {
+        const input = document.querySelector(`[data-job-id="${id}"][data-job-field="${field}"]`);
+        if (input) input.value = value;
+      });
+    });
+
     const scriptRows = document.getElementById("scriptRows");
     scriptBeats.forEach(row => {
       const tr = document.createElement("tr");
@@ -895,6 +1137,61 @@ Subtitles = post-production telop</code>
     const resetChecks = document.getElementById("resetChecks");
     const summaryBox = document.getElementById("summaryBox");
 
+    function loadJobState() {
+      try {
+        return JSON.parse(localStorage.getItem("seedance-job-state") || "{}");
+      } catch {
+        localStorage.removeItem("seedance-job-state");
+        return {};
+      }
+    }
+
+    function collectJobState() {
+      const state = {};
+      document.querySelectorAll("[data-job-id][data-job-field]").forEach(input => {
+        const id = input.dataset.jobId;
+        const field = input.dataset.jobField;
+        if (!state[id]) state[id] = {};
+        state[id][field] = input.value;
+      });
+      return state;
+    }
+
+    function saveJobState() {
+      localStorage.setItem("seedance-job-state", JSON.stringify(collectJobState()));
+      updateJobMetrics();
+      summaryBox.value = buildSummary();
+    }
+
+    function updateJobMetrics() {
+      const state = collectJobState();
+      const jobs = Object.values(state);
+      const completed = jobs.filter(job => job.status === "completed").length;
+      const retry = jobs.filter(job => job.status === "needs_retry" || job.decision === "retry").length;
+      const credits = jobs.reduce((sum, job) => {
+        const value = Number.parseFloat(job.credits || "0");
+        return Number.isFinite(value) ? sum + value : sum;
+      }, 0);
+      document.getElementById("jobMetricTotal").textContent = String(generationJobs.length);
+      document.getElementById("jobMetricDone").textContent = String(completed);
+      document.getElementById("jobMetricRetry").textContent = String(retry);
+      document.getElementById("jobMetricCredits").textContent = credits ? String(Math.round(credits * 10) / 10) : "0";
+    }
+
+    function jobSummaryLines() {
+      const state = collectJobState();
+      return generationJobs.map(([id, title]) => {
+        const job = state[id] || {};
+        const parts = [
+          `${title}: ${job.status || "not_started"}`,
+          `review=${job.decision || "pending"}`
+        ];
+        if (job.credits) parts.push(`credits=${job.credits}`);
+        if (job.url) parts.push(`url=${job.url}`);
+        return "- " + parts.join(" / ");
+      });
+    }
+
     function buildSummary() {
       const checked = Array.from(document.querySelectorAll("[data-check-id]:checked")).map(input => {
         const item = checks.find(([id]) => id === input.dataset.checkId);
@@ -912,6 +1209,9 @@ Subtitles = post-production telop</code>
         "Voice plan: Japanese narration via Higgsfield ElevenLabs",
         "Subtitle plan: post-production Japanese telop",
         "Workflow: assets and script are prepared; next gate is Higgsfield cost estimate and human approval",
+        "",
+        "Job queue:",
+        ...jobSummaryLines(),
         "",
         "Checks:",
         ...checked,
@@ -931,12 +1231,18 @@ Subtitles = post-production telop</code>
       readyStatus.textContent = ready ? "生成準備OK" : "承認待ち";
       readyStatus.classList.toggle("ready", ready);
       copySummary.disabled = !ready;
+      updateJobMetrics();
       summaryBox.value = buildSummary();
       localStorage.setItem("seedance-checkpoint", JSON.stringify(inputs.map(input => [input.dataset.checkId, input.checked])));
     }
 
     document.querySelectorAll("[data-check-id]").forEach(input => {
       input.addEventListener("change", updateState);
+    });
+
+    document.querySelectorAll("[data-job-id][data-job-field]").forEach(input => {
+      input.addEventListener("input", saveJobState);
+      input.addEventListener("change", saveJobState);
     });
 
     resetChecks.addEventListener("click", () => {
