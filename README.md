@@ -59,11 +59,13 @@ TikTok風の物語動画や劇団型のキャスト運用では、`workspace/ass
 
 生成前の人間確認には `workspace/ui/generation-checkpoint.html` を開きます。現在のキャスト素材、source captures、60秒台本、Seedance visual-only、Higgsfield ElevenLabs音声、後付け字幕、権利確認をワークフローUIでチェックし、確認サマリーをコピーしてから費用見積もりと生成へ進みます。生成後は同じUIにresult URL、使用クレジット、OK/NG、再生成理由、編集対応メモを残します。
 
-ターミナル指示に応じてCodexが裏で状態を更新し、それをUIに反映するライブ運用では `workspace/ui/live-workflow.html` を使います。`bash workspace/scripts/serve-ui.sh` でPC上に `127.0.0.1` 限定のローカルサーバーを起動し、Codexは `workspace/ui/state/generation-state.json` と `workspace/ui/state/asset-library.json` を更新します。ブラウザは `/api/factory-data` から、状態JSON、素材ライブラリ、Codex inbox、素材フォルダ、source captures、生成結果フォルダ、Blender有無の実データを読みます。UIの「この内容をCodexに送信」ボタンはローカルの `/api/send-to-codex` に送信し、ターミナルログと `workspace/ui/state/codex-inbox.jsonl` に指示を残します。工場風の表示では、AIの作業場を人間が覗くように、素材、台本、生成キュー、音声、字幕、レビューを1本の生成ラインとして確認できます。
+ターミナル指示に応じてCodexが裏で状態を更新し、それをUIに反映するライブ運用では `workspace/ui/live-workflow.html` を使います。`bash workspace/scripts/serve-ui.sh` でPC上に `127.0.0.1` 限定のローカルサーバーを起動し、Codexは `workspace/ui/state/generation-state.json` と `workspace/ui/state/asset-library.json` を更新します。ブラウザは `/api/factory-data` から、状態JSON、素材ライブラリ、Codex inbox、素材フォルダ、source captures、生成結果フォルダ、Blender有無、Higgsfield MCP request/logの実データを読みます。UIの「この内容をCodexに送信」ボタンはローカルの `/api/send-to-codex` に送信し、ターミナルログと `workspace/ui/state/codex-inbox.jsonl` に指示を残します。工場風の表示では、AIの作業場を人間が覗くように、素材、台本、生成キュー、音声、字幕、レビューを1本の生成ラインとして確認できます。
 
 Factory UIは個別ページも持ちます。`studio-lines.html`、`assets.html`、`cast-library.html`、`jobs.html`、`gates.html`、`activity.html` はすべて `/api/factory-data` を読み、ページごとに「意図」「実データ」「次の判断」を表示します。
 
-Blender/3D previewを使う場合は `references/blender-3d-preview-workflow.md` を参照します。Blenderはローカル処理だけに使い、有料生成や外部投稿とは切り離します。`bash workspace/scripts/render-blender-demo.sh` を実行すると `workspace/assets/3d/renders/codex_factory_demo.png` が更新され、Factory中央の `LIVE FACTORY FLOOR` に最新Blender plateとして投影されます。
+Higgsfield MCP連結はhandoff方式です。`workspace/scripts/higgsfield-status.sh`、`seedance-cost.sh`、`seedance-generate.sh` が `workspace/mcp-requests/` にHiggsfield MCP用JSONを作り、実行結果は `workspace/logs/` に保存します。Factory UIはこのrequest/logを監視しますが、UIやローカルサーバーから有料生成APIを直接呼びません。
+
+Blender/3D previewを使う場合は `references/blender-3d-preview-workflow.md` を参照します。Blenderはローカル処理だけに使い、有料生成や外部投稿とは切り離します。`bash workspace/scripts/render-blender-demo.sh` を実行すると `workspace/assets/3d/renders/codex_factory_demo.png` が更新され、Factory中央の `LIVE FACTORY FLOOR` に最新Blender plateとして投影されます。実際に開いているBlenderアプリ画面を投影したい場合は、`bash workspace/scripts/capture-blender-screen.sh` を実行します。継続更新する場合は `LOOP=1 INTERVAL=1 bash workspace/scripts/capture-blender-screen.sh` を別ターミナルで動かします。
 
 ローカル配布パッケージを作る場合は次を実行します。
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import functools
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -16,9 +17,12 @@ from urllib.parse import urlparse
 REPO_ROOT = Path(__file__).resolve().parents[2]
 STATE_DIR = REPO_ROOT / "workspace" / "ui" / "state"
 INBOX_PATH = STATE_DIR / "codex-inbox.jsonl"
+TERMINAL_FORWARD_LOG = STATE_DIR / "codex-terminal-forward.jsonl"
 STATE_PATH = STATE_DIR / "generation-state.json"
 ASSET_LIBRARY_PATH = STATE_DIR / "asset-library.json"
 ASSET_3D_DIR = REPO_ROOT / "workspace" / "assets" / "3d"
+MCP_REQUEST_DIR = REPO_ROOT / "workspace" / "mcp-requests"
+LOG_DIR = REPO_ROOT / "workspace" / "logs"
 
 
 def now_label() -> str:
@@ -60,6 +64,7 @@ def file_record(path: Path) -> dict[str, object]:
         "exists": True,
         "bytes": stat.st_size,
         "mtime": datetime.fromtimestamp(stat.st_mtime).astimezone().isoformat(timespec="seconds"),
+        "mtime_ns": stat.st_mtime_ns,
     }
 
 
@@ -150,6 +155,7 @@ def blender_assets() -> dict[str, object]:
     render_dir = ASSET_3D_DIR / "renders"
     blend_dir = ASSET_3D_DIR / "blend"
     manifest_dir = ASSET_3D_DIR / "manifests"
+    live_dir = ASSET_3D_DIR / "live"
     renders = [
         file_record(path)
         for path in sorted(render_dir.glob("*"))
@@ -167,18 +173,72 @@ def blender_assets() -> dict[str, object]:
             record["_file"] = file_record(path)
             manifests.append(record)
 
+    live_frames = [
+        file_record(path)
+        for path in sorted(live_dir.glob("blender_live_*.png"))
+        if path.is_file()
+    ]
+    live_frames.sort(key=lambda item: str(item.get("mtime", "")), reverse=True)
+    live_state_path = live_dir / "live-state.json"
+    live_state = read_json(live_state_path, {})
+    if isinstance(live_state, dict):
+        live_state["_file"] = file_record(live_state_path)
+    screen_state_path = live_dir / "blender-screen-state.json"
+    screen_state = read_json(screen_state_path, {})
+    if isinstance(screen_state, dict):
+        screen_state["_file"] = file_record(screen_state_path)
+    screen_capture = file_record(live_dir / "blender_screen_current.png")
+
     renders.sort(key=lambda item: str(item.get("mtime", "")), reverse=True)
     latest = renders[0] if renders else None
+    screen_status = screen_state.get("status") if isinstance(screen_state, dict) else ""
+    live_status = live_state.get("status") if isinstance(live_state, dict) else ""
     return {
         "root": rel(ASSET_3D_DIR),
         "render_dir": rel(render_dir),
         "blend_dir": rel(blend_dir),
         "manifest_dir": rel(manifest_dir),
+        "live_dir": rel(live_dir),
         "renders": renders,
         "blends": blends,
         "manifests": manifests,
+        "live_frames": live_frames,
+        "live_state": live_state,
+        "screen_state": screen_state,
+        "screen_capture": screen_capture,
+        "latest_live_frame": live_frames[0] if live_frames else None,
         "latest_render": latest,
-        "status": "ready" if latest else "waiting_for_render",
+        "status": screen_status or live_status or ("ready" if latest else "waiting_for_render"),
+    }
+
+
+def higgsfield_mcp_state() -> dict[str, object]:
+    requests = []
+    for path in sorted(MCP_REQUEST_DIR.glob("*.json")):
+        record = read_json(path, {})
+        if isinstance(record, dict):
+            record["_file"] = file_record(path)
+            requests.append(record)
+
+    logs = []
+    for path in sorted(LOG_DIR.glob("*.json")):
+        record = read_json(path, {})
+        if isinstance(record, dict):
+            record["_file"] = file_record(path)
+            logs.append(record)
+
+    return {
+        "mode": "prepared-request-handoff",
+        "direct_tool_visible": False,
+        "local_only": True,
+        "requests_dir": rel(MCP_REQUEST_DIR),
+        "logs_dir": rel(LOG_DIR),
+        "requests": requests,
+        "logs": logs,
+        "result_urls": file_record(LOG_DIR / "result-urls.md"),
+        "pending": sum(1 for item in logs if item.get("status") == "pending_mcp_execution"),
+        "blocked": sum(1 for item in logs if item.get("status") == "blocked"),
+        "note": "The local UI prepares and watches Higgsfield MCP handoff files. It does not call paid generation APIs.",
     }
 
 
@@ -204,21 +264,26 @@ def factory_data(server_address: tuple[str, int]) -> dict[str, object]:
         for path in sorted((REPO_ROOT / "videos").glob("**/*"))
         if path.is_file() and path.suffix.lower() in {".mp4", ".mov", ".wav", ".mp3", ".m4a"}
     ]
+    jobs = state.get("jobs", []) if isinstance(state, dict) else []
+    workflow = state.get("workflow", []) if isinstance(state, dict) else []
+    gates = state.get("gates", []) if isinstance(state, dict) else []
+    inbox = tail_jsonl(INBOX_PATH)
+    terminal_forward_log = tail_jsonl(TERMINAL_FORWARD_LOG)
+    blender_asset_data = blender_assets()
+    higgsfield_mcp = higgsfield_mcp_state()
+    mcp_request_files = sorted(MCP_REQUEST_DIR.glob("*.json"))
+    mcp_log_files = sorted(LOG_DIR.glob("*.json"))
     tracked_paths = [
         STATE_PATH,
         ASSET_LIBRARY_PATH,
         INBOX_PATH,
         cast_manifest_path,
+        *mcp_request_files[-6:],
+        *mcp_log_files[-6:],
         *generated_cast_files[-8:],
         *source_capture_files[-8:],
         *render_outputs[-8:],
     ]
-
-    jobs = state.get("jobs", []) if isinstance(state, dict) else []
-    workflow = state.get("workflow", []) if isinstance(state, dict) else []
-    gates = state.get("gates", []) if isinstance(state, dict) else []
-    inbox = tail_jsonl(INBOX_PATH)
-    blender_asset_data = blender_assets()
 
     host, port = server_address
     return {
@@ -230,11 +295,14 @@ def factory_data(server_address: tuple[str, int]) -> dict[str, object]:
             "local_only": host in {"127.0.0.1", "localhost", "::1"},
             "package_mode": "local-first",
             "storage": "workspace/ui/state/*.json + project asset folders",
+            "terminal_forward_enabled": terminal_forward_enabled(),
+            "terminal_forward_app": os.environ.get("CODEX_TERMINAL_APP", "Terminal"),
         },
         "state": state,
         "library": library,
         "cast_manifest": cast_manifest,
         "inbox": inbox,
+        "terminal_forward_log": terminal_forward_log,
         "counts": {
             "workflow_steps": len(workflow),
             "jobs": len(jobs),
@@ -247,20 +315,29 @@ def factory_data(server_address: tuple[str, int]) -> dict[str, object]:
             "blender_renders": len(blender_asset_data["renders"]),
             "blender_blends": len(blender_asset_data["blends"]),
             "blender_manifests": len(blender_asset_data["manifests"]),
+            "blender_live_frames": len(blender_asset_data["live_frames"]),
+            "blender_screen_captures": 1 if blender_asset_data.get("screen_capture", {}).get("exists") else 0,
             "source_capture_files": len(source_capture_files),
             "render_outputs": len(render_outputs),
             "inbox_messages": len(inbox),
+            "terminal_forward_messages": len(terminal_forward_log),
+            "higgsfield_mcp_requests": len(higgsfield_mcp["requests"]),
+            "higgsfield_mcp_logs": len(higgsfield_mcp["logs"]),
+            "higgsfield_mcp_pending": higgsfield_mcp["pending"],
+            "higgsfield_mcp_blocked": higgsfield_mcp["blocked"],
         },
         "files": {
             "state": file_record(STATE_PATH),
             "asset_library": file_record(ASSET_LIBRARY_PATH),
             "codex_inbox": file_record(INBOX_PATH),
+            "terminal_forward_log": file_record(TERMINAL_FORWARD_LOG),
             "cast_manifest": file_record(cast_manifest_path),
             "recent": list_recent_files(tracked_paths),
         },
         "git": git_summary(),
         "blender": blender_summary(),
         "blender_assets": blender_asset_data,
+        "higgsfield_mcp": higgsfield_mcp,
     }
 
 
@@ -290,6 +367,74 @@ def append_activity(message: str, source: str) -> None:
         json.dumps(state, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+
+
+def append_terminal_forward_log(payload: dict[str, object]) -> None:
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    with TERMINAL_FORWARD_LOG.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+
+def terminal_forward_enabled() -> bool:
+    return os.environ.get("CODEX_FORWARD_TO_TERMINAL", "0").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def forward_to_terminal(record: dict[str, object]) -> dict[str, object]:
+    result: dict[str, object] = {
+        "enabled": terminal_forward_enabled(),
+        "attempted": False,
+        "ok": False,
+        "app": os.environ.get("CODEX_TERMINAL_APP", "Terminal"),
+        "message": "",
+    }
+    if not result["enabled"]:
+        result["message"] = "ターミナル転送はOFFです。CODEX_FORWARD_TO_TERMINAL=1 で有効化できます。"
+        append_terminal_forward_log({"time": now_label(), **result})
+        return result
+
+    text = str(record.get("message", "")).strip()
+    if not text:
+        result["message"] = "転送するメッセージが空です。"
+        append_terminal_forward_log({"time": now_label(), **result})
+        return result
+
+    result["attempted"] = True
+    app = str(result["app"] or "Terminal")
+    paste_text = text + "\n"
+    try:
+        subprocess.run(
+            ["pbcopy"],
+            input=paste_text,
+            text=True,
+            check=True,
+            timeout=2.0,
+        )
+        apple_script = f'''
+tell application "{app}" to activate
+delay 0.15
+tell application "System Events"
+  keystroke "v" using command down
+  key code 36
+end tell
+'''
+        proc = subprocess.run(
+            ["osascript"],
+            input=apple_script,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=4.0,
+        )
+        if proc.returncode == 0:
+            result["ok"] = True
+            result["message"] = f"{app} へ貼り付けて送信しました。"
+        else:
+            result["message"] = proc.stderr.strip() or proc.stdout.strip() or "osascript failed"
+    except (OSError, subprocess.SubprocessError) as exc:
+        result["message"] = str(exc)
+
+    append_terminal_forward_log({"time": now_label(), **result})
+    return result
 
 
 class CodexWorkflowHandler(SimpleHTTPRequestHandler):
@@ -360,11 +505,13 @@ class CodexWorkflowHandler(SimpleHTTPRequestHandler):
             fh.write(json.dumps(record, ensure_ascii=False) + "\n")
 
         append_activity(message, source)
+        terminal_forward = forward_to_terminal(record)
 
         print("\n" + "=" * 72)
         print("[Codex inbox] instruction received")
         print(f"time: {record['time']}")
         print(f"source: {source}")
+        print(f"terminal_forward: {terminal_forward}")
         print("-" * 72)
         print(terminal_safe(message))
         print("=" * 72 + "\n")
@@ -374,6 +521,7 @@ class CodexWorkflowHandler(SimpleHTTPRequestHandler):
             "ok": True,
             "queued_at": record["time"],
             "inbox": str(INBOX_PATH.relative_to(REPO_ROOT)),
+            "terminal_forward": terminal_forward,
         }
         self.send_json(response)
 

@@ -616,6 +616,10 @@ body::before {
     linear-gradient(180deg, #041526, #020713 72%);
 }
 
+.factory-visual.has-app-screen {
+  min-height: 420px;
+}
+
 .depth-hall {
   position: absolute;
   inset: 0;
@@ -774,10 +778,10 @@ body::before {
 
 .blender-projection {
   position: absolute;
-  right: 10%;
-  top: 13%;
+  right: 5%;
+  top: 9%;
   z-index: 7;
-  width: min(36%, 380px);
+  width: min(52%, 560px);
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border: 1px solid rgba(34, 211, 238, 0.52);
@@ -786,7 +790,7 @@ body::before {
     linear-gradient(135deg, rgba(34, 211, 238, 0.12), rgba(244, 114, 255, 0.10)),
     rgba(2, 6, 23, 0.86);
   box-shadow: 0 0 35px rgba(34, 211, 238, 0.20), inset 0 0 28px rgba(34, 211, 238, 0.10);
-  transform: perspective(900px) rotateY(-11deg) rotateX(3deg);
+  transform: perspective(1000px) rotateY(-8deg) rotateX(2deg);
 }
 
 .blender-projection::before {
@@ -811,6 +815,154 @@ body::before {
   filter: saturate(1.22) contrast(1.1);
 }
 
+.blender-projection.is-app-screen {
+  left: 14px;
+  right: 14px;
+  top: 14px;
+  width: auto;
+  max-width: none;
+  aspect-ratio: 1920 / 988;
+  border-color: rgba(34, 211, 238, 0.72);
+  background: rgba(0, 0, 0, 0.92);
+  box-shadow: 0 0 44px rgba(34, 211, 238, 0.30), inset 0 0 28px rgba(34, 211, 238, 0.12);
+  transform: none;
+}
+
+.blender-projection.is-app-screen img {
+  object-fit: contain;
+  filter: none;
+}
+
+.blender-projection.is-app-screen::before {
+  display: none;
+}
+
+.blender-projection.is-app-screen .raw-blender-screen {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.factory-visual.has-app-screen .studio-sign,
+.factory-visual.has-app-screen .line-number,
+.factory-visual.has-app-screen .floating-monitor,
+.factory-visual.has-app-screen .render-core,
+.factory-visual.has-app-screen .conveyor-lane,
+.factory-visual.has-app-screen .video-cube,
+.factory-visual.has-app-screen .robot-arm,
+.factory-visual.has-app-screen .machine-bay,
+.factory-visual.has-app-screen .ceiling-rig,
+.factory-visual.has-app-screen .beam,
+.factory-visual.has-app-screen .holo-grid {
+  display: none;
+}
+
+.factory-visual.has-app-screen {
+  background:
+    linear-gradient(135deg, rgba(2, 6, 23, 0.96), rgba(2, 6, 23, 0.90)),
+    #020617;
+}
+
+.factory-visual.has-app-screen .depth-hall {
+  position: absolute;
+  inset: 0;
+  transform: none;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+.factory-visual.has-app-screen .depth-hall::before,
+.factory-visual.has-app-screen .depth-hall::after {
+  display: none;
+}
+
+.blender-window-bar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border-bottom: 1px solid rgba(34, 211, 238, 0.22);
+  background: rgba(4, 14, 24, 0.88);
+  color: #b8d5e2;
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.blender-window-bar strong,
+.blender-window-bar em {
+  font-style: normal;
+  color: var(--cyan);
+  text-transform: uppercase;
+}
+
+.blender-window-sidebar {
+  position: absolute;
+  z-index: 4;
+  top: 28px;
+  left: 0;
+  bottom: 24px;
+  width: 82px;
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  padding: 8px;
+  border-right: 1px solid rgba(34, 211, 238, 0.18);
+  background: rgba(2, 6, 23, 0.52);
+  color: #9fb9c9;
+  font-family: var(--mono);
+  font-size: 9px;
+}
+
+.blender-window-sidebar b {
+  display: block;
+  overflow: hidden;
+  padding: 3px 4px;
+  border-radius: 4px;
+  background: rgba(34, 211, 238, 0.08);
+  color: #dff7ff;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.blender-timeline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  height: 24px;
+  border-top: 1px solid rgba(34, 211, 238, 0.22);
+  background: rgba(4, 14, 24, 0.88);
+  font-family: var(--mono);
+  font-size: 9px;
+}
+
+.blender-timeline span {
+  position: absolute;
+  left: 10px;
+  top: 5px;
+  z-index: 2;
+  color: #b8d5e2;
+}
+
+.blender-timeline i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.32), rgba(244, 114, 255, 0.26));
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.45);
+}
+
 .projection-frame,
 .projection-overlay {
   position: absolute;
@@ -826,6 +978,84 @@ body::before {
 .projection-frame {
   align-content: center;
   text-align: center;
+}
+
+.mirror-placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 24px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(34, 211, 238, 0.22), transparent 30%),
+    linear-gradient(135deg, rgba(34, 211, 238, 0.12), rgba(244, 114, 255, 0.10)),
+    rgba(2, 6, 23, 0.88);
+}
+
+.mirror-placeholder span,
+.mirror-placeholder strong,
+.mirror-placeholder small {
+  position: relative;
+  z-index: 3;
+  display: block;
+  font-family: var(--mono);
+}
+
+.mirror-placeholder span {
+  color: #a8c8d9;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.mirror-placeholder strong {
+  margin-top: 6px;
+  color: var(--cyan);
+  font-size: 24px;
+  text-shadow: 0 0 22px rgba(34, 211, 238, 0.76);
+}
+
+.mirror-placeholder small {
+  margin-top: 8px;
+  color: #87a7b6;
+  font-size: 10px;
+}
+
+.mirror-rings {
+  position: absolute;
+  inset: 18%;
+  display: grid;
+  place-items: center;
+}
+
+.mirror-rings i {
+  position: absolute;
+  width: 36%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(34, 211, 238, 0.44);
+  border-radius: 50%;
+  box-shadow: 0 0 28px rgba(34, 211, 238, 0.22), inset 0 0 20px rgba(34, 211, 238, 0.12);
+  animation: ringPulse 2.8s ease-in-out infinite;
+}
+
+.mirror-rings i:nth-child(2) {
+  width: 58%;
+  animation-delay: -0.9s;
+}
+
+.mirror-rings i:nth-child(3) {
+  width: 82%;
+  animation-delay: -1.8s;
+}
+
+.mirror-scan {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.22), transparent);
+  transform: translateX(-120%);
+  animation: mirrorScan 2.4s linear infinite;
 }
 
 .projection-frame span,
@@ -844,7 +1074,7 @@ body::before {
 .projection-overlay strong {
   color: var(--cyan);
   font-family: var(--mono);
-  font-size: 18px;
+  font-size: 14px;
   text-transform: uppercase;
   text-shadow: 0 0 16px rgba(34, 211, 238, 0.65);
 }
@@ -1787,6 +2017,22 @@ button:disabled {
 @keyframes ticker {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
+}
+
+@keyframes ringPulse {
+  0%, 100% {
+    transform: scale(0.82);
+    opacity: 0.32;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 0.88;
+  }
+}
+
+@keyframes mirrorScan {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(120%); }
 }
 
 @media (max-width: 1400px) {

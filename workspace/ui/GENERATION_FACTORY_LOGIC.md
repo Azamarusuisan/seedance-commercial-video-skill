@@ -58,6 +58,9 @@ POST /api/send-to-codex
 | cast manifest | `workspace/assets/cast/generated_20260629/cast-manifest.json` | AI演者ライブラリ |
 | source captures | `videos/**/assets/source-captures/*` | UI / Codex操作 / 説明動画素材 |
 | generated outputs | `videos/**/*.mp4` など | 生成後の成果物 |
+| Higgsfield MCP requests | `workspace/mcp-requests/*.json` | Higgsfield MCPへ渡すhandoff request |
+| Higgsfield MCP logs | `workspace/logs/*.json`, `workspace/logs/result-urls.md` | MCP実行後のサニタイズ済み結果 |
+| Blender app screen | `workspace/assets/3d/live/blender_screen_current.png` | 実際のBlenderアプリ画面キャプチャ |
 
 `/api/factory-data` は上記を集約してUIへ返す。
 
@@ -74,6 +77,8 @@ POST /api/send-to-codex
 - Blocked gates count
 - Inbox messages count
 - Render output file count
+- Higgsfield MCP request/log count
+- Blender app screen capture status
 - Git changed files count
 - Current stage
 - Current work
@@ -107,12 +112,13 @@ POST /api/send-to-codex
 
 | 表示名 | 実データ | 表示例 |
 |---|---|---|
-| Active Stage | `state.meta.active_stage` | `cost_estimate` |
-| Planned Jobs | `state.jobs.length` | `4` |
-| Estimated Credits | `sum(jobs[].cost_credits)` | 未入力なら `not estimated` |
-| Render Outputs | `counts.render_outputs` | `0` |
-| Cast Assets | `counts.generated_cast_files` | `17` |
-| Approval Gates | `counts.blocked_gates` | `1 blocked` |
+| 現在工程 | `state.current_work.title` / `state.meta.active_stage` | `Blender Live Plate連結` |
+| 予定ジョブ | `state.jobs.length` | `4` |
+| 見積クレジット | `sum(jobs[].cost_credits)` | 未入力なら `未見積` |
+| MCP要求 | `counts.higgsfield_mcp_requests` | `2` |
+| Blender画面 | `counts.blender_screen_captures` | `1` |
+| 演者素材 | `counts.generated_cast_files` | `17` |
+| 承認ゲート | `counts.blocked_gates` | `1件停止中` |
 
 ## UIコンポーネント
 
@@ -149,6 +155,7 @@ workspace/ui/server.py
 - GenerationQueuePanel
 - ActiveGenerationCard
 - SystemPerformancePanel
+- HiggsfieldMcpBridgePanel
 - TerminalLogTape
 - AssetLibraryPanel
 - JobsPanel
@@ -166,7 +173,7 @@ workspace/ui/server.py
 | Cast Library | `cast-library.html` | AI演者一覧と利用範囲 | `cast-manifest.json` |
 | Jobs | `jobs.html` | Seedance clip job状態 | `generation-state.json.jobs[]` |
 | Gates | `gates.html` | 権利・費用・承認・公開停止 | `generation-state.json.gates[]` |
-| Activity | `activity.html` | Codex inbox、activity、更新ファイル | `codex-inbox.jsonl`, `activity[]`, `files.recent` |
+| Activity | `activity.html` | Codex inbox、activity、更新ファイル、MCP handoff | `codex-inbox.jsonl`, `activity[]`, `files.recent`, `mcp-requests`, `logs` |
 
 各ページは「このページの意図」「読んでいる実データ」「次に判断すること」を上部に出す。
 
@@ -223,7 +230,35 @@ workspace/ui/server.py
    - Blenderがない場合は `unavailable` と表示し、CSS/Three.js/Higgsfield 3D代替を検討する
    - `workspace/assets/3d/renders` の最新plateを中央の `LIVE FACTORY FLOOR` に投影する
    - `bash workspace/scripts/render-blender-demo.sh` でCodexからローカルBlenderレンダーを更新できる
+   - `bash workspace/scripts/capture-blender-screen.sh` で実際のBlenderアプリ画面を `workspace/assets/3d/live/blender_screen_current.png` に保存する
+   - `LOOP=1 INTERVAL=1 bash workspace/scripts/capture-blender-screen.sh` でローカルだけの疑似リアルタイム投影にする
+   - UIは `/api/factory-data` を1秒ごとに読み直し、`mtime_ns` を画像URLのキャッシュキーに使う
    - 有料生成や外部API実行とは切り離す
+
+## Higgsfield MCP連結方針
+
+このUIはHiggsfield MCPの直接実行ボタンではなく、handoff状態の監視パネルとして扱う。
+
+理由:
+
+- Higgsfield / Seedance / ElevenLabs生成は課金を伴う可能性がある
+- 生成前に人間承認、権利確認、費用見積、ログイン状態確認が必要
+- このローカル配布パッケージはPCをサーバーにするUIであり、外部API実行を勝手に行わない
+
+実際の流れ:
+
+1. `workspace/scripts/higgsfield-status.sh` でaccount/model確認用requestを作る
+2. `workspace/scripts/seedance-cost.sh` で費用見積requestを作る
+3. `workspace/scripts/seedance-generate.sh` で生成requestを作る
+4. Higgsfield MCPが使えるホスト側でrequest内容を実行する
+5. `workspace/scripts/record-mcp-json.sh` でサニタイズ済み結果を `workspace/logs/` に保存する
+6. Factory UIが `/api/factory-data` 経由でrequest/log件数、pending、blocked、result URL状態を表示する
+
+禁止:
+
+- UIから直接Higgsfield有料生成を開始しない
+- UIから広告公開、外部投稿、決済、ログイン、削除を行わない
+- APIキー、Cookie、セッション、ブラウザストレージ、決済情報を保存しない
 
 本番用ライブラリに追加したい項目:
 

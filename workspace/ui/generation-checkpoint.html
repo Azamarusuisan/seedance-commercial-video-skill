@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Seedance Generation Checkpoint</title>
+  <title>Seedance生成前チェック</title>
   <style>
     :root {
       --bg: #f6f7f8;
@@ -690,7 +690,7 @@
   <div class="shell">
     <aside class="sidebar">
       <div class="brand">
-        <h1>Seedance Checkpoint</h1>
+        <h1>Seedance生成前チェック</h1>
         <p>生成前の素材・台本・運用確認</p>
       </div>
 
@@ -704,15 +704,15 @@
         </div>
       </div>
 
-      <nav class="nav" aria-label="Checkpoint sections">
-        <a href="#overview">状態 <span>Overview</span></a>
-        <a href="#workflow">工程 <span>Workflow</span></a>
-        <a href="#assets">素材 <span>Assets</span></a>
-        <a href="#script">台本 <span>Script</span></a>
-        <a href="#flow">生成フロー <span>Flow</span></a>
-        <a href="#jobs">生成 <span>Jobs</span></a>
-        <a href="#review">レビュー <span>Review</span></a>
-        <a href="#approval">確認 <span>Approval</span></a>
+      <nav class="nav" aria-label="生成前チェック項目">
+        <a href="#overview">状態 <span>概要</span></a>
+        <a href="#workflow">工程 <span>流れ</span></a>
+        <a href="#assets">素材 <span>素材棚</span></a>
+        <a href="#script">台本 <span>秒割り</span></a>
+        <a href="#flow">生成フロー <span>手順</span></a>
+        <a href="#jobs">生成 <span>ジョブ</span></a>
+        <a href="#review">レビュー <span>確認</span></a>
+        <a href="#approval">承認 <span>最終確認</span></a>
       </nav>
 
       <p class="note">この画面はHiggsfieldの有料生成を実行しません。生成前の人間確認用です。</p>
@@ -726,12 +726,12 @@
         </div>
         <div class="status-panel">
           <div>
-            <div class="status-label">Generation Status</div>
+            <div class="status-label">生成状態</div>
             <div class="status-value" id="readyStatus">承認待ち</div>
           </div>
           <div class="pill-row">
-            <span class="pill ok">17 generated cast</span>
-            <span class="pill ok">0 source refs</span>
+            <span class="pill ok">生成演者17人</span>
+            <span class="pill ok">外部素材参照0件</span>
             <span class="pill stop">支給人物画像は削除済み</span>
           </div>
         </div>
@@ -746,8 +746,8 @@
         </div>
         <div class="section-body">
           <div class="pill-row">
-            <span class="pill ok">Seedance visual-only</span>
-            <span class="pill ok">Japanese narration</span>
+            <span class="pill ok">Seedanceは映像のみ</span>
+            <span class="pill ok">日本語ナレーション</span>
             <span class="pill ok">Higgsfield ElevenLabs</span>
             <span class="pill ok">字幕は後編集</span>
             <span class="pill ok">1クリップ1主参照</span>
@@ -778,10 +778,10 @@ Higgsfield cost estimate確認
             </div>
             <div class="handoff">
               <strong>次の実行単位</strong>
-              <code>4 x 15s Seedance visual-only clips
-1 clip = 1 primary reference image
-Japanese VO = Higgsfield ElevenLabs
-Subtitles = post-production telop</code>
+              <code>15秒Seedance映像クリップ x 4本
+1クリップ = 主参照画像1枚
+日本語ナレーション = Higgsfield ElevenLabs
+字幕 = 後編集テロップ</code>
             </div>
           </div>
         </div>
@@ -863,19 +863,19 @@ Subtitles = post-production telop</code>
         <div class="section-body">
           <div class="metrics">
             <div class="metric">
-              <span>Jobs</span>
+              <span>ジョブ</span>
               <strong id="jobMetricTotal">4</strong>
             </div>
             <div class="metric">
-              <span>Completed</span>
+              <span>完了</span>
               <strong id="jobMetricDone">0</strong>
             </div>
             <div class="metric">
-              <span>NG / Retry</span>
+              <span>NG / 再生成</span>
               <strong id="jobMetricRetry">0</strong>
             </div>
             <div class="metric">
-              <span>Credits</span>
+              <span>クレジット</span>
               <strong id="jobMetricCredits">0</strong>
             </div>
           </div>
@@ -1032,14 +1032,14 @@ Subtitles = post-production telop</code>
         <div class="job-title">
           <div>
             <strong>${title}</strong>
-            <span>${phase} / primary: ${reference}</span>
+            <span>${phase} / 主参照: ${reference}</span>
           </div>
           <span class="pill warn">${id}</span>
         </div>
         <div class="phase-output">${beat}</div>
         <div class="field-grid">
           <div class="field">
-            <label for="${id}-status">Status</label>
+            <label for="${id}-status">状態</label>
             <select id="${id}-status" data-job-id="${id}" data-job-field="status">
               <option value="not_started">未生成</option>
               <option value="estimated">見積済</option>
@@ -1049,16 +1049,16 @@ Subtitles = post-production telop</code>
             </select>
           </div>
           <div class="field">
-            <label for="${id}-credits">Credits</label>
+            <label for="${id}-credits">クレジット</label>
             <input id="${id}-credits" inputmode="decimal" placeholder="例: 12" data-job-id="${id}" data-job-field="credits">
           </div>
         </div>
         <div class="field">
-          <label for="${id}-url">Result URL / local path</label>
+          <label for="${id}-url">結果URL / ローカルパス</label>
           <input id="${id}-url" placeholder="https://... または workspace/outputs/..." data-job-id="${id}" data-job-field="url">
         </div>
         <div class="field">
-          <label for="${id}-note">Generation note</label>
+          <label for="${id}-note">生成メモ</label>
           <textarea id="${id}-note" placeholder="使ったプロンプト、崩れ、良かった点、再生成理由" data-job-id="${id}" data-job-field="note"></textarea>
         </div>
       `;
@@ -1075,7 +1075,7 @@ Subtitles = post-production telop</code>
         </div>
         <div class="field-grid">
           <div class="field">
-            <label for="${id}-decision">Review</label>
+            <label for="${id}-decision">レビュー</label>
             <select id="${id}-decision" data-job-id="${id}" data-job-field="decision">
               <option value="pending">未確認</option>
               <option value="approved">採用</option>
@@ -1085,7 +1085,7 @@ Subtitles = post-production telop</code>
             </select>
           </div>
           <div class="field">
-            <label for="${id}-issue">Main issue</label>
+            <label for="${id}-issue">主な問題</label>
             <select id="${id}-issue" data-job-id="${id}" data-job-field="issue">
               <option value="">なし</option>
               <option value="face">顔崩れ</option>
@@ -1098,7 +1098,7 @@ Subtitles = post-production telop</code>
           </div>
         </div>
         <div class="field">
-          <label for="${id}-reviewNote">Review note</label>
+          <label for="${id}-reviewNote">レビューメモ</label>
           <textarea id="${id}-reviewNote" placeholder="OK理由、編集で直す点、次の再生成プロンプト方針" data-job-id="${id}" data-job-field="reviewNote"></textarea>
         </div>
       `;
@@ -1181,11 +1181,11 @@ Subtitles = post-production telop</code>
       return generationJobs.map(([id, title]) => {
         const job = state[id] || {};
         const parts = [
-          `${title}: ${job.status || "not_started"}`,
-          `review=${job.decision || "pending"}`
+          `${title}: ${job.status || "未生成"}`,
+          `レビュー=${job.decision || "未確認"}`
         ];
-        if (job.credits) parts.push(`credits=${job.credits}`);
-        if (job.url) parts.push(`url=${job.url}`);
+        if (job.credits) parts.push(`クレジット=${job.credits}`);
+        if (job.url) parts.push(`URL=${job.url}`);
         return "- " + parts.join(" / ");
       });
     }
@@ -1197,24 +1197,24 @@ Subtitles = post-production telop</code>
       }).filter(Boolean);
 
       return [
-        "# Generation Checkpoint Approval",
+        "# 生成前チェック承認",
         "",
-        "Status: " + (checked.length === checks.length ? "READY" : "PENDING"),
-        "Generated cast: 17 fictional generated actors",
-        "Source refs: 2 user-supplied references, internal draft only until rights are confirmed",
-        "Removed asset: first blond male guide is excluded",
-        "Video plan: 60s TikTok story, 4 x 15s Seedance visual-only clips",
-        "Voice plan: Japanese narration via Higgsfield ElevenLabs",
-        "Subtitle plan: post-production Japanese telop",
-        "Workflow: assets and script are prepared; next gate is Higgsfield cost estimate and human approval",
+        "状態: " + (checked.length === checks.length ? "準備完了" : "承認待ち"),
+        "生成演者: 架空の生成演者17人",
+        "外部素材参照: 0件。権利未確認素材は本番利用しない",
+        "除外素材: 最初の金髪男性ガイドは除外済み",
+        "映像計画: 60秒TikTok物語。15秒Seedance映像クリップ x 4本",
+        "音声計画: Higgsfield ElevenLabsで日本語ナレーション",
+        "字幕計画: 後編集の日本語テロップ",
+        "ワークフロー: 素材と台本は準備済み。次のゲートはHiggsfield費用見積と人間承認",
         "",
-        "Job queue:",
+        "ジョブキュー:",
         ...jobSummaryLines(),
         "",
-        "Checks:",
+        "確認項目:",
         ...checked,
         "",
-        "Next action: run Higgsfield cost estimate, then generate only after explicit human approval."
+        "次のアクション: Higgsfield費用見積を確認し、明示的な人間承認後だけ生成する。"
       ].join("\n");
     }
 

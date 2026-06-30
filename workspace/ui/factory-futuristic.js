@@ -6,15 +6,54 @@ const LIBRARY_PATH = "state/asset-library.json";
 // 本番KPI、ジョブ、キュー、成果物は state/API の実データを使う。
 const MOCK_GENERATION_DATA_UI_ONLY = {
   pipeline: [
-    ["INGEST", "Complete", "complete"],
-    ["ANALYZE", "Complete", "complete"],
-    ["BLENDER", "Live Plate", "active"],
-    ["GENERATE", "Processing", "active"],
-    ["RENDER", "76%", "active"],
-    ["POST", "Pending", "pending"],
-    ["DELIVER", "Locked", "locked"],
+    ["取込", "完了", "complete"],
+    ["解析", "完了", "complete"],
+    ["Blender", "実画面投影", "active"],
+    ["生成", "待機中", "active"],
+    ["レンダー", "76%", "active"],
+    ["後編集", "待機中", "pending"],
+    ["納品", "ロック中", "locked"],
   ],
 };
+
+const STATUS_JA = {
+  done: "完了",
+  completed: "完了",
+  approved: "承認済み",
+  estimated: "見積済み",
+  active: "進行中",
+  generating: "生成中",
+  rendering: "レンダー中",
+  processing: "処理中",
+  pending: "待機中",
+  not_started: "未開始",
+  blocked: "停止中",
+  locked: "ロック中",
+  captured: "取得済み",
+  failed: "失敗",
+  waiting: "待機中",
+  waiting_for_render: "レンダー待ち",
+  ready: "準備完了",
+};
+
+function statusJa(value) {
+  return STATUS_JA[String(value || "").toLowerCase()] || String(value || "待機中");
+}
+
+function displayText(value) {
+  return String(value ?? "")
+    .replace(/^Clip\s+(\d+)/, "クリップ$1")
+    .replaceAll("review pending", "レビュー待ち")
+    .replaceAll("approval locked", "承認待ち")
+    .replaceAll("No paid generation executed", "有料生成は未実行")
+    .replaceAll("Seedance visual-only", "Seedance映像のみ")
+    .replaceAll("not estimated", "未見積")
+    .replaceAll("structure only", "構造だけ参照")
+    .replaceAll("waiting for local render", "ローカルレンダー待ち")
+    .replaceAll("main lead", "主役")
+    .replaceAll("co-lead", "相手役")
+    .replaceAll("local guide", "現地ガイド");
+}
 
 const appState = {
   tick: 0,
@@ -23,12 +62,12 @@ const appState = {
   library: {},
   castManifest: {},
   logTape: [
-    "Line 04: Local factory server online",
-    "Seedance queue locked until human approval",
-    "ElevenLabs voice lane prepared",
-    "Subtitle post-edit gate armed",
-    "Publish blocked: human review required",
-    "No paid generation executed",
+    "ライン04: ローカル工場サーバー起動",
+    "Seedanceキューは人間承認までロック",
+    "ElevenLabs音声レーン準備完了",
+    "字幕後編集ゲート待機中",
+    "公開停止: 人間レビュー必須",
+    "有料生成は未実行",
   ],
   sendInFlight: false,
 };
@@ -96,11 +135,11 @@ async function loadFactoryData() {
     appState.state = state;
     appState.library = library;
     appState.castManifest = castManifest;
-    loadStatus.textContent = `${runtime?.local_server?.local_only ? "local server" : "static"}: ${new Date().toLocaleTimeString()}`;
-    document.getElementById("connectionStatus").textContent = runtime?.local_server?.local_only ? "LOCAL ONLY" : "STATIC FALLBACK";
+    loadStatus.textContent = `${runtime?.local_server?.local_only ? "ローカルサーバー" : "静的表示"}: ${new Date().toLocaleTimeString()}`;
+    document.getElementById("connectionStatus").textContent = runtime?.local_server?.local_only ? "ローカル限定" : "静的フォールバック";
     renderAll();
   } catch (error) {
-    loadStatus.textContent = `state load failed: ${error.message}`;
+    loadStatus.textContent = `状態読み込み失敗: ${error.message}`;
   }
 }
 
@@ -122,30 +161,30 @@ function estimatedCredits(jobs) {
 }
 
 function renderValue(value) {
-  if (value === null || value === undefined || value === "") return "pending";
+  if (value === null || value === undefined || value === "") return "待機中";
   if (typeof value === "number") return value.toLocaleString("ja-JP");
-  return String(value);
+  return displayText(String(value));
 }
 
 function renderTop() {
   const state = appState.state;
   document.getElementById("systemTime").textContent = nowJstParts();
-  document.getElementById("queueStatus").textContent = "LOCKED";
+  document.getElementById("queueStatus").textContent = "ロック中";
 
   const statusStrip = document.getElementById("statusStrip");
   const sourceRefs = state.assets?.source_ref_count ?? 0;
-  const currentWork = state.current_work?.title || "Cost estimate active";
+  const currentWork = state.current_work?.title || "費用見積が進行中";
   statusStrip.innerHTML = [
-    ["CURRENT WORK", currentWork, "magenta"],
-    ["HUMAN APPROVAL", "REQUIRED", "warning"],
-    ["PUBLISH", "BLOCKED", "danger"],
-    ["SOURCE_REFS", String(sourceRefs), ""],
-    ["LINE", "LIVE", "success"],
-    ["VOICE", "ELEVENLABS", ""],
-    ["SUBTITLE", "POST_EDIT", ""],
-    ["PAID GENERATION", "NOT EXECUTED", "danger"],
+    ["現在作業", currentWork, "magenta"],
+    ["人間承認", "必須", "warning"],
+    ["公開", "停止中", "danger"],
+    ["外部素材参照", String(sourceRefs), ""],
+    ["ライン", "稼働中", "success"],
+    ["音声", "ElevenLabs", ""],
+    ["字幕", "後編集", ""],
+    ["有料生成", "未実行", "danger"],
   ].map(([label, value, tone]) => (
-    `<span class="thin-pill ${tone}">${escapeHtml(label)} ${escapeHtml(value)}</span>`
+    `<span class="thin-pill ${tone}">${escapeHtml(label)} ${escapeHtml(displayText(value))}</span>`
   )).join("");
 }
 
@@ -155,19 +194,20 @@ function renderMetrics() {
   const credits = estimatedCredits(jobs);
   const blocked = counts.blocked_gates ?? (appState.state.gates || []).filter(gate => gate.status === "blocked").length;
   const metrics = [
-    ["Active Stage", appState.state.meta?.active_stage || "pending", "state.meta.active_stage"],
-    ["Planned Jobs", counts.jobs ?? jobs.length, "state.jobs.length"],
-    ["Estimated Credits", credits === null ? "not estimated" : credits.toFixed(1), "jobs[].cost_credits"],
-    ["Blender Plates", counts.blender_renders ?? 0, "workspace/assets/3d/renders"],
-    ["Cast Assets", counts.generated_cast_files ?? appState.state.assets?.generated_cast_count ?? 0, "cast manifest files"],
-    ["Approval Gates", `${blocked} blocked`, "human approval required"],
+    ["現在工程", appState.state.current_work?.title || appState.state.meta?.active_stage || "待機中", "generation-state.json"],
+    ["予定ジョブ", counts.jobs ?? jobs.length, "state.jobs.length"],
+    ["見積クレジット", credits === null ? "未見積" : credits.toFixed(1), "jobs[].cost_credits"],
+    ["MCP要求", counts.higgsfield_mcp_requests ?? 0, "workspace/mcp-requests"],
+    ["Blender画面", counts.blender_screen_captures ?? counts.blender_live_frames ?? counts.blender_renders ?? 0, "workspace/assets/3d/live"],
+    ["演者素材", counts.generated_cast_files ?? appState.state.assets?.generated_cast_count ?? 0, "cast manifest"],
+    ["承認ゲート", `${blocked}件停止中`, "人間承認必須"],
   ];
   const row = document.getElementById("metricRow");
   row.innerHTML = metrics.map(([label, value, note]) => `
       <article class="metric-card">
         <span>${escapeHtml(label)}</span>
         <strong>${escapeHtml(renderValue(value))}</strong>
-        <small>${escapeHtml(note)}</small>
+        <small>${escapeHtml(displayText(note))}</small>
       </article>
   `).join("");
 }
@@ -184,18 +224,18 @@ function renderFactoryOverview() {
   const readiness = Math.round((checks.filter(Boolean).length / checks.length) * 100);
   document.getElementById("factoryOverviewPanel").innerHTML = `
     <div class="panel-heading">
-      <div><span class="eyebrow">Factory Overview</span><h3>Local Readiness</h3></div>
-      <span class="thin-pill success">Factory is live</span>
+      <div><span class="eyebrow">工場概要</span><h3>ローカル準備率</h3></div>
+      <span class="thin-pill success">工場稼働中</span>
     </div>
     <div class="factory-overview">
       <div class="circular-gauge" style="--value:${readiness}">
-        <div><strong>${readiness}%</strong><small>Local Ready</small></div>
+        <div><strong>${readiness}%</strong><small>準備完了</small></div>
       </div>
       <div class="overview-list">
-        <div class="data-row"><span>Workflow Steps</span><strong>${counts.workflow_steps ?? 0}</strong></div>
-        <div class="data-row"><span>Generating</span><strong>0</strong></div>
-        <div class="data-row"><span>Queued Jobs</span><strong>${counts.active_jobs ?? 0}</strong></div>
-        <div class="data-row"><span>Render Outputs</span><strong>${counts.render_outputs ?? 0}</strong></div>
+        <div class="data-row"><span>工程数</span><strong>${counts.workflow_steps ?? 0}</strong></div>
+        <div class="data-row"><span>生成中</span><strong>0</strong></div>
+        <div class="data-row"><span>待機ジョブ</span><strong>${counts.active_jobs ?? 0}</strong></div>
+        <div class="data-row"><span>出力数</span><strong>${counts.render_outputs ?? 0}</strong></div>
       </div>
     </div>
   `;
@@ -204,14 +244,14 @@ function renderFactoryOverview() {
 function renderSystemMonitor() {
   const blenderReady = appState.runtime?.blender?.available ? 100 : 0;
   const rows = [
-    ["State JSON", appState.runtime?.files?.state?.exists ? 100 : 0],
-    ["Asset Library", appState.runtime?.files?.asset_library?.exists ? 100 : 0],
-    ["Codex Inbox", appState.runtime?.files?.codex_inbox?.exists ? 100 : 0],
-    ["Cast Files", Math.min(100, ((appState.runtime?.counts?.generated_cast_files ?? 0) / 17) * 100)],
-    ["Blender Lane", blenderReady],
+    ["状態JSON", appState.runtime?.files?.state?.exists ? 100 : 0],
+    ["素材ライブラリ", appState.runtime?.files?.asset_library?.exists ? 100 : 0],
+    ["Codex受信箱", appState.runtime?.files?.codex_inbox?.exists ? 100 : 0],
+    ["演者ファイル", Math.min(100, ((appState.runtime?.counts?.generated_cast_files ?? 0) / 17) * 100)],
+    ["Blenderレーン", blenderReady],
   ];
   document.getElementById("systemMonitorPanel").innerHTML = `
-    <div class="panel-heading"><div><span class="eyebrow">System Monitor</span><h3>Local Data Health</h3></div></div>
+    <div class="panel-heading"><div><span class="eyebrow">システム監視</span><h3>ローカルデータ状態</h3></div></div>
     <div class="monitor-list">
       ${rows.map(([label, base], index) => {
         const value = Math.round(Math.max(0, Math.min(100, base)));
@@ -242,29 +282,29 @@ function renderMarketFeed() {
   const chart = chartPoints(28, 270, 82, phase, 18);
   document.getElementById("marketFeedPanel").innerHTML = `
     <div class="panel-heading">
-      <div><span class="eyebrow">Market Feed</span><h3>AI Video Index</h3></div>
-      <span class="thin-pill">mock</span>
+      <div><span class="eyebrow">需要メーター</span><h3>AI動画指数</h3></div>
+      <span class="thin-pill">演出用</span>
     </div>
     <div class="market-value"><strong>${(8247.33 + Math.sin(appState.tick / 8) * 18).toFixed(2)}</strong><span>+3.27%</span></div>
-    <svg class="mini-chart" viewBox="0 0 270 96" aria-label="Mock AI video index chart">
+    <svg class="mini-chart" viewBox="0 0 270 96" aria-label="演出用AI動画指数チャート">
       <polyline points="${chart}" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
       <polyline points="${chartPoints(28, 270, 82, phase + 5, 12)}" fill="none" stroke="#22d3ee" stroke-width="2" opacity="0.65"/>
     </svg>
     <div class="market-mini-row">
-      <div>AIvD<strong>+3.27%</strong></div>
-      <div>REND<strong>+2.91%</strong></div>
-      <div>GEN<strong>+4.32%</strong></div>
-      <div>META<strong>+2.14%</strong></div>
+      <div>動画指数<strong>+3.27%</strong></div>
+      <div>描画<strong>+2.91%</strong></div>
+      <div>生成<strong>+4.32%</strong></div>
+      <div>素材<strong>+2.14%</strong></div>
     </div>
   `;
 }
 
 function renderGlobalActivity() {
   const cityTimes = [
-    ["New York", "America/New_York"],
-    ["London", "Europe/London"],
-    ["Tokyo", "Asia/Tokyo"],
-    ["Singapore", "Asia/Singapore"],
+    ["ニューヨーク", "America/New_York"],
+    ["ロンドン", "Europe/London"],
+    ["東京", "Asia/Tokyo"],
+    ["シンガポール", "Asia/Singapore"],
   ];
   const formatter = zone => new Intl.DateTimeFormat("en-GB", {
     timeZone: zone,
@@ -274,7 +314,7 @@ function renderGlobalActivity() {
   }).format(new Date());
 
   document.getElementById("globalActivityPanel").innerHTML = `
-    <div class="panel-heading"><div><span class="eyebrow">Global Activity</span><h3>Render Watch</h3></div></div>
+    <div class="panel-heading"><div><span class="eyebrow">拠点表示</span><h3>レンダー監視</h3></div></div>
     <div class="world-map"></div>
     <div class="timezone-row">
       ${cityTimes.map(([city, zone]) => `<div>${escapeHtml(city)}<strong>${formatter(zone)}</strong></div>`).join("")}
@@ -283,29 +323,65 @@ function renderGlobalActivity() {
 }
 
 function renderFactoryVisual() {
+  const factoryVisual = document.getElementById("factoryVisual");
   const projection = document.getElementById("blenderProjection");
+  const screenState = appState.runtime?.blender_assets?.screen_state || {};
+  const screenCapture = appState.runtime?.blender_assets?.screen_capture;
+  const latestLive = appState.runtime?.blender_assets?.latest_live_frame;
   const latestRender = appState.runtime?.blender_assets?.latest_render;
-  const blenderStatus = appState.runtime?.blender_assets?.status || "waiting";
+  const liveState = appState.runtime?.blender_assets?.live_state || {};
+  const projectedFrame = screenCapture?.exists ? screenCapture : (latestLive || latestRender);
+  const isAppScreen = Boolean(screenCapture?.exists);
+  const blenderStatus = screenState.status || liveState.status || appState.runtime?.blender_assets?.status || "waiting";
+  const frame = liveState.frame || (latestLive ? 1 : 0);
+  const frameCount = liveState.frame_count || (latestLive ? appState.runtime?.counts?.blender_live_frames : 0) || 0;
+  const progress = isAppScreen ? 100 : Math.max(0, Math.min(100, Number(liveState.progress || 0)));
+  const cacheKey = projectedFrame?.mtime_ns || projectedFrame?.mtime || Date.now();
+  if (factoryVisual) {
+    factoryVisual.classList.toggle("has-app-screen", Boolean(isAppScreen && projectedFrame?.path));
+  }
   if (projection) {
-    if (latestRender?.path) {
-      projection.innerHTML = `
-        <img src="${escapeHtml(toProjectPath(latestRender.path))}?t=${encodeURIComponent(latestRender.mtime || Date.now())}" alt="Latest Blender factory render">
-        <div class="projection-overlay">
-          <span>BLENDER LIVE PLATE</span>
-          <strong>${escapeHtml(blenderStatus)}</strong>
-          <small>${escapeHtml(latestRender.path)}</small>
-        </div>
+    if (projectedFrame?.path) {
+      projection.innerHTML = isAppScreen ? `
+        <img class="raw-blender-screen" src="${escapeHtml(toProjectPath(projectedFrame.path))}?t=${encodeURIComponent(cacheKey)}" alt="Blender実画面キャプチャ">
+      ` : `
+          <div class="blender-window-bar">
+            <span>Blender 5.1.2</span>
+            <strong>ビューポート</strong>
+            <em>${escapeHtml(statusJa(blenderStatus))}</em>
+          </div>
+          <img src="${escapeHtml(toProjectPath(projectedFrame.path))}?t=${encodeURIComponent(cacheKey)}" alt="Blenderライブプレート">
+          <div class="blender-window-sidebar">
+            <span>シーン</span>
+            <b>工場ライン</b>
+            <b>動画キューブ</b>
+            <b>カメラ</b>
+          </div>
+          <div class="projection-overlay">
+          <span>BLENDERライブプレート</span>
+          <strong>${escapeHtml(statusJa(blenderStatus))} / ${escapeHtml(frame)}-${escapeHtml(frameCount)}</strong>
+          <small>${escapeHtml(projectedFrame.path)}</small>
+          </div>
+          <div class="blender-timeline">
+            <span>フレーム ${escapeHtml(frame)}</span>
+            <i style="width:${progress}%"></i>
+          </div>
       `;
       projection.classList.add("is-ready");
+      projection.classList.toggle("is-app-screen", isAppScreen);
     } else {
       projection.innerHTML = `
-        <div class="projection-frame">
-          <span>BLENDER LIVE PLATE</span>
-          <strong>waiting</strong>
-          <small>workspace/assets/3d/renders</small>
+        <div class="mirror-placeholder">
+          <div class="mirror-rings"><i></i><i></i><i></i></div>
+          <div class="mirror-scan"></div>
+          <span>BLENDERミラー待機中</span>
+          <strong>ローカル工場アニメーション</strong>
+          <small>Blender起動後に capture-blender-screen.sh で実画面へ切替</small>
         </div>
       `;
       projection.classList.remove("is-ready");
+      projection.classList.remove("is-app-screen");
+      if (factoryVisual) factoryVisual.classList.remove("has-app-screen");
     }
   }
 
@@ -345,7 +421,7 @@ function castImages() {
 function renderRecentOutputs() {
   const images = castImages();
   const jobs = appState.state.jobs || [];
-  const planned = jobs.length ? jobs : [{ id: "clip_pending", title: "No planned clips", status: "pending", note: "Add jobs to generation-state.json" }];
+  const planned = jobs.length ? jobs : [{ id: "clip_pending", title: "予定クリップなし", status: "pending", note: "generation-state.json にジョブを追加" }];
   document.getElementById("recentOutputs").innerHTML = planned.map((job, index) => {
     const image = images[index % Math.max(1, images.length)];
     const imageHtml = image?.src
@@ -356,8 +432,8 @@ function renderRecentOutputs() {
       <article class="output-card">
         <div class="output-thumb">${imageHtml}</div>
         <div class="output-body">
-          <strong>${escapeHtml(job.title || job.id)}</strong>
-          <span>${escapeHtml(job.id || `clip_${index + 1}`)} / ${escapeHtml(job.status || "pending")} / ${escapeHtml(job.review || "review pending")}</span>
+          <strong>${escapeHtml(displayText(job.title || job.id))}</strong>
+          <span>${escapeHtml(job.id || `clip_${index + 1}`)} / ${escapeHtml(statusJa(job.status))} / ${escapeHtml(displayText(job.review || "review pending"))}</span>
           <div class="progress" style="--progress:${progress}%"><i></i></div>
         </div>
       </article>
@@ -369,8 +445,8 @@ function renderGenerationQueue() {
   const jobs = appState.state.jobs || [];
   document.getElementById("generationQueuePanel").innerHTML = `
     <div class="panel-heading">
-      <div><span class="eyebrow">Generation Queue</span><h3>Locked Queue</h3></div>
-      <span class="thin-pill danger">approval required</span>
+      <div><span class="eyebrow">生成キュー</span><h3>承認待ちキュー</h3></div>
+      <span class="thin-pill danger">承認必須</span>
     </div>
     <div class="queue-list">
       ${jobs.map((job, index) => {
@@ -379,10 +455,10 @@ function renderGenerationQueue() {
         <div class="queue-item">
           <strong class="queue-id">#${String(index + 1).padStart(2, "0")}</strong>
           <div>
-            <strong>${escapeHtml(job.title || job.id)}</strong>
+            <strong>${escapeHtml(displayText(job.title || job.id))}</strong>
             <div class="progress" style="--progress:${progress}%"><i></i></div>
           </div>
-          <span class="queue-status">${escapeHtml(job.status || "pending")}</span>
+          <span class="queue-status">${escapeHtml(statusJa(job.status))}</span>
         </div>
       `;}).join("")}
     </div>
@@ -394,7 +470,7 @@ function renderActiveGenerations() {
   const jobs = appState.state.jobs || [];
   const active = jobs.slice(0, 3);
   document.getElementById("activeGenerationsPanel").innerHTML = `
-    <div class="panel-heading"><div><span class="eyebrow">Planned Generations</span><h3>Studio Jobs</h3></div></div>
+    <div class="panel-heading"><div><span class="eyebrow">生成予定</span><h3>スタジオジョブ</h3></div></div>
     <div class="active-list">
       ${active.map((job, index) => {
         const image = images[(index + 2) % Math.max(1, images.length)];
@@ -403,10 +479,10 @@ function renderActiveGenerations() {
           <article class="active-card">
             <div class="active-thumb">${image?.src ? `<img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.name)}">` : ""}</div>
             <div>
-              <strong>${escapeHtml(job.title || job.id)}</strong>
-              <span>${escapeHtml(job.id || "-")} / ${escapeHtml(job.status || "pending")} / Seedance visual-only / approval locked</span>
+              <strong>${escapeHtml(displayText(job.title || job.id))}</strong>
+              <span>${escapeHtml(job.id || "-")} / ${escapeHtml(statusJa(job.status))} / Seedance映像のみ / 承認待ち</span>
               <div class="progress" style="--progress:${progress}%"><i></i></div>
-              <span>${escapeHtml(job.note || "No paid generation executed")}</span>
+              <span>${escapeHtml(displayText(job.note || "No paid generation executed"))}</span>
             </div>
           </article>
         `;
@@ -415,21 +491,45 @@ function renderActiveGenerations() {
   `;
 }
 
+function renderMcpBridge() {
+  const mcp = appState.runtime?.higgsfield_mcp || {};
+  const requests = mcp.requests || [];
+  const logs = mcp.logs || [];
+  const latestLog = logs.slice().sort((a, b) => String(b.checked_at || "").localeCompare(String(a.checked_at || "")))[0];
+  const visible = mcp.direct_tool_visible ? "直接ツール検出" : "handoff方式";
+  document.getElementById("mcpBridgePanel").innerHTML = `
+    <div class="panel-heading">
+      <div><span class="eyebrow">Higgsfield MCP連結</span><h3>${escapeHtml(visible)}</h3></div>
+      <span class="thin-pill warning">生成は未実行</span>
+    </div>
+    <div class="overview-list">
+      <div class="data-row"><span>リクエストJSON</span><strong>${requests.length}</strong></div>
+      <div class="data-row"><span>実行ログ</span><strong>${logs.length}</strong></div>
+      <div class="data-row"><span>MCP待ち</span><strong>${mcp.pending ?? 0}</strong></div>
+      <div class="data-row"><span>停止中</span><strong>${mcp.blocked ?? 0}</strong></div>
+    </div>
+    <div class="data-list compact-list">
+      ${requests.slice(-3).reverse().map(item => `<article><strong>${escapeHtml(displayText(item.request_type || "MCP要求"))}</strong><span>${escapeHtml(item._file?.path || "")}</span></article>`).join("") || "<article><strong>MCP要求なし</strong><span>workspace/scripts/higgsfield-status.sh を実行</span></article>"}
+      ${latestLog ? `<article><strong>最新ログ: ${escapeHtml(statusJa(latestLog.status))}</strong><span>${escapeHtml(displayText(latestLog.command || latestLog.reason || ""))}</span></article>` : ""}
+    </div>
+  `;
+}
+
 function renderSystemPerformance() {
   const phase = appState.tick / 1.7;
   const counts = appState.runtime?.counts || {};
-  const status = counts.blender_renders ? "3D READY" : "LOCKED";
+  const status = counts.blender_screen_captures ? "実画面投影中" : (counts.blender_live_frames ? "ライブ表示" : (counts.blender_renders ? "3D準備完了" : "ロック中"));
   document.getElementById("systemPerformancePanel").innerHTML = `
-    <div class="panel-heading"><div><span class="eyebrow">System Performance</span><h3>Local Render State</h3></div></div>
+    <div class="panel-heading"><div><span class="eyebrow">処理状態</span><h3>ローカルレンダー状態</h3></div></div>
     <div class="performance-grid">
-      <svg class="performance-chart" viewBox="0 0 270 130" aria-label="Local activity chart">
+      <svg class="performance-chart" viewBox="0 0 270 130" aria-label="ローカル活動チャート">
         <polyline points="${chartPoints(32, 270, 118, phase, 26)}" fill="none" stroke="#22d3ee" stroke-width="2"/>
         <polyline points="${chartPoints(32, 270, 118, phase + 4, 18)}" fill="none" stroke="#34d399" stroke-width="2"/>
         <polyline points="${chartPoints(32, 270, 118, phase + 8, 22)}" fill="none" stroke="#f472ff" stroke-width="2"/>
         <polyline points="${chartPoints(32, 270, 118, phase + 12, 14)}" fill="none" stroke="#fbbf24" stroke-width="2"/>
       </svg>
       <div class="big-speed">
-        <div><strong>${escapeHtml(status)}</strong><span>${counts.blender_renders ?? 0} Blender plates</span></div>
+        <div><strong>${escapeHtml(status)}</strong><span>${counts.blender_screen_captures ?? 0} 実画面 / ${counts.blender_live_frames ?? 0} フレーム</span></div>
       </div>
     </div>
   `;
@@ -439,14 +539,14 @@ function renderTerminal() {
   const runtime = appState.runtime;
   const latestInbox = (runtime?.inbox || []).slice(-1)[0];
   const baseEvents = [
-    "Line 04: Cost estimation active",
-    "Generation queue locked until human approval",
-    "Seedance visual-only lane standing by",
-    "ElevenLabs voice lane prepared",
-    "Subtitle post-edit gate armed",
-    "Publish blocked: human review required",
-    `Local files watched: ${runtime?.files?.recent?.length ?? 0}`,
-    latestInbox ? `Inbox latest: ${(latestInbox.message || "").slice(0, 80)}` : "Inbox latest: empty",
+    "ライン04: 費用見積が進行中",
+    "生成キュー: 人間承認までロック",
+    "Seedance映像レーン: 待機中",
+    "ElevenLabs音声レーン: 準備完了",
+    "字幕後編集ゲート: 待機中",
+    "公開停止: 人間レビュー必須",
+    `監視ファイル: ${runtime?.files?.recent?.length ?? 0}件`,
+    latestInbox ? `受信箱最新: ${(latestInbox.message || "").slice(0, 80)}` : "受信箱最新: 空",
   ];
   if (appState.tick % 3 === 0) {
     const event = baseEvents[appState.tick % baseEvents.length];
@@ -463,9 +563,9 @@ function renderTerminal() {
   const activity = appState.state.activity || [];
   document.getElementById("activity").innerHTML = activity.slice(-5).reverse().map(item => `
     <article class="activity-item">
-      <strong>${escapeHtml(item.actor || "System")}</strong>
+      <strong>${escapeHtml(item.actor || "システム")}</strong>
       <span>${escapeHtml(item.time || "")}</span>
-      <span>${escapeHtml(item.event || "")}</span>
+      <span>${escapeHtml(displayText(item.event || ""))}</span>
     </article>
   `).join("");
 }
@@ -474,51 +574,54 @@ function renderLowerData() {
   const images = castImages().slice(0, 8);
   const captures = appState.library?.source_captures || [];
   const blenderRenders = appState.runtime?.blender_assets?.renders || [];
+  const liveFrames = appState.runtime?.blender_assets?.live_frames || [];
+  const screenCapture = appState.runtime?.blender_assets?.screen_capture;
   const references = appState.library?.external_references || [];
   const blocked = appState.library?.blocked_assets || appState.library?.removed_assets || [];
   document.getElementById("library").innerHTML = `
     <div class="panel-heading">
-      <div><span class="eyebrow">Production Library</span><h3>${(appState.castManifest?.cast || []).length || 0} cast / ${captures.length} captures</h3></div>
-      <span class="thin-pill success">generated refs</span>
+      <div><span class="eyebrow">制作ライブラリ</span><h3>${(appState.castManifest?.cast || []).length || 0} 演者 / ${captures.length} キャプチャ</h3></div>
+      <span class="thin-pill success">生成素材</span>
     </div>
     <div class="mini-grid">
       ${images.map(item => `
         <article class="asset-mini-card">
           <img src="${escapeHtml(item.src)}" alt="${escapeHtml(item.name)}">
           <strong>${escapeHtml(item.name)}</strong>
-          <span>${escapeHtml(item.role)}</span>
+          <span>${escapeHtml(displayText(item.role))}</span>
         </article>
       `).join("")}
     </div>
     <div class="library-ledger">
       <div>
-        <strong>Blender Plates</strong>
-        ${blenderRenders.slice(0, 5).map(item => `<span>${escapeHtml(item.path)} / ${escapeHtml(item.mtime || "")}</span>`).join("") || "<span>waiting for local render</span>"}
+        <strong>Blender実画面 / ライブフレーム</strong>
+        ${screenCapture?.exists ? `<span>${escapeHtml(screenCapture.path)} / ${escapeHtml(screenCapture.mtime || "")}</span>` : ""}
+        ${liveFrames.slice(0, 4).map(item => `<span>${escapeHtml(item.path)} / ${escapeHtml(item.mtime || "")}</span>`).join("") || blenderRenders.slice(0, 3).map(item => `<span>${escapeHtml(item.path)} / ${escapeHtml(item.mtime || "")}</span>`).join("") || "<span>ローカルレンダー待ち</span>"}
       </div>
       <div>
-        <strong>Source Captures</strong>
-        ${captures.slice(0, 5).map(item => `<span>${escapeHtml(item.name || item.id)} / ${escapeHtml(item.type || "capture")}</span>`).join("") || "<span>none</span>"}
+        <strong>ソースキャプチャ</strong>
+        ${captures.slice(0, 5).map(item => `<span>${escapeHtml(item.name || item.id)} / ${escapeHtml(item.type || "capture")}</span>`).join("") || "<span>なし</span>"}
       </div>
       <div>
-        <strong>External References</strong>
-        ${references.slice(0, 3).map(item => `<span>${escapeHtml(item.id)} / structure only</span>`).join("") || "<span>none</span>"}
+        <strong>外部参考</strong>
+        ${references.slice(0, 3).map(item => `<span>${escapeHtml(item.id)} / 構造だけ参照</span>`).join("") || "<span>なし</span>"}
       </div>
       <div>
-        <strong>Blocked Records</strong>
-        <span>${blocked.length} records / not active assets</span>
+        <strong>ブロック記録</strong>
+        <span>${blocked.length}件 / 使用素材ではない</span>
       </div>
     </div>
   `;
 
   const jobs = appState.state.jobs || [];
   document.getElementById("jobs").innerHTML = `
-    <div class="panel-heading"><div><span class="eyebrow">Seedance Jobs</span><h3>${jobs.length} clips</h3></div></div>
+    <div class="panel-heading"><div><span class="eyebrow">Seedanceジョブ</span><h3>${jobs.length}本のクリップ</h3></div></div>
     <div class="overview-list">
       ${jobs.map(job => `
         <article class="job-mini-card ${cls(job.status)}">
-          <strong>${escapeHtml(job.title)}</strong>
-          <span>${escapeHtml(job.status)} / ${escapeHtml(job.primary_reference || "-")}</span>
-          <span>${escapeHtml(job.note || "")}</span>
+          <strong>${escapeHtml(displayText(job.title))}</strong>
+          <span>${escapeHtml(statusJa(job.status))} / ${escapeHtml(job.primary_reference || "-")}</span>
+          <span>${escapeHtml(displayText(job.note || ""))}</span>
         </article>
       `).join("")}
     </div>
@@ -526,12 +629,12 @@ function renderLowerData() {
 
   const gates = appState.state.gates || [];
   document.getElementById("gates").innerHTML = `
-    <div class="panel-heading"><div><span class="eyebrow">Safety Gates</span><h3>approval locks</h3></div></div>
+    <div class="panel-heading"><div><span class="eyebrow">安全ゲート</span><h3>承認ロック</h3></div></div>
     <div class="overview-list">
       ${gates.map(gate => `
         <article class="gate-mini-card ${cls(gate.status)}">
           <strong>${escapeHtml(gate.label)}</strong>
-          <span>${escapeHtml(gate.status)} / ${escapeHtml(gate.id)}</span>
+          <span>${escapeHtml(statusJa(gate.status))} / ${escapeHtml(gate.id)}</span>
         </article>
       `).join("")}
     </div>
@@ -550,6 +653,7 @@ function renderAll() {
   renderRecentOutputs();
   renderGenerationQueue();
   renderActiveGenerations();
+  renderMcpBridge();
   renderSystemPerformance();
   renderTerminal();
   renderLowerData();
@@ -576,7 +680,14 @@ async function sendInstruction() {
     });
     const result = await response.json();
     if (!response.ok || !result.ok) throw new Error(result.message || `HTTP ${response.status}`);
-    status.textContent = `送信済み: ${result.queued_at}`;
+    const forward = result.terminal_forward || {};
+    if (forward.ok) {
+      status.textContent = `送信済み / Terminal転送OK: ${result.queued_at}`;
+    } else if (forward.enabled) {
+      status.textContent = `受信箱保存済み / Terminal転送失敗: ${forward.message || result.queued_at}`;
+    } else {
+      status.textContent = `受信箱保存済み / Terminal転送OFF: ${result.queued_at}`;
+    }
     await loadFactoryData();
   } catch (error) {
     status.textContent = `送信失敗: ${error.message}`;
@@ -593,7 +704,7 @@ document.getElementById("copyInstruction").addEventListener("click", async () =>
 document.getElementById("sendInstruction").addEventListener("click", sendInstruction);
 
 loadFactoryData();
-setInterval(loadFactoryData, 3500);
+setInterval(loadFactoryData, 1000);
 setInterval(() => {
   appState.tick += 1;
   renderAll();

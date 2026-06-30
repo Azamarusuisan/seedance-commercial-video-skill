@@ -12,9 +12,11 @@ workspace/tmp/
 workspace/logs/*.raw.json
 workspace/logs/*.err
 workspace/ui/state/codex-inbox.jsonl
+workspace/ui/state/codex-terminal-forward.jsonl
 workspace/ui/**/__pycache__/
 workspace/outputs/*.mp4
 workspace/outputs/*.mov
+workspace/assets/3d/live/
 workspace/assets/cast/**/*.png
 workspace/assets/cast/**/*.jpg
 workspace/assets/cast/**/*.jpeg

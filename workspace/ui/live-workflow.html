@@ -3,77 +3,77 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Generation Factory | Seedance Theater</title>
+  <title>生成工場 | Seedance劇場</title>
   <link rel="stylesheet" href="factory-futuristic.css">
 </head>
 <body>
   <div class="scanline" aria-hidden="true"></div>
   <div class="noise" aria-hidden="true"></div>
   <div class="app-shell">
-    <aside class="left-rail" aria-label="Generation Factory navigation">
+    <aside class="left-rail" aria-label="生成工場ナビゲーション">
       <div class="brand-lockup">
         <span class="brand-mark"></span>
         <div>
-          <h1>GENERATION FACTORY</h1>
-          <p>AI Video Production Studio</p>
+            <h1>生成工場</h1>
+            <p>AI動画制作スタジオ</p>
         </div>
       </div>
-      <nav class="rail-nav" aria-label="Factory sections">
-        <a href="live-workflow.html" class="active">Factory</a>
-        <a href="studio-lines.html">Studio Lines</a>
-        <a href="assets.html">Assets</a>
-        <a href="cast-library.html">Cast Library</a>
-        <a href="jobs.html">Jobs</a>
-        <a href="gates.html">Gates</a>
-        <a href="activity.html">Activity</a>
+      <nav class="rail-nav" aria-label="工場セクション">
+        <a href="live-workflow.html" class="active">工場</a>
+        <a href="studio-lines.html">制作ライン</a>
+        <a href="assets.html">素材</a>
+        <a href="cast-library.html">演者ライブラリ</a>
+        <a href="jobs.html">ジョブ</a>
+        <a href="gates.html">ゲート</a>
+        <a href="activity.html">履歴</a>
       </nav>
       <section class="rail-card">
-        <span class="eyebrow">State file</span>
+        <span class="eyebrow">状態ファイル</span>
         <code>workspace/ui/state/generation-state.json</code>
-        <p id="loadStatus">connecting...</p>
+        <p id="loadStatus">接続中...</p>
       </section>
       <section class="rail-card compact">
-        <span class="eyebrow">Connection</span>
-        <strong id="connectionStatus">LOCAL ONLY</strong>
-        <p>No external generation executed</p>
+        <span class="eyebrow">接続</span>
+        <strong id="connectionStatus">ローカル限定</strong>
+        <p>外部生成は実行しない</p>
       </section>
     </aside>
 
     <main class="factory-page" id="factory">
       <header class="top-command-bar">
         <div class="top-title">
-          <h2>GENERATION FACTORY</h2>
-          <p>AI Movie Generation Factory / Realtime Local Command Center</p>
+          <h2>生成工場</h2>
+          <p>AI動画生成工場 / リアルタイム・ローカル管制室</p>
         </div>
         <div class="top-status-grid">
           <div class="status-tile">
-            <span>System Time</span>
+            <span>システム時刻</span>
             <strong id="systemTime">--:--:--</strong>
             <small>JST</small>
           </div>
           <div class="status-tile live">
-            <span>Live Status</span>
-            <strong>ALL SYSTEMS OPERATIONAL</strong>
-            <small>local package mode</small>
+            <span>稼働状態</span>
+            <strong>ローカル稼働中</strong>
+            <small>ローカル配布モード</small>
           </div>
           <div class="status-tile">
-            <span>Queue Status</span>
-            <strong id="queueStatus">LOCKED</strong>
-            <small>human approval required</small>
+            <span>キュー状態</span>
+            <strong id="queueStatus">ロック中</strong>
+            <small>人間承認が必要</small>
           </div>
         </div>
         <div class="theater-lockup">
-          <h2>SEEDANCE THEATER</h2>
-          <p>Real-time Generation Command Center</p>
+          <h2>Seedance劇場</h2>
+          <p>リアルタイム生成管制室</p>
         </div>
       </header>
 
-      <div class="status-strip" id="statusStrip" aria-label="Safety status"></div>
+      <div class="status-strip" id="statusStrip" aria-label="安全状態"></div>
 
-      <section class="metric-row" id="metricRow" aria-label="Generation metrics"></section>
+      <section class="metric-row" id="metricRow" aria-label="生成指標"></section>
 
       <div class="dashboard-grid">
-        <aside class="side-stack left-stack" aria-label="Factory monitoring panels">
+        <aside class="side-stack left-stack" aria-label="工場監視パネル">
           <section class="glass-panel" id="factoryOverviewPanel"></section>
           <section class="glass-panel" id="systemMonitorPanel"></section>
           <section class="glass-panel" id="marketFeedPanel"></section>
@@ -81,13 +81,13 @@
         </aside>
 
         <section class="center-stage">
-          <article class="factory-floor-panel" aria-label="Live factory floor">
+          <article class="factory-floor-panel" aria-label="ライブ工場フロア">
             <div class="panel-heading">
               <div>
-                <span class="eyebrow">LIVE FACTORY FLOOR</span>
-                <h3>SEEDANCE THEATER</h3>
+                <span class="eyebrow">ライブ工場フロア</span>
+                <h3>SEEDANCE劇場</h3>
               </div>
-              <span class="live-badge"><i></i> LIVE</span>
+              <span class="live-badge"><i></i> 稼働中</span>
             </div>
             <div class="factory-visual" id="factoryVisual">
               <div class="beam beam-a"></div>
@@ -113,14 +113,14 @@
                   <i></i><b></b><em></em>
                 </div>
                 <div class="render-core">
-                  <span>LINE</span>
+                  <span>ライン</span>
                   <strong>04</strong>
-                  <small>render core</small>
+                  <small>レンダー中枢</small>
                 </div>
                 <div class="blender-projection" id="blenderProjection">
                   <div class="projection-frame">
-                    <span>BLENDER LIVE PLATE</span>
-                    <strong>waiting</strong>
+                    <span>BLENDER実画面</span>
+                    <strong>待機中</strong>
                     <small>workspace/assets/3d/renders</small>
                   </div>
                 </div>
@@ -129,18 +129,18 @@
                   <span>76%</span>
                 </div>
                 <div class="floating-monitor monitor-b">
-                  <strong>VOICE</strong>
-                  <span>armed</span>
+                  <strong>音声</strong>
+                  <span>待機</span>
                 </div>
                 <div class="floating-monitor monitor-c">
-                  <strong>SUB</strong>
-                  <span>post</span>
+                  <strong>字幕</strong>
+                  <span>後付け</span>
                 </div>
               </div>
               <div class="studio-sign">
                 <span>SEEDANCE</span>
-                <span>THEATER</span>
-                <small>STUDIO LINE 04</small>
+                <span>劇場</span>
+                <small>スタジオライン04</small>
               </div>
               <div class="line-number">04</div>
               <div class="conveyor-lane lane-a" id="conveyorLaneA"></div>
@@ -152,10 +152,10 @@
           <section class="glass-panel pipeline-panel" id="pipeline">
             <div class="panel-heading">
               <div>
-                <span class="eyebrow">Production Pipeline</span>
-                <h3>Studio Line 04</h3>
+                <span class="eyebrow">制作パイプライン</span>
+                <h3>スタジオライン04</h3>
               </div>
-              <span class="thin-pill warning">Cost estimate active</span>
+              <span class="thin-pill warning">費用見積中</span>
             </div>
             <div class="pipeline" id="productionPipeline"></div>
           </section>
@@ -163,10 +163,10 @@
           <section class="glass-panel outputs-panel">
             <div class="panel-heading">
               <div>
-                <span class="eyebrow">Local Render Queue</span>
-                <h3>Planned Clips / Real State</h3>
+                <span class="eyebrow">ローカル生成キュー</span>
+                <h3>予定クリップ / 実データ</h3>
               </div>
-              <span class="thin-pill">state driven</span>
+              <span class="thin-pill">状態連動</span>
             </div>
             <div class="output-strip" id="recentOutputs"></div>
           </section>
@@ -174,10 +174,10 @@
           <section class="glass-panel inbox-panel">
             <div class="panel-heading">
               <div>
-                <span class="eyebrow">Codex Inbox Bridge</span>
-                <h3>Next Terminal Instruction</h3>
+                <span class="eyebrow">Codex受信箱ブリッジ</span>
+                <h3>次のターミナル指示</h3>
               </div>
-              <span class="thin-pill danger">No paid generation executed</span>
+              <span class="thin-pill danger">有料生成未実行</span>
             </div>
             <textarea id="nextInstruction" readonly></textarea>
             <div class="button-row">
@@ -188,16 +188,17 @@
           </section>
         </section>
 
-        <aside class="side-stack right-stack" aria-label="Generation queue and active jobs">
+        <aside class="side-stack right-stack" aria-label="生成キューと進行ジョブ">
           <section class="glass-panel" id="generationQueuePanel"></section>
           <section class="glass-panel" id="activeGenerationsPanel"></section>
+          <section class="glass-panel" id="mcpBridgePanel"></section>
           <section class="glass-panel" id="systemPerformancePanel"></section>
         </aside>
       </div>
 
-      <section class="terminal-dock" aria-label="Terminal log tape">
+      <section class="terminal-dock" aria-label="ターミナルログテープ">
         <div class="terminal-head">
-          <span>System Log</span>
+          <span>システムログ</span>
           <div class="terminal-ticker" id="terminalTicker"></div>
         </div>
         <div class="terminal-grid">

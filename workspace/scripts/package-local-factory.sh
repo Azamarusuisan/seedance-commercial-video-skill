@@ -43,6 +43,10 @@ zip -rq "$OUT" \
   workspace/scripts/serve-ui.sh \
   workspace/scripts/package-local-factory.sh \
   workspace/scripts/render-blender-demo.sh \
+  workspace/scripts/render-blender-live.sh \
+  workspace/scripts/capture-blender-screen.sh \
+  workspace/mcp-requests \
+  workspace/logs \
   workspace/assets/cast/README.md \
   workspace/assets/cast/generated_20260629 \
   workspace/assets/cast/source_refs_20260629/source-manifest.json \

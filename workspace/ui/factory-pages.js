@@ -3,54 +3,54 @@ const PAGE_STATE_PATH = "state/generation-state.json";
 const PAGE_LIBRARY_PATH = "state/asset-library.json";
 
 const PAGE_NAV = [
-  ["factory", "Factory", "live-workflow.html"],
-  ["studio-lines", "Studio Lines", "studio-lines.html"],
-  ["assets", "Assets", "assets.html"],
-  ["cast-library", "Cast Library", "cast-library.html"],
-  ["jobs", "Jobs", "jobs.html"],
-  ["gates", "Gates", "gates.html"],
-  ["activity", "Activity", "activity.html"],
+  ["factory", "工場", "live-workflow.html"],
+  ["studio-lines", "制作ライン", "studio-lines.html"],
+  ["assets", "素材", "assets.html"],
+  ["cast-library", "演者ライブラリ", "cast-library.html"],
+  ["jobs", "ジョブ", "jobs.html"],
+  ["gates", "ゲート", "gates.html"],
+  ["activity", "履歴", "activity.html"],
 ];
 
 const PAGE_META = {
   "studio-lines": {
-    title: "Studio Lines",
-    subtitle: "Workflow lanes tied to real state",
+    title: "制作ライン",
+    subtitle: "実データに連動する工程レーン",
     intent: "工程ごとに、AIがどこまで進み、どこで人間承認待ちになっているかを見る。",
     source: "generation-state.json / workflow[] / current_work",
     decision: "active工程の次に、何をCodexへ指示するかを決める。",
   },
   assets: {
-    title: "Assets",
-    subtitle: "Local source shelves and 3D lanes",
+    title: "素材",
+    subtitle: "ローカル素材棚と3Dレーン",
     intent: "生成前に、使える素材、source captures、Blender/3Dレーン、ブロック済み記録を確認する。",
     source: "asset-library.json / cast manifest / videos/**/source-captures / workspace/assets/3d / blender status",
     decision: "Seedanceへ渡す素材と、ローカル3D preview plateを使うかを決める。",
   },
   "cast-library": {
-    title: "Cast Library",
-    subtitle: "AI actors and usage scope",
+    title: "演者ライブラリ",
+    subtitle: "AI演者と利用範囲",
     intent: "AI演者の名前、役割、利用範囲、権利ステータスを見て、次の動画の配役を決める。",
     source: "workspace/assets/cast/generated_20260629/cast-manifest.json",
     decision: "主参照に使う1人と、背景/カメオに回す演者を選ぶ。",
   },
   jobs: {
-    title: "Jobs",
-    subtitle: "Seedance clip queue and cost state",
+    title: "ジョブ",
+    subtitle: "Seedanceクリップキューと費用状態",
     intent: "4本のSeedanceクリップの状態、見積、結果、レビューを追う。",
     source: "generation-state.json / jobs[]",
     decision: "見積未完了ならcost estimate、承認後だけ生成へ進む。",
   },
   gates: {
-    title: "Gates",
-    subtitle: "Safety locks and approval stops",
+    title: "ゲート",
+    subtitle: "安全ロックと承認停止",
     intent: "権利、費用、生成承認、広告公開の停止条件を一画面で見る。",
     source: "generation-state.json / gates[]",
     decision: "どのゲートが解除されるまで先へ進めないかを確認する。",
   },
   activity: {
-    title: "Activity",
-    subtitle: "Codex inbox, file updates, and audit trail",
+    title: "履歴",
+    subtitle: "Codex受信箱、更新ファイル、監査ログ",
     intent: "UIからCodexへ送った指示、状態更新、ファイル監視、git状態を監査する。",
     source: "codex-inbox.jsonl / activity[] / files.recent / git status",
     decision: "次の指示が届いているか、どのファイルが更新されたかを確認する。",
@@ -86,6 +86,44 @@ function statusClass(status) {
   return String(status || "pending").toLowerCase().replace(/[^a-z0-9_-]/g, "_");
 }
 
+const STATUS_JA = {
+  done: "完了",
+  completed: "完了",
+  approved: "承認済み",
+  estimated: "見積済み",
+  active: "進行中",
+  generating: "生成中",
+  rendering: "レンダー中",
+  processing: "処理中",
+  pending: "待機中",
+  not_started: "未開始",
+  blocked: "停止中",
+  locked: "ロック中",
+  captured: "取得済み",
+  failed: "失敗",
+  ready: "準備完了",
+  waiting_for_render: "レンダー待ち",
+};
+
+function statusJa(value) {
+  return STATUS_JA[String(value || "").toLowerCase()] || String(value || "待機中");
+}
+
+function displayText(value) {
+  return String(value ?? "")
+    .replace(/^Clip\s+(\d+)/, "クリップ$1")
+    .replaceAll("review pending", "レビュー待ち")
+    .replaceAll("not estimated", "未見積")
+    .replaceAll("Local-only Blender lane for 3D preview plates.", "3Dプレビュー用のローカルBlenderレーンです。")
+    .replaceAll("Run workspace/scripts/render-blender-demo.sh", "workspace/scripts/render-blender-demo.sh を実行")
+    .replaceAll("Run workspace/scripts/capture-blender-screen.sh", "workspace/scripts/capture-blender-screen.sh を実行")
+    .replaceAll("No page renders", "ページレンダーなし")
+    .replaceAll("No captures", "キャプチャなし")
+    .replaceAll("No manifest", "マニフェストなし")
+    .replaceAll("Empty", "空")
+    .replaceAll("No inbox log in packaged mode", "配布モードでは受信箱ログなし");
+}
+
 function nowJst() {
   return new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo",
@@ -118,18 +156,18 @@ function shellMarkup() {
         <div class="brand-lockup">
           <span class="brand-mark"></span>
           <div>
-            <h1>GENERATION FACTORY</h1>
-            <p>AI Video Production Studio</p>
+          <h1>生成工場</h1>
+          <p>AI動画制作スタジオ</p>
           </div>
         </div>
         <nav class="rail-nav">${navMarkup()}</nav>
         <section class="rail-card">
-          <span class="eyebrow">State file</span>
+          <span class="eyebrow">状態ファイル</span>
           <code>workspace/ui/state/generation-state.json</code>
-          <p id="loadStatus">connecting...</p>
+          <p id="loadStatus">接続中...</p>
         </section>
         <section class="rail-card compact">
-          <span class="eyebrow">Page intent</span>
+          <span class="eyebrow">ページの目的</span>
           <strong>${html(meta.title)}</strong>
           <p>${html(meta.intent)}</p>
         </section>
@@ -141,13 +179,13 @@ function shellMarkup() {
             <p>${html(meta.subtitle)}</p>
           </div>
           <div class="top-status-grid">
-            <div class="status-tile"><span>System Time</span><strong id="systemTime">--:--:--</strong><small>JST</small></div>
-            <div class="status-tile live"><span>Data Source</span><strong>LOCAL STATE</strong><small>${html(meta.source)}</small></div>
-            <div class="status-tile"><span>Project</span><strong id="projectName">Loading</strong><small>Seedance Theater</small></div>
+            <div class="status-tile"><span>システム時刻</span><strong id="systemTime">--:--:--</strong><small>JST</small></div>
+            <div class="status-tile live"><span>データ元</span><strong>ローカル状態</strong><small>${html(meta.source)}</small></div>
+            <div class="status-tile"><span>プロジェクト</span><strong id="projectName">読み込み中</strong><small>Seedance劇場</small></div>
           </div>
           <div class="theater-lockup">
-            <h2>SEEDANCE THEATER</h2>
-            <p>Local Production Data Room</p>
+            <h2>SEEDANCE劇場</h2>
+            <p>ローカル制作データ室</p>
           </div>
         </header>
         <section class="detail-hero" id="pageHero"></section>
@@ -162,18 +200,18 @@ function renderHero() {
   const counts = pageState.runtime?.counts || {};
   document.getElementById("pageHero").innerHTML = `
     <article class="hero-intent">
-      <span class="eyebrow">Intent</span>
+      <span class="eyebrow">目的</span>
       <h3>${html(meta.intent)}</h3>
       <p>${html(meta.decision)}</p>
     </article>
     <article class="hero-source">
-      <span class="eyebrow">Real Data Binding</span>
+      <span class="eyebrow">実データ連携</span>
       <h3>${html(meta.source)}</h3>
       <div class="binding-grid">
-        <div><span>Jobs</span><strong>${counts.jobs ?? 0}</strong></div>
-        <div><span>Cast</span><strong>${counts.generated_cast_files ?? 0}</strong></div>
-        <div><span>Captures</span><strong>${counts.source_capture_files ?? 0}</strong></div>
-        <div><span>Blocked Gates</span><strong>${counts.blocked_gates ?? 0}</strong></div>
+        <div><span>ジョブ</span><strong>${counts.jobs ?? 0}</strong></div>
+        <div><span>演者</span><strong>${counts.generated_cast_files ?? 0}</strong></div>
+        <div><span>キャプチャ</span><strong>${counts.source_capture_files ?? 0}</strong></div>
+        <div><span>停止ゲート</span><strong>${counts.blocked_gates ?? 0}</strong></div>
       </div>
     </article>
   `;
@@ -183,20 +221,20 @@ function renderStudioLines() {
   const workflow = pageState.state.workflow || [];
   return `
     <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">Studio Lines</span><h3>Workflow from real state</h3></div></div>
+      <div class="panel-heading"><div><span class="eyebrow">制作ライン</span><h3>実データから見る工程</h3></div></div>
       <div class="line-board">
         ${workflow.map((phase, index) => `
           <article class="line-card ${statusClass(phase.status)}">
-            <span class="thin-pill ${statusClass(phase.status)}">${html(phase.status)}</span>
+            <span class="thin-pill ${statusClass(phase.status)}">${html(statusJa(phase.status))}</span>
             <h3>${String(index + 1).padStart(2, "0")} / ${html(phase.label)}</h3>
-            <p>${html(phase.note)}</p>
-            <div class="kv-grid"><span>Owner</span><strong>${html(phase.owner)}</strong><span>Output</span><strong>${html(phase.output)}</strong></div>
+            <p>${html(displayText(phase.note))}</p>
+            <div class="kv-grid"><span>担当</span><strong>${html(displayText(phase.owner))}</strong><span>出力</span><strong>${html(displayText(phase.output))}</strong></div>
           </article>
         `).join("")}
       </div>
     </section>
     <section class="page-panel">
-      <span class="eyebrow">Current Work</span>
+      <span class="eyebrow">現在の作業</span>
       <h3>${html(pageState.state.current_work?.title || pageState.state.meta?.active_stage)}</h3>
       <p>${html(pageState.state.current_work?.summary || pageState.state.meta?.operator_message)}</p>
     </section>
@@ -212,27 +250,43 @@ function renderAssets() {
   const blender = pageState.runtime?.blender || {};
   const blenderAssets = pageState.runtime?.blender_assets || {};
   const blenderRenders = blenderAssets.renders || [];
+  const blenderScreen = blenderAssets.screen_capture || {};
+  const blenderScreenState = blenderAssets.screen_state || {};
   const blenderManifests = blenderAssets.manifests || [];
   return `
     <section class="page-panel">
-      <div class="panel-heading"><div><span class="eyebrow">Asset Shelves</span><h3>Local source inventory</h3></div></div>
+      <div class="panel-heading"><div><span class="eyebrow">素材棚</span><h3>ローカル素材一覧</h3></div></div>
       <div class="binding-grid large">
-        <div><span>Generated Cast</span><strong>${pageState.runtime?.counts?.generated_cast_files ?? 0}</strong></div>
-        <div><span>Source Captures</span><strong>${captures.length}</strong></div>
-        <div><span>Page Renders</span><strong>${pageRenders.length}</strong></div>
-        <div><span>External References</span><strong>${refs.length}</strong></div>
-        <div><span>Blocked Records</span><strong>${blocked.length}</strong></div>
-        <div><span>Blender Plates</span><strong>${blenderRenders.length}</strong></div>
+        <div><span>生成演者</span><strong>${pageState.runtime?.counts?.generated_cast_files ?? 0}</strong></div>
+        <div><span>ソースキャプチャ</span><strong>${captures.length}</strong></div>
+        <div><span>ページレンダー</span><strong>${pageRenders.length}</strong></div>
+        <div><span>外部参考</span><strong>${refs.length}</strong></div>
+        <div><span>ブロック記録</span><strong>${blocked.length}</strong></div>
+        <div><span>Blender素材</span><strong>${blenderRenders.length + (blenderScreen.exists ? 1 : 0)}</strong></div>
       </div>
     </section>
     <section class="page-panel">
-      <span class="eyebrow">Blender / 3D Preview Lane</span>
-      <h3>${blender.available ? "available" : "unavailable"}</h3>
-      <p>${html(blender.note || "Local-only Blender lane for 3D preview plates.")}</p>
-      <div class="kv-grid"><span>Executable</span><strong>${html(blender.executable || blender.cli || "not found")}</strong><span>Version</span><strong>${html(blender.version || "-")}</strong><span>Mode</span><strong>${html(blender.mode || "local-only")}</strong><span>Status</span><strong>${html(blenderAssets.status || "waiting")}</strong></div>
+      <span class="eyebrow">Blender / 3Dプレビューレーン</span>
+      <h3>${blender.available ? "利用可能" : "未検出"}</h3>
+      <p>${html(displayText(blender.note || "Local-only Blender lane for 3D preview plates."))}</p>
+      <div class="kv-grid"><span>実行ファイル</span><strong>${html(blender.executable || blender.cli || "未検出")}</strong><span>バージョン</span><strong>${html(blender.version || "-")}</strong><span>方式</span><strong>${html(blender.mode || "ローカル限定")}</strong><span>状態</span><strong>${html(statusJa(blenderAssets.status || "waiting"))}</strong></div>
     </section>
     <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">Blender Live Plates</span><h3>Projected into workflow animation</h3></div></div>
+      <div class="panel-heading"><div><span class="eyebrow">Blender実画面</span><h3>ワークフロー中央へ投影</h3></div></div>
+      <div class="render-shelf">
+        ${blenderScreen.exists ? `
+          <article class="render-card">
+            <img src="${html(toProjectPath(blenderScreen.path))}?t=${encodeURIComponent(blenderScreen.mtime || "")}" alt="Blender実画面キャプチャ">
+            <div>
+              <strong>${html(blenderScreen.path)}</strong>
+              <span>${html(statusJa(blenderScreenState.status || "captured"))} / ${html(blenderScreenState.window_rect || "")} / ${html(blenderScreen.mtime || "")}</span>
+            </div>
+          </article>
+        ` : "<article class=\"render-card\"><div><strong>Blender実画面なし</strong><span>workspace/scripts/capture-blender-screen.sh を実行</span></div></article>"}
+      </div>
+    </section>
+    <section class="page-panel wide">
+      <div class="panel-heading"><div><span class="eyebrow">Blenderライブプレート</span><h3>レンダー結果とマニフェスト</h3></div></div>
       <div class="render-shelf">
         ${blenderRenders.map(item => `
           <article class="render-card">
@@ -242,22 +296,22 @@ function renderAssets() {
               <span>${html(item.mtime || "")} / ${html(item.bytes || 0)} bytes</span>
             </div>
           </article>
-        `).join("") || "<article class=\"render-card\"><div><strong>No Blender render yet</strong><span>Run workspace/scripts/render-blender-demo.sh</span></div></article>"}
+        `).join("") || "<article class=\"render-card\"><div><strong>Blenderレンダーなし</strong><span>workspace/scripts/render-blender-demo.sh を実行</span></div></article>"}
       </div>
       <div class="data-list">
-        ${blenderManifests.map(item => `<article><strong>${html(item.name || item.id)}</strong><span>${html(item.path || "")} / ${html(item.review_status || "")}</span></article>`).join("") || "<article><strong>No manifest</strong><span>Render script writes workspace/assets/3d/manifests/*.json</span></article>"}
-      </div>
-    </section>
-    <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">Page Renders</span><h3>Download-ready local renders</h3></div></div>
-      <div class="data-list">
-        ${pageRenders.map(item => `<article><strong>${html(item.name || item.id)}</strong><span>${html(item.type)} / ${html(item.path)}</span></article>`).join("") || "<article><strong>No page renders</strong><span>Run the local render capture step first</span></article>"}
+        ${blenderManifests.map(item => `<article><strong>${html(item.name || item.id)}</strong><span>${html(item.path || "")} / ${html(statusJa(item.review_status || ""))}</span></article>`).join("") || "<article><strong>マニフェストなし</strong><span>レンダースクリプトが workspace/assets/3d/manifests/*.json に書き込みます</span></article>"}
       </div>
     </section>
     <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">Source Captures</span><h3>Workflow and operation captures</h3></div></div>
+      <div class="panel-heading"><div><span class="eyebrow">ページレンダー</span><h3>ダウンロード可能なローカル出力</h3></div></div>
       <div class="data-list">
-        ${captures.map(item => `<article><strong>${html(item.name || item.id)}</strong><span>${html(item.type)} / ${html(item.path)}</span></article>`).join("") || "<article><strong>No captures</strong><span>source captures folder is empty</span></article>"}
+        ${pageRenders.map(item => `<article><strong>${html(item.name || item.id)}</strong><span>${html(item.type)} / ${html(item.path)}</span></article>`).join("") || "<article><strong>ページレンダーなし</strong><span>先にローカルレンダー取得を実行</span></article>"}
+      </div>
+    </section>
+    <section class="page-panel wide">
+      <div class="panel-heading"><div><span class="eyebrow">ソースキャプチャ</span><h3>ワークフローと操作画面の記録</h3></div></div>
+      <div class="data-list">
+        ${captures.map(item => `<article><strong>${html(item.name || item.id)}</strong><span>${html(item.type)} / ${html(item.path)}</span></article>`).join("") || "<article><strong>キャプチャなし</strong><span>source capturesフォルダは空です</span></article>"}
       </div>
     </section>
   `;
@@ -267,7 +321,7 @@ function renderCastLibrary() {
   const cast = pageState.castManifest?.cast || [];
   return `
     <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">AI Cast Library</span><h3>${cast.length} generated actors</h3></div><span class="thin-pill success">active library</span></div>
+      <div class="panel-heading"><div><span class="eyebrow">AI演者ライブラリ</span><h3>${cast.length}人の生成演者</h3></div><span class="thin-pill success">使用中ライブラリ</span></div>
       <div class="cast-library-grid">
         ${cast.map(item => `
           <article class="cast-card">
@@ -275,8 +329,8 @@ function renderCastLibrary() {
             <div>
               <h3>${html(item.name)}</h3>
               <span>${html(item.id)}</span>
-              <p>${html(item.role)}</p>
-              <div class="kv-grid"><span>Rights</span><strong>${html(item.rights_status)}</strong><span>Scope</span><strong>${html(item.use_scope)}</strong></div>
+              <p>${html(displayText(item.role))}</p>
+              <div class="kv-grid"><span>権利</span><strong>${html(displayText(item.rights_status))}</strong><span>範囲</span><strong>${html(displayText(item.use_scope))}</strong></div>
             </div>
           </article>
         `).join("")}
@@ -289,16 +343,16 @@ function renderJobs() {
   const jobs = pageState.state.jobs || [];
   return `
     <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">Seedance Jobs</span><h3>Real job state</h3></div><span class="thin-pill danger">no paid generation executed</span></div>
+      <div class="panel-heading"><div><span class="eyebrow">Seedanceジョブ</span><h3>実ジョブ状態</h3></div><span class="thin-pill danger">有料生成未実行</span></div>
       <div class="job-table">
         ${jobs.map(job => `
           <article class="job-row ${statusClass(job.status)}">
-            <div><strong>${html(job.title)}</strong><span>${html(job.id)}</span></div>
-            <div><span>Status</span><strong>${html(job.status)}</strong></div>
-            <div><span>Reference</span><strong>${html(job.primary_reference || "-")}</strong></div>
-            <div><span>Credits</span><strong>${html(job.cost_credits || "not estimated")}</strong></div>
-            <div><span>Review</span><strong>${html(job.review || "pending")}</strong></div>
-            <p>${html(job.note || "")}</p>
+            <div><strong>${html(displayText(job.title))}</strong><span>${html(job.id)}</span></div>
+            <div><span>状態</span><strong>${html(statusJa(job.status))}</strong></div>
+            <div><span>参照素材</span><strong>${html(job.primary_reference || "-")}</strong></div>
+            <div><span>クレジット</span><strong>${html(displayText(job.cost_credits || "not estimated"))}</strong></div>
+            <div><span>レビュー</span><strong>${html(statusJa(job.review || "pending"))}</strong></div>
+            <p>${html(displayText(job.note || ""))}</p>
           </article>
         `).join("")}
       </div>
@@ -310,11 +364,11 @@ function renderGates() {
   const gates = pageState.state.gates || [];
   return `
     <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">Safety Gates</span><h3>Stops before generation and publishing</h3></div></div>
+      <div class="panel-heading"><div><span class="eyebrow">安全ゲート</span><h3>生成・公開前の停止条件</h3></div></div>
       <div class="gate-grid">
         ${gates.map(gate => `
           <article class="gate-detail ${statusClass(gate.status)}">
-            <span class="thin-pill ${statusClass(gate.status)}">${html(gate.status)}</span>
+            <span class="thin-pill ${statusClass(gate.status)}">${html(statusJa(gate.status))}</span>
             <h3>${html(gate.label)}</h3>
             <p>${html(gate.id)}</p>
           </article>
@@ -330,15 +384,15 @@ function renderActivity() {
   const files = pageState.runtime?.files?.recent || [];
   return `
     <section class="page-panel">
-      <div class="panel-heading"><div><span class="eyebrow">Activity</span><h3>State audit trail</h3></div></div>
-      <div class="data-list">${activity.slice().reverse().map(item => `<article><strong>${html(item.actor)}</strong><span>${html(item.time)} / ${html(item.event)}</span></article>`).join("")}</div>
+      <div class="panel-heading"><div><span class="eyebrow">履歴</span><h3>状態監査ログ</h3></div></div>
+      <div class="data-list">${activity.slice().reverse().map(item => `<article><strong>${html(displayText(item.actor))}</strong><span>${html(item.time)} / ${html(displayText(item.event))}</span></article>`).join("")}</div>
     </section>
     <section class="page-panel">
-      <div class="panel-heading"><div><span class="eyebrow">Codex Inbox</span><h3>${inbox.length} messages</h3></div></div>
-      <div class="data-list">${inbox.slice().reverse().slice(0, 8).map(item => `<article><strong>${html(item.source || "UI")}</strong><span>${html(item.time)} / ${html(item.message || "")}</span></article>`).join("") || "<article><strong>Empty</strong><span>No inbox log in packaged mode</span></article>"}</div>
+      <div class="panel-heading"><div><span class="eyebrow">Codex受信箱</span><h3>${inbox.length}件のメッセージ</h3></div></div>
+      <div class="data-list">${inbox.slice().reverse().slice(0, 8).map(item => `<article><strong>${html(item.source || "UI")}</strong><span>${html(item.time)} / ${html(item.message || "")}</span></article>`).join("") || "<article><strong>空</strong><span>配布モードでは受信箱ログなし</span></article>"}</div>
     </section>
     <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">Watched Files</span><h3>${files.length} recent files</h3></div><span class="thin-pill">git ${html(pageState.runtime?.git?.changed_files ?? 0)} changed</span></div>
+      <div class="panel-heading"><div><span class="eyebrow">監視ファイル</span><h3>${files.length}件の最近更新</h3></div><span class="thin-pill">git ${html(pageState.runtime?.git?.changed_files ?? 0)}件変更</span></div>
       <div class="data-list">${files.map(file => `<article><strong>${html(file.path)}</strong><span>${html(file.mtime || "")} / ${html(file.bytes || 0)} bytes</span></article>`).join("")}</div>
     </section>
   `;
@@ -379,13 +433,13 @@ async function loadPageData() {
     pageState.state = state;
     pageState.library = library;
     pageState.castManifest = castManifest;
-    document.getElementById("loadStatus").textContent = `${runtime?.local_server?.local_only ? "local server" : "static"}: ${new Date().toLocaleTimeString()}`;
+    document.getElementById("loadStatus").textContent = `${runtime?.local_server?.local_only ? "ローカルサーバー" : "静的表示"}: ${new Date().toLocaleTimeString()}`;
     document.getElementById("systemTime").textContent = nowJst();
     document.getElementById("projectName").textContent = state.meta?.project || "Seedance Theater";
     renderHero();
     renderPageContent();
   } catch (error) {
-    document.getElementById("loadStatus").textContent = `load failed: ${error.message}`;
+    document.getElementById("loadStatus").textContent = `読み込み失敗: ${error.message}`;
   }
 }
 
