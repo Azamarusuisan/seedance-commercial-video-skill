@@ -1,30 +1,42 @@
 Status: proposal. Do not run until approved and this marker is removed.
 
-Purpose: Clip 1 end key visual (photoreal), per postmortem-20260701-blender-fleshout-mismatch.md.
+Purpose: Clip 1 end key visual (photoreal), per postmortem-20260701-blender-fleshout-mismatch.md
+and references/known-failure-patterns.md (FP-001, FP-003). Checked against known-failure-patterns.md
+before writing this version.
 
-Source image (structure/composition reference only, do not preserve blockout look):
+Execution route: `workspace/scripts/gpt-image-reference.sh` in edit mode.
+GPT_IMAGE_SOURCE_IMAGE=workspace/assets/3d/renders/lipstick_cm_panel_03_hero_vfx.png
+GPT_IMAGE_PROMPT_FILE=<this file>
+GPT_IMAGE_OUT=workspace/assets/references/lipstick-cm/clip_01_end_key.png
+
+Source image (structure/composition reference only — do not preserve its blockout/CG look, FP-001):
 workspace/assets/3d/renders/lipstick_cm_panel_03_hero_vfx.png
 
 Target: full premium product hero shot, settled center-frame. This is the closing beat (10-15s) key visual for Clip 1.
 
-Preserve from source:
+Preserve from source (composition only):
 - same product silhouette, cap, and bullet shape
-- same orbit light ring / floating particle composition
 - same vertical 9:16 packshot framing and negative space for a title
 - same camera distance and centered product placement
 
 Replace/add (core fix — no blockout look permitted):
-- photoreal black lacquer tube, physically-plausible reflections
-- champagne-gold metal rings, real metal specular response
-- deep red lipstick bullet, glossy and photoreal, not flat-shaded
+- photoreal black lacquer tube, physically-plausible reflections, visible micro-texture
+- champagne-gold metal, real metal specular response (brushed/polished, not flat CG gold)
+- deep red lipstick bullet, glossy and photoreal wax texture, not flat-shaded
 - real studio background with commercial-grade lighting, no visible placeholder geometry
-- volumetric light, controlled lens bloom, premium studio reflections on the product surface
+- soft volumetric light and a warm champagne-toned glow around the product, controlled photographic lens bloom, premium studio reflections on the product surface
+
+Language note (FP-003 — this caused the previous failure): describe all light/atmosphere in photographic terms only —
+bokeh, soft glints, volumetric haze, lens flare, warm rim light. Do NOT use graphic-design nouns like
+"ring", "line", "dot", or "particle" as countable drawn shapes.
 
 Explicitly avoid:
 - any visible low-poly edges, flat/placeholder materials, "3D render" or CG-primitive look
+- any drawn/graphic line, ring, or dot overlay (FP-003) — no motion-graphics-template look
 - real brand logos, real packaging, real fonts, Dior or any real brand reference
 - any visible person, hand, or face
 
-Review criteria before approval (from the postmortem):
+Review criteria before approval (from the postmortem + known-failure-patterns.md):
 - product must be photoreal luxury cosmetics quality, not a Blender-rendered primitive
+- no graphic line/ring/dot overlays anywhere in the frame (FP-003)
 - this is the shot users will judge as "does this look like a real premium ad" — hold it to that bar

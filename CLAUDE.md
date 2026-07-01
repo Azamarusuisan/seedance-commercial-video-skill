@@ -55,16 +55,18 @@ Next work is to create photoreal key visuals derived from the Blender storyboard
 
 Show the key visuals beside the original Blender panels. The user must approve them before any new Seedance estimate or generation.
 
-### Status (Claude Code, this session)
+### Status (Claude Code, this session — revised)
 
-Drafted the 4 key-visual generation prompts, following the postmortem's corrected rule (Blender = structure/composition source only, never the literal Seedance start frame; Clip 2 lips must be a single integrated shot, not a product+lips composite):
+Looked directly at the failed contact sheets (`workspace/outputs/lipstick-cm-30s/review_frames/clip_0{1,2}_contact.jpg`) and found a **second failure mode the postmortem had not caught**: the "orbit light rings / floating particles" prompt language rendered as literal white line/dot graphic overlays (a motion-graphics-template look), not photographic light. Logged as `FP-003` in the new **`references/known-failure-patterns.md`** — a durable, cross-project failure-pattern registry (the practical, non-ML-retraining version of a "feedback loop": accumulate root causes here, and every future Seedance generation must check this file first). FP-001 (raw Blender as start_image) and FP-002 (product+lips composite) are also logged there from the existing postmortem.
+
+Rewrote all 4 key-visual prompts to fix FP-003 (photographic light vocabulary only — bokeh/glints/haze — no "ring/particle/line/dot" as drawn shapes) and to explicitly route through `workspace/scripts/gpt-image-reference.sh` in edit mode (`GPT_IMAGE_SOURCE_IMAGE=<blender render>`), per user direction:
 
 - `workspace/prompts/lipstick-cm/keyvisuals/clip_01_start_key.txt`
 - `workspace/prompts/lipstick-cm/keyvisuals/clip_01_end_key.txt`
 - `workspace/prompts/lipstick-cm/keyvisuals/clip_02_lips_key.txt`
 - `workspace/prompts/lipstick-cm/keyvisuals/clip_02_final_key.txt`
 
-Each still carries a `Status: proposal` pending marker. **Not executed yet** — this session has neither `OPENAI_API_KEY` nor a connected Higgsfield MCP tool, so `gpt-image-reference.sh --image` / `higgsfield-image.sh` cannot actually be run here. Whichever agent/session has one of those available should run the 4 prompts (source images already referenced inside each file), show the results beside the original Blender panels, and get user approval before any new Seedance cost estimate or generation.
+Each still carries a `Status: proposal` pending marker. **Not executed yet** — this session has neither `OPENAI_API_KEY` nor a connected Higgsfield MCP tool. Whichever agent/session has `OPENAI_API_KEY` should run these 4 prompts through `gpt-image-reference.sh` (source images already referenced inside each file), show the results beside the original Blender panels, and get user approval before any new Seedance cost estimate or generation. `WORKFLOW.md` §7-8 now requires checking `references/known-failure-patterns.md` before every future Seedance generation, not just this project's.
 
 ## Safety / Cost Gate
 

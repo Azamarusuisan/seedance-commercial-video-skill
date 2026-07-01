@@ -1,8 +1,15 @@
 Status: proposal. Do not run until approved and this marker is removed.
 
-Purpose: Clip 2 final key visual (photoreal), per postmortem-20260701-blender-fleshout-mismatch.md.
+Purpose: Clip 2 final key visual (photoreal), per postmortem-20260701-blender-fleshout-mismatch.md
+and references/known-failure-patterns.md (FP-001, FP-003). Checked against known-failure-patterns.md
+before writing this version.
 
-Source image (structure/composition reference only, do not preserve blockout look):
+Execution route: `workspace/scripts/gpt-image-reference.sh` in edit mode.
+GPT_IMAGE_SOURCE_IMAGE=workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png
+GPT_IMAGE_PROMPT_FILE=<this file>
+GPT_IMAGE_OUT=workspace/assets/references/lipstick-cm/clip_02_final_key.png
+
+Source image (structure/composition reference only, do not preserve blockout look, FP-001):
 workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png
 
 Target: the product/lips world resolves into a premium final brand frame. This is the closing beat (26-30s) key visual for Clip 2, and the final frame of the whole 30s commercial.
@@ -18,12 +25,18 @@ Replace/add (core fix — no blockout look permitted):
 - generous negative space, clean, for a small brand tag text to be added later (placeholder brand name "ROUGE NOIR" only, no real brand)
 - quiet, settled, premium final-frame mood — the "held breath" ending of a luxury cosmetics ad
 
+Language note (FP-003): describe any light/atmosphere in photographic terms only (bokeh, soft glints,
+volumetric haze, warm rim light). Do NOT use graphic-design nouns like "ring", "line", "dot", or
+"particle" as countable drawn shapes.
+
 Explicitly avoid:
 - any visible low-poly edges or CG-primitive look
+- any drawn/graphic line, ring, or dot overlay (FP-003)
 - real brand logos, real packaging, real fonts, Dior or any real brand reference
 - any visible person, hand, or face
 - cluttered composition — this frame must read as calm and premium, not busy
 
-Review criteria before approval (from the postmortem):
+Review criteria before approval (from the postmortem + known-failure-patterns.md):
 - must visually match the material/lighting quality established in the Clip 1 key visuals (same product, same world)
+- no graphic line/ring/dot overlays anywhere in the frame (FP-003)
 - negative space must be clean enough for a brand tag to sit in later without crowding

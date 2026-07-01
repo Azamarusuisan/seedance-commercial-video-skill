@@ -1,10 +1,17 @@
 Status: proposal. Do not run until approved and this marker is removed.
 
-Purpose: Clip 2 lips key visual (photoreal), per postmortem-20260701-blender-fleshout-mismatch.md.
+Purpose: Clip 2 lips key visual (photoreal), per postmortem-20260701-blender-fleshout-mismatch.md
+and references/known-failure-patterns.md (FP-002, FP-003). Checked against known-failure-patterns.md
+before writing this version.
+
+Execution route: `workspace/scripts/gpt-image-reference.sh` in edit mode.
+GPT_IMAGE_SOURCE_IMAGE=workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png
+GPT_IMAGE_PROMPT_FILE=<this file>
+GPT_IMAGE_OUT=workspace/assets/references/lipstick-cm/clip_02_lips_key.png
 
 IMPORTANT: use the lips-only reference below, NOT the combined product+lips composite
-(workspace/assets/references/lipstick-cm/clip_02_product_plus_rina_lips_clean.png). The postmortem's
-root cause #3 was combining product and lips into one pasted-together image, which read as a collage.
+(workspace/assets/references/lipstick-cm/clip_02_product_plus_rina_lips_clean.png). FP-002's
+root cause was combining product and lips into one pasted-together image, which read as a collage.
 This key visual must be a single, integrated beauty-campaign shot, not a composite.
 
 Source image (lips-only reference, skin tone / lip shape anchor):
@@ -21,12 +28,18 @@ Build fresh around it (this is a new integrated scene, not a composite):
 - macro beauty-campaign framing: lips only, no full face, no eyes, no identifiable features
 - deep red lipstick color transfer application implied or in progress on the lips
 
+Language note (FP-003): describe any light/atmosphere in photographic terms only (bokeh, soft glints,
+volumetric haze, warm rim light). Do NOT use graphic-design nouns like "ring", "line", "dot", or
+"particle" as countable drawn shapes.
+
 Explicitly avoid:
-- any visible seam, collage edge, or mismatched lighting between a "product photo" and a "lips photo"
+- any visible seam, collage edge, or mismatched lighting between a "product photo" and a "lips photo" (FP-002)
+- any drawn/graphic line, ring, or dot overlay (FP-003)
 - full face, selfie framing, hand holding product, visible person identity
 - real brand logos, real packaging, real fonts, Dior or any real brand reference
 - customer-testimonial or influencer-style framing (per rights/safety notes in seedance-conditions.md)
 
-Review criteria before approval (from the postmortem):
-- must read as one integrated luxury cosmetics scene, not two images placed side by side
+Review criteria before approval (from the postmortem + known-failure-patterns.md):
+- must read as one integrated luxury cosmetics scene, not two images placed side by side (FP-002)
+- no graphic line/ring/dot overlays anywhere in the frame (FP-003)
 - lighting and color grade must visually match Clip 1's product shots

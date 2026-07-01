@@ -141,9 +141,11 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 
 ### 7-8. Higgsfield Seedance image-to-video
 
+- **生成前に必須: `references/known-failure-patterns.md`の全エントリを読み、今回のプロンプト・参照画像が既知の失敗パターンを踏んでいないか確認する。** 確認したことを案件のcondition md(または`review.json`)に一行残す。これは機械的なゲートではなく運用ルールなので、エージェントが毎回自分で確認する。
 - 承認済みの写実キービジュアルを参照画像として`workspace/scripts/seedance-cost.sh`→`seedance-generate.sh`に渡す。軽量パスと同じスクリプト・同じ承認手順(§6の3〜7と同一)。
 - ショットごとに同じ`.blend`由来の参照画像を使うことで、複数ショット間の一貫性を保つ。
 - **プロンプトは「肉付け」方針で書く**: Blenderの構図・配置・カメラを守り、写実キービジュアルの質感・光・素材感を起点に、映画的な動きを足す。低品質なBlender画像をテキストだけで高級CMへ変換できると期待しない。
+- **光・空気感は撮影用語で書く。図形的な名詞(ring/particle/line/dot)を数えられるモノとして描写しない**(FP-003)。bokeh、volumetric haze、soft glints、lens flareなど写真的な語彙を使う。
 
 ### 7-9. 承認ゲート2: 素材承認
 
@@ -268,7 +270,7 @@ MCPリクエスト自体(実行前のペイロード)は`workspace/mcp-requests/
 ## 14. 既知の制約・未検証事項
 
 - Higgsfield MCPの画像生成(任意・補助トーン確認用)のモデル実名(暫定`image2`)とimg2img対応可否は未検証だが、必須の通過点ではなくなったため、パイプライン全体のブロッカーにはならない。使わない選択も可。
-- Seedanceプロンプトの「肉付け」方針(手続き型のBlenderレンダーから写実的な質感・光をテキスト指示だけで引き出せるか)は未検証。最初の1回は試し生成で品質を見る前提とする。
+- **検証済み・失敗: 「Blenderレンダーをそのまま`start_image`にして、テキストプロンプトの『肉付け』指示だけで写実化する」は実際に試して失敗した**(リップスティックCM、2026-07-01、270 credits消費)。低ポリ感が残り、図形的な光表現(`ring`/`particle`)が2Dグラフィックとして描画された。正しくは、写実キービジュアルを別途生成(GPT Image edit mode等)し、承認してからSeedanceに渡す。詳細は`references/known-failure-patterns.md`(FP-001〜003)。
 - Palmier Proの`mirelo-sfx-v1.5-video-to-audio`(動画からSFX生成)は`list_models`で存在を確認しただけで、実際に動画を渡して満足のいく効果音が返るかは未検証。`elevenlabs-music`等のBGM尺指定(`durations`)も同様に未実行。最初の1回は試し生成で品質を見る前提とする。
 - リップシンクは未解決。カメラ目線の会話カットは演出で回避するか、専用ツールを別途検討する。
 - 音声と映像のタイミング合わせはPalmier Proの`sync_audio`と手動の速度調整に依存し、完全自動同期は保証しない。
@@ -284,6 +286,7 @@ MCPリクエスト自体(実行前のペイロード)は`workspace/mcp-requests/
 | Blenderプレビュー規約 | `references/blender-3d-preview-workflow.md` |
 | 「Blender主素材・生成絵コンテは補助参照」原則の初出 | `workspace/briefs/ascension-line-workflow-runbook.md` |
 | 自社素材ライブラリ(ローカルのみ、Supabase等クラウドDB非接続) | `workspace/assets/brand/README.md` |
+| 失敗パターンの蓄積台帳(生成前に必ず確認、§7-8) | `references/known-failure-patterns.md` |
 | 実装タスクと決定の経緯 | `CODEX.md` |
 | 共通の運用ルール・ハードルール | `AGENTS.md`, `workspace/agent-guides/cross-agent-runbook.md` |
 | スキル定義本体 | `SKILL.md` |
