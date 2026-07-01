@@ -6,12 +6,15 @@ Seedance generation is blocked.
 
 The current product images are reference assets only. They are not a generated storyboard and must not be treated as final visual approval.
 
+The current browser preview image is a non-canonical photoreal key-visual preview. It is not the storyboard/conte sheet.
+
 ## Required Before Cost / Generation
 
 - [x] Objective: colorful new PC, speed, color, premium feel
 - [x] Format: 15s / 16:9 / 1080p
 - [x] Product reference assets: 3 user-provided PC images
-- [ ] Generated storyboard / contact sheet: missing
+- [ ] Higgsfield MCP `image2` storyboard/conte sheet: request pending
+- [ ] Higgsfield MCP `image2` photoreal key visuals: request pending
 - [ ] Storyboard approval: missing
 - [ ] Shot list locked against storyboard: missing
 - [x] Dialogue policy: no dialogue
@@ -36,11 +39,16 @@ Reference images alone produce thin videos because they do not lock:
 
 ## Next Correct Step
 
-Prepare or generate a 4-panel photoreal storyboard contact sheet from:
+Prepare the canonical 4-panel storyboard/conte sheet through Higgsfield MCP `image2` from:
 
-- `workspace/prompts/macneo-pc-cm/storyboard-contact-sheet.txt`
+- `workspace/prompts/macneo-pc-cm/higgsfield-storyboard-conte-sheet.txt`
 - `workspace/assets/brand/products/macneo/hero.webp`
 - `workspace/assets/brand/products/macneo/color-gallery.jpeg`
 - `workspace/assets/brand/products/macneo/blush-product.jpg`
 
-Only after that storyboard is visible and approved should cost/model/final Seedance generation approval be requested.
+Then prepare two separate Higgsfield MCP `image2` photoreal key visuals:
+
+- `workspace/prompts/macneo-pc-cm/keyvisual-01-opening-lineup.txt`
+- `workspace/prompts/macneo-pc-cm/keyvisual-02-electric-hero.txt`
+
+Only after the storyboard and at least one photoreal key visual are visible and approved should cost/model/final Seedance generation approval be requested.

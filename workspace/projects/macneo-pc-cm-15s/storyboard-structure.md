@@ -3,8 +3,9 @@
 ## Current Decision
 
 - Format: 15s / 16:9 / 1080p
-- Model target: Seedance 2 via Palmier MCP
-- Status: blocked until generated storyboard exists
+- Image provider: Higgsfield MCP `image2`
+- Video target: Higgsfield MCP Seedance
+- Status: blocked until Higgsfield storyboard/conte sheet and photoreal key visual exist
 - Audio: electronic music and electric SFX allowed
 - Dialogue: none
 - Cast: none. Product-only CM.
@@ -44,6 +45,7 @@ Make the video look like premium product photography, not a raw product collage.
 
 ## Missing
 
-- Generated storyboard contact sheet is not created yet.
+- Canonical Higgsfield `image2` storyboard/conte sheet is not created yet.
 - Current images are product references only.
-- Seedance cost/generation must stay blocked until the generated storyboard is visible and approved.
+- The existing photoreal preview is a key-visual preview, not a storyboard/conte sheet.
+- Seedance cost/generation must stay blocked until the storyboard/conte sheet and photoreal key visual are visible and approved.

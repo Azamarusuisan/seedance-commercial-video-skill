@@ -39,6 +39,10 @@ workspace/assets/brand/**/*.mov
 !workspace/assets/brand/**/.gitkeep
 !workspace/assets/brand/**/*.md
 !workspace/assets/brand/**/*.json
+workspace/assets/generated/**/*.png
+workspace/assets/generated/**/*.jpg
+workspace/assets/generated/**/*.jpeg
+workspace/assets/generated/**/*.webp
 node_modules/
 playwright-report/
 test-results/

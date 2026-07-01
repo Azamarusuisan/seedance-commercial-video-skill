@@ -2,24 +2,33 @@
 
 Current status: generation preapproval.
 
-No paid generation, audio generation, subtitle rendering, Palmier edit, upscale, or publishing has been executed.
+No paid Seedance generation, audio generation, subtitle rendering, Palmier edit, upscale, or publishing has been executed.
 
 ## Proposed Generation
 
-- Model: Seedance 2.0, pending live model confirmation
+- Model: Higgsfield MCP Seedance, pending live model confirmation
 - Count: 1 video
 - Duration: 15s
 - Aspect ratio: 16:9
 - Resolution: 1080p if supported
 - Bitrate: high if supported
 - Audio generation: true
-- Primary reference: `workspace/assets/brand/products/macneo/hero.webp`
+- Primary reference: blocked until approved Higgsfield MCP `image2` photoreal key visual exists
 - Support references:
   - `workspace/assets/brand/products/macneo/color-gallery.jpeg`
   - `workspace/assets/brand/products/macneo/blush-product.jpg`
+  - `workspace/assets/brand/products/macneo/hero.webp`
 - Prompt: `workspace/prompts/macneo-pc-cm/seedance-15s-16x9.txt`
 - Output path: `workspace/outputs/macneo-pc-cm-15s-16x9.mp4`
 - Estimated credits: pending live cost/model check
+
+## Required Before Seedance Cost
+
+- Higgsfield MCP `image2` storyboard/conte sheet visible in UI
+- Higgsfield MCP `image2` photoreal key visual visible in UI
+- Human approval of storyboard structure
+- Human approval of the exact primary image
+- Cost estimate shown before final paid generation approval
 
 ## Required Post Step
 

@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-07-01T13:44:31.211620+00:00",
+  "request_type": "higgsfield_mcp.image_generate",
+  "tool_hint": "Higgsfield MCP: generate storyboard/reference image",
+  "arguments": {
+    "prompt_file": "workspace/prompts/macneo-pc-cm/keyvisual-01-opening-lineup.txt",
+    "prompt": "Create one 16:9 photoreal key visual for a premium PC commercial through Higgsfield MCP image2.\n\nThis is not the storyboard/conte sheet. This is a clean Seedance primary-image candidate after human approval.\n\nUse the provided laptop images as product, color, and material references. Do not create a contact sheet, collage, panel grid, captions, labels, numbers, or text.\n\nScene:\nA bright white studio desk with pink, blue, yellow, and silver laptops opening in sequence. The camera is low and wide, like a cinematic product dolly shot. Blue-white electric glints run subtly along laptop edges and ports, suggesting speed and power.\n\nPreserve:\ncolorful laptop lineup, slim profiles, clean screens, white desk, premium reflections, soft bloom, realistic product photography.\n\nAvoid:\npeople, hands, dialogue, readable text, fake specs, UI screens, harsh sparks, unsafe electricity, split panels, storyboard numbers, graphic overlays.\n",
+    "model": "image2",
+    "aspect_ratio": "16:9",
+    "output_file": "workspace/assets/generated/macneo-pc-cm-15s/higgsfield-keyvisual-01-opening-lineup.png",
+    "quality": "high",
+    "resolution": "2k",
+    "image_1": "workspace/assets/brand/products/macneo/hero.webp",
+    "image_1_role": "primary white desk product lineup reference",
+    "image_2": "workspace/assets/brand/products/macneo/color-gallery.jpeg",
+    "image_2_role": "color lineup and laptop profile reference",
+    "image_3": "workspace/assets/brand/products/macneo/blush-product.jpg",
+    "image_3_role": "single product finish and material reference"
+  },
+  "output_log": "workspace/logs/macneo-keyvisual-01-image2.json",
+  "execution": "Run this with the Higgsfield MCP tool exposed by the host agent. Save the sanitized MCP response to output_log.",
+  "security_note": "Do not save API keys, cookies, sessions, tokens, payment data, or raw browser storage."
+}

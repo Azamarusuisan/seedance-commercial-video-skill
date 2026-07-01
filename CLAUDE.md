@@ -10,6 +10,12 @@ Do not run paid generation or external publishing. Do not execute Higgsfield MCP
 
 The goal is to change the production system so Blender previs can never be passed directly to Seedance as a primary image. Blender is composition truth only. GPT Image / image generation creates the photoreal storyboard or key visual. Only an approved photoreal storyboard/key visual can become Seedance primary image.
 
+Provider rule:
+- The canonical cross-agent generation route is Higgsfield MCP.
+- For image/storyboard work, prepare Higgsfield MCP `image2` requests. Do not use Codex internal image generation, Palmier `generate_image`, or OpenAI API image scripts as the canonical route unless the user explicitly approves a one-off fallback.
+- Media created through Codex-internal tools or Palmier may be kept as non-canonical preview/evidence, but must not be marked as approved storyboard/key visual for Seedance.
+- This rule exists because Claude/OpenCrew cannot reproduce Codex-only internal generation. The repo must stay executable by Higgsfield MCP-capable agents.
+
 ### Non-Negotiable Policy
 
 - Blender role: `composition_only`.

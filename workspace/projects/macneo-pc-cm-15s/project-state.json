@@ -2,33 +2,35 @@
   "meta": {
     "project": "MacNeo PC CM 15s",
     "project_id": "macneo-pc-cm-15s",
-    "updated_at": "2026-07-01T12:35:21.479Z",
+    "updated_at": "2026-07-01T13:36:00.000Z",
     "active_stage": "seedance_generation_preapproval",
     "codex_status": "blocked_before_paid_generation",
     "operator_message": "新作PCの15秒CM。PC向け16:9、音声あり。参照画像3枚を使用し、電気が走るVFXで製品の凄さを表現する。"
   },
   "route": "light",
-  "current_stage": "preproduction_scope_alignment",
+  "current_stage": "higgsfield_storyboard_request_ready",
   "generation_blocked": true,
-  "block_reason": "generated_storyboard_and_full_preproduction_scope_missing",
+  "block_reason": "awaiting_higgsfield_image2_storyboard_and_keyvisual_execution",
   "image_generation_allowed": false,
   "seedance_generation_allowed": false,
   "audio_generation_allowed": false,
   "post_edit_allowed": false,
   "current_work": {
-    "title": "生成前スコープ再確認",
-    "summary": "参照素材だけでは薄い動画になるため、生成絵コンテ・素材設計・台本・配役・音声・字幕を先に固定する。",
-    "owner": "Human + Codex + Seedance",
+    "title": "Higgsfield絵コンテ実行待ち",
+    "summary": "いま見えている写真は絵コンテではなく非正規の写真キープレビュー。正規フローはHiggsfield MCP image2でコンテシートと写真キーを作る。",
+    "owner": "Human + Higgsfield MCP + Seedance",
     "input": "workspace/projects/macneo-pc-cm-15s/brief.md",
     "output": "workspace/outputs/macneo-pc-cm-15s-16x9.mp4",
-    "status_text": "Seedance生成は停止中。生成絵コンテ未作成、費用見積/最終承認も未完了。"
+    "status_text": "Higgsfield image2 storyboard/keyvisual request pending"
   },
   "visual_handoff": {
-    "status": "blocked_until_generated_storyboard",
+    "status": "higgsfield_image2_request_pending",
+    "canonical_provider": "higgsfield_mcp",
+    "canonical_image_model": "image2",
     "blender_role": "not_used",
-    "storyboard_status": "missing_generated_storyboard",
+    "storyboard_status": "pending_higgsfield_image2_execution",
     "seedance_primary_image_allowed": false,
-    "block_reason": "ユーザー素材3枚は参照素材。Seedance投入前に生成絵コンテ/キービジュアルの確認が必要。",
+    "block_reason": "絵コンテは未生成。Palmier/Codex由来の写真キープレビューは非正規素材で、Higgsfield image2成果物として扱わない。",
     "approval_board": "workspace/projects/macneo-pc-cm-15s/seedance-approval.md"
   },
   "audio_post": {
@@ -93,13 +95,21 @@
     ]
   },
   "storyboard": {
-    "status": "blocked_missing_generated_storyboard",
+    "status": "higgsfield_image2_request_pending",
     "required": true,
+    "canonical_provider": "higgsfield_mcp",
+    "canonical_model": "image2",
     "structure_diagram": "workspace/projects/macneo-pc-cm-15s/storyboard-structure.md",
-    "generation_prompt": "workspace/prompts/macneo-pc-cm/storyboard-contact-sheet.txt",
+    "conte_spec": "workspace/projects/macneo-pc-cm-15s/storyboard-conte.md",
+    "generation_prompt": "workspace/prompts/macneo-pc-cm/higgsfield-storyboard-conte-sheet.txt",
+    "canonical_storyboard_request": "workspace/mcp-requests/macneo-storyboard-conte-sheet-image2.request.json",
+    "canonical_keyvisual_requests": [
+      "workspace/mcp-requests/macneo-keyvisual-01-image2.request.json",
+      "workspace/mcp-requests/macneo-keyvisual-02-image2.request.json"
+    ],
     "generated_contact_sheet": "",
-    "approval_status": "not_requested",
-    "note": "現在あるのはユーザー提供PC素材の参照ボード。生成絵コンテはまだ作っていないため、Seedance生成は禁止。",
+    "approval_status": "pending_higgsfield_image2_execution",
+    "note": "絵コンテはImage #2のような構成確認用コンテシート。写真キーはSeedance用の別成果物。Palmier/Codex由来画像は非正規プレビューとしてのみ扱う。",
     "panels": [
       {
         "id": "panel_01",
@@ -107,8 +117,9 @@
         "title": "Electric Edge Hook",
         "reference_image": "workspace/assets/brand/products/macneo/blush-product.jpg",
         "generated_storyboard_image": "",
-        "status": "missing_generated_storyboard",
-        "seedance_use": "blocked_until_storyboard"
+        "status": "pending_higgsfield_image2_storyboard",
+        "seedance_use": "blocked_until_higgsfield_storyboard_and_keyvisual_approval",
+        "generated_image": ""
       },
       {
         "id": "panel_02",
@@ -116,8 +127,9 @@
         "title": "Color Lineup Open",
         "reference_image": "workspace/assets/brand/products/macneo/color-gallery.jpeg",
         "generated_storyboard_image": "",
-        "status": "missing_generated_storyboard",
-        "seedance_use": "blocked_until_storyboard"
+        "status": "pending_higgsfield_image2_storyboard",
+        "seedance_use": "blocked_until_higgsfield_storyboard_and_keyvisual_approval",
+        "generated_image": ""
       },
       {
         "id": "panel_03",
@@ -125,8 +137,9 @@
         "title": "Electric Hero Orbit",
         "reference_image": "workspace/assets/brand/products/macneo/hero.webp",
         "generated_storyboard_image": "",
-        "status": "missing_generated_storyboard",
-        "seedance_use": "blocked_until_storyboard"
+        "status": "pending_higgsfield_image2_storyboard",
+        "seedance_use": "blocked_until_higgsfield_storyboard_and_keyvisual_approval",
+        "generated_image": ""
       },
       {
         "id": "panel_04",
@@ -134,8 +147,46 @@
         "title": "Final Product Title Space",
         "reference_image": "workspace/assets/brand/products/macneo/hero.webp",
         "generated_storyboard_image": "",
-        "status": "missing_generated_storyboard",
-        "seedance_use": "blocked_until_storyboard"
+        "status": "pending_higgsfield_image2_storyboard",
+        "seedance_use": "blocked_until_higgsfield_storyboard_and_keyvisual_approval",
+        "generated_image": ""
+      }
+    ],
+    "noncanonical_preview_media_ref": "0DA3C3E8",
+    "noncanonical_preview_model": "palmier_gpt-image-2",
+    "model": "image2",
+    "quality": "high",
+    "resolution": "2k",
+    "review_notes": [
+      "現時点のブラウザ画像は写真キーの非正規プレビューで、絵コンテではない。",
+      "Higgsfield image2でImage #2型のコンテシートを生成してから構成承認する。",
+      "Seedanceへ渡す画像は、別途Higgsfield image2で作るphotoreal key visualを承認してから使う。",
+      "日本語字幕と macneo apple はSeedance内生成ではなく後編集で正確に入れる。"
+    ],
+    "generated_contact_sheet_local_path": "",
+    "noncanonical_preview_local_path": "workspace/assets/generated/macneo-pc-cm-15s/keyvisual-02-electric-hero.jpg",
+    "keyvisuals_required": 2,
+    "keyvisuals": [
+      {
+        "id": "keyvisual_01",
+        "title": "Opening lineup / low dolly",
+        "status": "pending_higgsfield_mcp_execution",
+        "media_ref": "",
+        "local_path": "",
+        "prompt_path": "workspace/prompts/macneo-pc-cm/keyvisual-01-opening-lineup.txt",
+        "role": "seedance_start_candidate",
+        "previous_noncanonical_media_ref": "8441D4B6",
+        "previous_noncanonical_failure_reason": "Palmier downstream service error"
+      },
+      {
+        "id": "keyvisual_02",
+        "title": "Electric hero / orbit",
+        "status": "pending_higgsfield_mcp_execution",
+        "media_ref": "",
+        "local_path": "",
+        "prompt_path": "workspace/prompts/macneo-pc-cm/keyvisual-02-electric-hero.txt",
+        "role": "seedance_primary_candidate",
+        "noncanonical_preview_path": "workspace/assets/generated/macneo-pc-cm-15s/keyvisual-02-electric-hero.jpg"
       }
     ]
   },
@@ -143,20 +194,20 @@
     {
       "id": "macneo_clip_01",
       "title": "MacNeo PC CM / 15s",
-      "status": "blocked_missing_generated_storyboard",
+      "status": "blocked_higgsfield_storyboard_pending",
       "duration_seconds": 15,
       "aspect_ratio": "16:9",
       "resolution": "1080p",
       "bitrate_mode": "high",
       "generate_audio": true,
       "prompt_path": "workspace/prompts/macneo-pc-cm/seedance-15s-16x9.txt",
-      "reference_image": "workspace/assets/brand/products/macneo/hero.webp",
+      "reference_image": "",
       "secondary_reference": "workspace/assets/brand/products/macneo/color-gallery.jpeg",
       "asset_manifest": "workspace/assets/brand/products/macneo/asset-manifest.json",
       "permission_manifest": "workspace/run/macneo-pc-cm-15s.permission.json",
       "output_path": "workspace/outputs/macneo-pc-cm-15s-16x9.mp4",
       "cost_credits": "blocked",
-      "primary_reference": "Palmier media B7B16D97 / hero.webp",
+      "primary_reference": "blocked until approved Higgsfield image2 photoreal key visual",
       "reference_media_refs": [
         "B7B16D97",
         "A35A9A50",
@@ -164,19 +215,21 @@
       ],
       "model": "seedance-2",
       "prompt_summary": "カラーPCラインナップを白スタジオで見せ、青白い電気VFXで速さとパワーを演出。音楽/SFXあり、セリフなし。",
-      "note": "Seedance生成前に生成絵コンテと制作スコープ承認が必要"
+      "note": "Higgsfield image2の絵コンテ/写真キーが未完了。Palmier/Codex画像は非正規プレビュー。",
+      "storyboard_media_ref": "",
+      "storyboard_image": ""
     }
   ],
   "gates": [
     {
       "id": "generated_storyboard_required",
       "label": "生成絵コンテ必須",
-      "status": "blocked"
+      "status": "pending"
     },
     {
       "id": "scope_alignment_required",
       "label": "台本/配役/音声/字幕確認",
-      "status": "blocked"
+      "status": "pending"
     },
     {
       "id": "cost_model_check",
@@ -210,7 +263,7 @@
       "id": "reference_assets",
       "label": "PC素材登録",
       "status": "done",
-      "output": "Palmier media: B7B16D97 / A35A9A50 / D8183E09"
+      "output": "workspace/assets/brand/products/macneo/hero.webp / color-gallery.jpeg / blush-product.jpg"
     },
     {
       "id": "preproduction_scope",
@@ -221,14 +274,14 @@
     {
       "id": "storyboard_image",
       "label": "生成絵コンテ",
-      "status": "blocked",
-      "output": "workspace/prompts/macneo-pc-cm/storyboard-contact-sheet.txt"
+      "status": "active",
+      "output": "workspace/mcp-requests/macneo-storyboard-conte-sheet-image2.request.json"
     },
     {
       "id": "gate_storyboard",
       "label": "承認ゲート:絵コンテ",
       "status": "blocked",
-      "output": "生成絵コンテ承認待ち"
+      "output": "Higgsfield image2実行待ち"
     },
     {
       "id": "seedance_conditions",
@@ -275,8 +328,8 @@
     {
       "id": "generated_storyboard",
       "label": "生成絵コンテ",
-      "status": "blocked",
-      "note": "未生成。4パネルcontact sheet/key visualを先に作る"
+      "status": "pending",
+      "note": "Higgsfield image2のコンテシート/写真キー実行待ち。既存画像は非正規プレビュー"
     },
     {
       "id": "material_plan",
@@ -293,8 +346,8 @@
     {
       "id": "shot_list",
       "label": "カメラ割り",
-      "status": "blocked",
-      "note": "生成絵コンテに合わせてmacro/wide/orbit/finalを固定"
+      "status": "pending",
+      "note": "Image #2型のコンテシートでmacro/wide/orbit/finalを確認する"
     },
     {
       "id": "dialogue_policy",
@@ -330,17 +383,18 @@
       "id": "cost_estimate",
       "label": "費用見積",
       "status": "blocked",
-      "note": "生成絵コンテ承認後に確認"
+      "note": "絵コンテ承認後に確認"
     },
     {
       "id": "final_generation_approval",
       "label": "最終生成許可",
       "status": "blocked",
-      "note": "費用/モデル/出力先を見せてから承認"
+      "note": "絵コンテ承認後、費用/モデル/出力先を見せてから承認"
     }
   ],
   "learning": {
     "last_failure_pattern_check": "FP-CANDIDATE-007: checklist too thin; generated storyboard missing; scope alignment now blocks generation",
-    "next_prompt_rule": "Never treat product reference board as generated storyboard. Require generated storyboard/key visual and full scope checklist before cost/generation."
+    "next_prompt_rule": "Never treat product reference board as generated storyboard. Require generated storyboard/key visual and full scope checklist before cost/generation.",
+    "last_preflight_check": "Generated storyboard ready; Seedance remains blocked until human approval."
   }
 }

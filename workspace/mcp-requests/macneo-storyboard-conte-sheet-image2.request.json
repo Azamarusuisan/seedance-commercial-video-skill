@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-07-01T13:44:31.160703+00:00",
+  "request_type": "higgsfield_mcp.image_generate",
+  "tool_hint": "Higgsfield MCP: generate storyboard/reference image",
+  "arguments": {
+    "prompt_file": "workspace/prompts/macneo-pc-cm/higgsfield-storyboard-conte-sheet.txt",
+    "prompt": "Create a 16:9 production storyboard / conte sheet for a 15-second premium PC commercial.\n\nUse the provided laptop images only as product, color, shape, and material references.\n\nLayout:\nFour clear storyboard panels in one sheet, left to right, like a commercial film planning board. Each panel should show a distinct shot. Use clean pencil-and-marker production storyboard style with light grayscale shading and subtle color accents for the pink, blue, yellow, and silver laptops.\n\nPanel 1, 0-2s:\nMacro push across a closed laptop edge on a white studio desk. Blue-white electric energy glides along the edge and ports. This is the silent hook.\n\nPanel 2, 2-6s:\nWide low dolly shot. Pink, blue, yellow, and silver laptops open in sequence on a bright white desk.\n\nPanel 3, 6-11s:\nCamera orbits the colorful laptop lineup. Controlled blue-white energy trails connect the devices, suggesting speed and power without harsh sparks.\n\nPanel 4, 11-15s:\nFinal clean product lineup in a bright white studio with negative space on the right for post-production title text.\n\nImportant:\n- This is a storyboard/conte planning image, not the final photoreal Seedance start image.\n- Do not create a single product beauty shot.\n- Do not create a contact-sheet of unrelated photos.\n- Do not include readable Japanese text, logos, fake specs, captions, UI screens, or handwritten labels inside the image.\n- Do not invent people, hands, presenters, testimonials, or packaging.\n- Keep Apple-like logos only if they are already visible in the provided product references; do not add new brand marks.\n\nStyle:\nProfessional commercial storyboard, clear panel composition, camera arrows and motion guides are allowed, no dense text, no manga character scene, no clutter.\n",
+    "model": "image2",
+    "aspect_ratio": "16:9",
+    "output_file": "workspace/assets/generated/macneo-pc-cm-15s/higgsfield-storyboard-conte-sheet.png",
+    "quality": "high",
+    "resolution": "2k",
+    "image_1": "workspace/assets/brand/products/macneo/hero.webp",
+    "image_1_role": "primary white desk product lineup reference",
+    "image_2": "workspace/assets/brand/products/macneo/color-gallery.jpeg",
+    "image_2_role": "color lineup and laptop profile reference",
+    "image_3": "workspace/assets/brand/products/macneo/blush-product.jpg",
+    "image_3_role": "single product finish and material reference"
+  },
+  "output_log": "workspace/logs/macneo-storyboard-conte-sheet-image2.json",
+  "execution": "Run this with the Higgsfield MCP tool exposed by the host agent. Save the sanitized MCP response to output_log.",
+  "security_note": "Do not save API keys, cookies, sessions, tokens, payment data, or raw browser storage."
+}

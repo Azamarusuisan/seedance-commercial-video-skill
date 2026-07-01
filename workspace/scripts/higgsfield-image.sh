@@ -11,6 +11,8 @@ SOURCE_IMAGE="${IMAGE_FILE:-${HIGGSFIELD_IMAGE_SOURCE_IMAGE:-}}"
 SOURCE_IMAGES="${HIGGSFIELD_IMAGE_SOURCE_IMAGES:-}"
 OUT_FILE="${IMAGE_OUT:-workspace/assets/reference-image-v1.png}"
 ASPECT_RATIO="${ASPECT_RATIO:-9:16}"
+QUALITY="${HIGGSFIELD_IMAGE_QUALITY:-}"
+RESOLUTION="${HIGGSFIELD_IMAGE_RESOLUTION:-}"
 LOG_PATH="${IMAGE_LOG:-$LOG_DIR/image-result.json}"
 REQ_PATH="${REQ_PATH:-$MCP_REQUEST_DIR/higgsfield-image.request.json}"
 
@@ -59,15 +61,27 @@ fi
 
 mkdir -p "$REPO_ROOT/$(dirname "$OUT_FILE")"
 
+request_pairs=(
+  "model=$MODEL"
+  "aspect_ratio=$ASPECT_RATIO"
+  "output_file=$OUT_FILE"
+)
+
+if [ -n "$QUALITY" ]; then
+  request_pairs+=("quality=$QUALITY")
+fi
+
+if [ -n "$RESOLUTION" ]; then
+  request_pairs+=("resolution=$RESOLUTION")
+fi
+
 write_mcp_request_with_prompt \
   "$REQ_PATH" \
   "higgsfield_mcp.image_generate" \
   "Higgsfield MCP: generate storyboard/reference image" \
   "$LOG_PATH" \
   "$PROMPT_FILE" \
-  "model=$MODEL" \
-  "aspect_ratio=$ASPECT_RATIO" \
-  "output_file=$OUT_FILE" \
+  "${request_pairs[@]}" \
   ${image_pairs[@]+"${image_pairs[@]}"}
 
 write_status_json "$LOG_PATH" "Higgsfield MCP image generation $MODEL" "pending_mcp_execution" "Prepared MCP request at $REQ_PATH. Run it with the host-provided Higgsfield MCP image tool, then record the sanitized result with: bash workspace/scripts/record-mcp-json.sh image <mcp-response.json>"

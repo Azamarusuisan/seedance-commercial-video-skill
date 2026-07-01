@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-07-01T13:44:31.262654+00:00",
+  "request_type": "higgsfield_mcp.image_generate",
+  "tool_hint": "Higgsfield MCP: generate storyboard/reference image",
+  "arguments": {
+    "prompt_file": "workspace/prompts/macneo-pc-cm/keyvisual-02-electric-hero.txt",
+    "prompt": "Create one 16:9 photoreal key visual for a premium PC commercial through Higgsfield MCP image2.\n\nThis is not the storyboard/conte sheet. This is a clean Seedance primary-image candidate after human approval.\n\nUse the provided laptop images as product, color, and material references. Do not create a contact sheet, collage, panel grid, captions, labels, numbers, or text.\n\nScene:\nHero orbit moment around a colorful laptop lineup in a bright white studio. Pink, blue, yellow, and silver laptops form a clean premium arrangement. Controlled blue-white electric trails arc between devices as soft photographic light, not drawn lines. The composition leaves clean negative space on the right for Japanese subtitles added later.\n\nPreserve:\ncolor variety, laptop shape, bright studio, premium product reflections, clean high-end tech advertising look.\n\nAvoid:\npeople, hands, dialogue, readable text, fake specs, fake UI, panel divisions, storyboard numbers, clutter, exaggerated lightning, cheap CGI look.\n",
+    "model": "image2",
+    "aspect_ratio": "16:9",
+    "output_file": "workspace/assets/generated/macneo-pc-cm-15s/higgsfield-keyvisual-02-electric-hero.png",
+    "quality": "high",
+    "resolution": "2k",
+    "image_1": "workspace/assets/brand/products/macneo/hero.webp",
+    "image_1_role": "primary white desk product lineup reference",
+    "image_2": "workspace/assets/brand/products/macneo/color-gallery.jpeg",
+    "image_2_role": "color lineup and laptop profile reference",
+    "image_3": "workspace/assets/brand/products/macneo/blush-product.jpg",
+    "image_3_role": "single product finish and material reference"
+  },
+  "output_log": "workspace/logs/macneo-keyvisual-02-image2.json",
+  "execution": "Run this with the Higgsfield MCP tool exposed by the host agent. Save the sanitized MCP response to output_log.",
+  "security_note": "Do not save API keys, cookies, sessions, tokens, payment data, or raw browser storage."
+}

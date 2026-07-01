@@ -9,10 +9,12 @@ dry_run: true
 - FP-003: graphic light nouns risk
 
 ## Blocked Risks
+- missing approved photoreal key visual
+- primary image role is not visual_truth
 - primary image is not approved
 - seedance_input_allowed is not true
+- rights_status is missing or unknown
 - generated storyboard/contact sheet is missing
-- storyboard status blocks Seedance preparation
 
 ## Prompt Changes Required
 - Use Blender only as composition/camera guide.
@@ -35,6 +37,6 @@ dry_run: true
 - demand_patterns: True
 - project_brief: True
 - project_state: workspace/projects/macneo-pc-cm-15s/project-state.json
-- seedance_prompt: workspace/prompts/macneo-pc-cm/seedance-15s-16x9.txt
+- seedance_prompt: missing
 - visual_handoff: missing
-- asset_manifest: workspace/assets/brand/products/macneo/asset-manifest.json
+- asset_manifest: missing

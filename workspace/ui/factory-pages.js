@@ -5,6 +5,7 @@ const PAGE_LIBRARY_PATH = "state/asset-library.json";
 const PAGE_NAV = [
   { id: "factory", label: "ダッシュボード", href: "live-workflow.html", note: "全体管制" },
   { id: "generation-review", label: "生成レビュー", href: "generation-review.html", note: "承認判断" },
+  { id: "storyboard", label: "絵コンテ", href: "storyboard.html", note: "画像確認" },
   { id: "studio-lines", label: "制作ライン", href: "studio-lines.html", note: "工程フロー" },
   { id: "assets", label: "素材", href: "assets.html", note: "入力可否" },
   { id: "cast-library", label: "演者（キャスト）", href: "cast-library.html", note: "権利範囲" },
@@ -29,6 +30,13 @@ const PAGE_META = {
     intent: "Blender構図コンポと写真キー候補を分け、Seedanceへ進めるかを判断する。",
     source: "generation-state.json / storyboard / jobs / blender_assets",
     decision: "承認済み写真キー画像があるか確認する。",
+  },
+  storyboard: {
+    title: "絵コンテ",
+    subtitle: "生成絵コンテ・素材・台本の確認",
+    intent: "Seedance本番前に、絵コンテ、素材3枚、秒割り、音声/字幕方針を一画面で確認する。",
+    source: "project-state.json / generated storyboard / product references",
+    decision: "この絵コンテでSeedance条件提示へ進めるかを判断する。",
   },
   generation: {
     title: "生成レビュー",
@@ -272,6 +280,35 @@ function workflowNodeClass(step) {
   return "pending";
 }
 
+function firstWorkspacePath(value) {
+  return String(value || "").match(/workspace\/[^\s,，)]+?\.(?:md|txt|json|jpg|jpeg|png|webp|mp4)/i)?.[0] || "";
+}
+
+function phaseLink(phase) {
+  const state = pageState.state || {};
+  const projectId = state.meta?.project_id || "macneo-pc-cm-15s";
+  const storyboard = state.storyboard?.generated_contact_sheet_local_path || state.storyboard?.generated_contact_sheet;
+  const paths = {
+    brief: `workspace/projects/${projectId}/brief.md`,
+    reference_assets: state.jobs?.[0]?.asset_manifest || "assets.html",
+    preproduction_scope: `workspace/projects/${projectId}/preproduction-checklist.md`,
+    storyboard_image: storyboard || state.storyboard?.generation_prompt,
+    gate_storyboard: storyboard || `workspace/projects/${projectId}/storyboard-structure.md`,
+    seedance_conditions: `workspace/projects/${projectId}/seedance-approval.md`,
+    seedance_generation: state.jobs?.[0]?.prompt_path || "jobs.html",
+    post_edit: "script.html",
+  };
+  return toProjectPath(firstWorkspacePath(phase.output || phase.note) || paths[phase.id] || "");
+}
+
+function p0StepClass(status) {
+  const key = String(status || "").toLowerCase();
+  if (["done", "completed", "approved"].includes(key)) return "done";
+  if (["active", "generating", "review_ready"].includes(key)) return "current";
+  if (["blocked", "locked"].includes(key)) return "blocked";
+  return "pending";
+}
+
 function visualHandoff() {
   const state = pageState.state || {};
   const approvedKey = (state.jobs || []).find(job => /approved|ready/i.test(`${job.approval_status || ""} ${job.review_decision || ""}`) && job.reference_image && !isBlenderDerived(job.reference_image) && !isSupportOnly(job.reference_image));
@@ -300,6 +337,7 @@ function normalizeFactoryState(runtime, state, library) {
     jobs,
     gates,
     counts: runtime?.counts || {},
+    storyboardImage: state.storyboard?.generated_contact_sheet_local_path || state.storyboard?.generated_contact_sheet || panels[0]?.generated_image || "",
     blenderImage: state.blender?.render_path || firstJob.reference_image || panels[0]?.generated_image || "",
     supportImage: jobs.find(job => job.reference_image && isSupportOnly(job.reference_image))?.reference_image || "",
     keySlots: jobs.length ? jobs : [0, 1, 2, 3],
@@ -442,29 +480,18 @@ function imageCard(src, title, note = "") {
 
 function workflowCards(workflow) {
   return `<div class="cockpit-flow">${workflow.map((phase, index) => `
-    <article class="${statusClass(phase.status)}">
+    <a class="${statusClass(phase.status)}" href="${html(phaseLink(phase))}">
       <i>${String(index + 1).padStart(2, "0")}</i>
       <strong>${html(compactText(phase.label || phase.id || "工程", 18))}</strong>
       <span>${html(statusJa(phase.status))}</span>
       <small>${html(compactText(summaryText(phase.output || phase.note || ""), 42))}</small>
-    </article>
+    </a>
   `).join("")}</div>`;
 }
 
 function renderFactory() {
   const data = normalizeFactoryState(pageState.runtime, pageState.state || {}, pageState.library || {});
-  const steps = [
-    ["01", "企画 / 台本", "完了", "done", "構成済み"],
-    ["02", "Blender previs", "完了", "done", "composition_only"],
-    ["03", "Visual handoff", "完了", "done", "構図の正"],
-    ["04", "写実絵コンテ / Key visual", "未生成", "current", "次に実行"],
-    ["05", "Key visual承認", "未承認", "blocked", "BLOCK"],
-    ["06", "Seedance見積", "禁止", "blocked", "写真キー待ち"],
-    ["07", "Seedance生成", "禁止", "blocked", "写真キー待ち"],
-    ["08", "レビュー", "未開始", "pending", "映像後"],
-    ["09", "音声 / 字幕 / Palmier", "映像承認後", "pending", "後工程"],
-    ["10", "発信", "禁止", "blocked", "公開不可"],
-  ];
+  const steps = pageState.state.workflow || [];
   return `
     <section class="p0-dashboard">
       <article class="p0-hero p0-blocked">
@@ -478,11 +505,11 @@ function renderFactory() {
             <div><dt>音声・字幕・Palmier</dt><dd>映像承認後</dd></div>
           </dl>
         </div>
-        <div class="p0-blender-mini">
-          ${data.blenderImage ? `<img src="${html(toProjectPath(data.blenderImage))}" alt="Blender構図ソース">` : `<div class="image-placeholder">BLENDER</div>`}
-          <strong>Blender構図ソース</strong>
-          <span>composition_only / Seedance入力不可</span>
-        </div>
+        <a class="p0-blender-mini" href="${html(toProjectPath(data.storyboardImage || data.blenderImage))}">
+          ${data.storyboardImage || data.blenderImage ? `<img src="${html(toProjectPath(data.storyboardImage || data.blenderImage))}" alt="生成絵コンテ">` : `<div class="image-placeholder">STORYBOARD</div>`}
+          <strong>${data.storyboardImage ? "生成絵コンテ" : "構図ソース"}</strong>
+          <span>${data.storyboardImage ? "クリックで画像を開く" : "composition_only / Seedance入力不可"}</span>
+        </a>
       </article>
       <aside class="p0-next">
         <span class="eyebrow">次にやること（最優先）</span>
@@ -496,15 +523,15 @@ function renderFactory() {
         <a href="generation-review.html">生成レビューへ</a>
       </aside>
       <section class="p0-panel p0-pipeline">
-        <div class="p0-panel-head"><span>制作パイプライン</span><strong>写真キー未承認で全工程停止</strong></div>
+        <div class="p0-panel-head"><span>制作パイプライン</span><strong>各カードをクリックで素材へ移動</strong></div>
         <div class="p0-steps">
-          ${steps.map(step => `
-            <article class="${step[3]}">
-              <i>${step[0]}</i>
-              <strong>${html(step[1])}</strong>
-              <span>${html(step[2])}</span>
-              <small>${html(step[4])}</small>
-            </article>
+          ${steps.map((step, index) => `
+            <a class="${p0StepClass(step.status)}" href="${html(phaseLink(step))}">
+              <i>${String(index + 1).padStart(2, "0")}</i>
+              <strong>${html(step.label || step.id || "工程")}</strong>
+              <span>${html(statusJa(step.status))}</span>
+              <small>${html(compactText(summaryText(step.output || step.note || ""), 34))}</small>
+            </a>
           `).join("")}
         </div>
       </section>
@@ -530,7 +557,7 @@ function renderFactory() {
         <div class="p0-panel-head"><span>役割</span><strong>混同禁止</strong></div>
         <div class="p0-role-grid">
           <article><b>Blender</b><span>composition_only</span><em>Seedance入力不可</em></article>
-          <article><b>GPT Image / Key visual</b><span>visual_truth</span><em>承認後のみ入力候補</em></article>
+          <article><b>Higgsfield image2 / Key visual</b><span>visual_truth</span><em>承認後のみ入力候補</em></article>
           <article><b>Seedance</b><span>motion_truth</span><em>写真キー承認後</em></article>
         </div>
       </section>
@@ -619,7 +646,7 @@ function renderAssets() {
         <div class="p0-panel-head"><span>ハンドオフフロー</span><strong>Blender -> 写真キー -> 承認 -> Seedance</strong></div>
         <div class="asset-handoff-flow">
           <article class="blocked"><strong>Blenderプレビュー</strong><span>構図のみ / 入力不可</span></article>
-          <article><strong>GPT Image</strong><span>写真キー化</span></article>
+          <article><strong>Higgsfield image2</strong><span>写真キー化</span></article>
           <article><strong>承認</strong><span>人間レビュー</span></article>
           <article class="ready"><strong>Seedance入力可</strong><span>承認済みのみ</span></article>
         </div>
@@ -801,6 +828,89 @@ function renderGeneration() {
   `;
 }
 
+function renderStoryboardPage() {
+  const state = pageState.state || {};
+  const storyboard = state.storyboard || {};
+  const script = state.script || {};
+  const beats = script.beats || [];
+  const job = state.jobs?.[0] || {};
+  const board = storyboard.generated_contact_sheet_local_path || storyboard.generated_contact_sheet || job.storyboard_image || "";
+  const noncanonicalPreview = storyboard.noncanonical_preview_local_path || "";
+  const requestPath = storyboard.canonical_storyboard_request || "";
+  const contePath = storyboard.conte_spec || storyboard.structure_diagram || "";
+  const keyRequests = storyboard.canonical_keyvisual_requests || [];
+  const refs = [
+    ["Hero lineup", "workspace/assets/brand/products/macneo/hero.webp"],
+    ["Color gallery", "workspace/assets/brand/products/macneo/color-gallery.jpeg"],
+    ["Blush closeup", "workspace/assets/brand/products/macneo/blush-product.jpg"],
+  ];
+  return `
+    <section class="storyboard-review-page">
+      <article class="storyboard-main-panel">
+        <div class="p0-panel-head">
+          <span>Higgsfield image2 絵コンテ</span>
+          <strong>${html(statusJa(storyboard.status || "pending"))} / ${html(storyboard.approval_status || "未承認")}</strong>
+        </div>
+        ${board ? `<a href="${html(toProjectPath(board))}" target="_blank" rel="noopener"><img src="${html(toProjectPath(board))}" alt="MacNeo generated storyboard"></a>` : `<div class="image-placeholder">Higgsfield image2 絵コンテ未生成</div>`}
+        <div class="storyboard-file-actions">
+          ${requestPath ? `<a class="p0-link" href="${html(toProjectPath(requestPath))}" target="_blank" rel="noopener">Higgsfield request JSON</a>` : ""}
+          ${contePath ? `<a class="p0-link" href="${html(toProjectPath(contePath))}" target="_blank" rel="noopener">コンテ仕様</a>` : ""}
+        </div>
+      </article>
+      <aside class="storyboard-side-panel">
+        <div class="p0-panel-head"><span>判断</span><strong>Seedance前</strong></div>
+        <div class="p0-gate-list">
+          <span class="${storyboard.status === "review_ready" ? "ok" : "warn"}">絵コンテ: ${html(statusJa(storyboard.status))}</span>
+          <span class="warn">承認: ${html(storyboard.approval_status || "未承認")}</span>
+          <span class="bad">Seedance: ${html(state.seedance_generation_allowed ? "許可" : "未許可")}</span>
+          <span class="ok">正規ルート: Higgsfield MCP image2</span>
+        </div>
+        <a class="p0-link" href="generation-review.html">生成レビューへ</a>
+      </aside>
+      ${noncanonicalPreview ? `
+        <section class="p0-panel storyboard-noncanonical-panel">
+          <div class="p0-panel-head"><span>非正規プレビュー</span><strong>絵コンテではありません</strong></div>
+          <a href="${html(toProjectPath(noncanonicalPreview))}" target="_blank" rel="noopener"><img src="${html(toProjectPath(noncanonicalPreview))}" alt="Non-canonical key visual preview"></a>
+          <p class="compact-copy">これは過去に作った写真キープレビューです。Higgsfield image2の正規成果物ではないため、Seedance承認素材にはしません。</p>
+        </section>
+      ` : ""}
+      ${keyRequests.length ? `
+        <section class="p0-panel storyboard-keyrequest-panel">
+          <div class="p0-panel-head"><span>写真キー request</span><strong>Higgsfield image2</strong></div>
+          <div class="p0-gate-list">
+            ${keyRequests.map(path => `<a class="p0-link" href="${html(toProjectPath(path))}" target="_blank" rel="noopener">${html(path)}</a>`).join("")}
+          </div>
+        </section>
+      ` : ""}
+      <section class="p0-panel storyboard-reference-panel">
+        <div class="p0-panel-head"><span>使用素材</span><strong>3 references</strong></div>
+        <div class="storyboard-ref-grid">
+          ${refs.map(([title, src]) => imageCard(src, title, "Higgsfield image2 reference")).join("")}
+        </div>
+      </section>
+      <section class="p0-panel storyboard-beat-panel">
+        <div class="p0-panel-head"><span>15秒構成</span><strong>台本 / カメラ割り</strong></div>
+        <div class="script-timeline">
+          ${beats.map(beat => `
+            <article>
+              <time>${html(beat.time || "")}</time>
+              <strong>${html(beat.telop || beat.caption || "")}</strong>
+              <p>${html(beat.visual || "")}</p>
+              <span>${html(beat.narration || "音楽/SFX")}</span>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+      <section class="p0-panel storyboard-notes-panel">
+        <div class="p0-panel-head"><span>レビュー注意</span><strong>後編集前提</strong></div>
+        <div class="p0-gate-list">
+          ${(storyboard.review_notes || []).map(note => `<span class="warn">${html(note)}</span>`).join("") || `<span class="warn">字幕と macneo apple は後編集</span>`}
+        </div>
+      </section>
+    </section>
+  `;
+}
+
 function broadcastPostText() {
   const state = pageState.state || {};
   const project = compactText(state.meta?.project || state.script?.title || "新作リップCM", 34);
@@ -873,6 +983,7 @@ function renderPageContent() {
     factory: renderFactory,
     generation: renderGeneration,
     "generation-review": renderGeneration,
+    storyboard: renderStoryboardPage,
     "studio-lines": renderStudioLines,
     assets: renderAssets,
     "cast-library": renderCastLibrary,

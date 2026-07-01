@@ -1,0 +1,29 @@
+Create a 16:9 production storyboard / conte sheet for a 15-second premium PC commercial.
+
+Use the provided laptop images only as product, color, shape, and material references.
+
+Layout:
+Four clear storyboard panels in one sheet, left to right, like a commercial film planning board. Each panel should show a distinct shot. Use clean pencil-and-marker production storyboard style with light grayscale shading and subtle color accents for the pink, blue, yellow, and silver laptops.
+
+Panel 1, 0-2s:
+Macro push across a closed laptop edge on a white studio desk. Blue-white electric energy glides along the edge and ports. This is the silent hook.
+
+Panel 2, 2-6s:
+Wide low dolly shot. Pink, blue, yellow, and silver laptops open in sequence on a bright white desk.
+
+Panel 3, 6-11s:
+Camera orbits the colorful laptop lineup. Controlled blue-white energy trails connect the devices, suggesting speed and power without harsh sparks.
+
+Panel 4, 11-15s:
+Final clean product lineup in a bright white studio with negative space on the right for post-production title text.
+
+Important:
+- This is a storyboard/conte planning image, not the final photoreal Seedance start image.
+- Do not create a single product beauty shot.
+- Do not create a contact-sheet of unrelated photos.
+- Do not include readable Japanese text, logos, fake specs, captions, UI screens, or handwritten labels inside the image.
+- Do not invent people, hands, presenters, testimonials, or packaging.
+- Keep Apple-like logos only if they are already visible in the provided product references; do not add new brand marks.
+
+Style:
+Professional commercial storyboard, clear panel composition, camera arrows and motion guides are allowed, no dense text, no manga character scene, no clutter.
