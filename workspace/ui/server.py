@@ -123,7 +123,8 @@ def blender_summary() -> dict[str, object]:
     app_paths = sorted(Path("/Applications").glob("Blender*")) if Path("/Applications").exists() else []
     executable = ""
     if app_paths:
-        app_executable = app_paths[0] / "Contents" / "MacOS" / "Blender"
+        # Highest version: glob+sort is ascending, so the last entry wins.
+        app_executable = app_paths[-1] / "Contents" / "MacOS" / "Blender"
         if app_executable.exists():
             executable = str(app_executable)
     if not executable:
@@ -473,20 +474,15 @@ class CodexWorkflowHandler(SimpleHTTPRequestHandler):
         if not is_allowed_origin(self.headers.get("Origin", ""), self.server.server_address):
             self.send_error(403, "Origin not allowed")
             return
+        # No CORS allow-headers: cross-origin requests are intentionally rejected.
+        # This server pastes-and-runs text into the user's Terminal, so it must
+        # never accept requests a malicious site could trigger via the browser.
         self.send_response(204)
-        origin = self.headers.get("Origin", "")
-        if origin:
-            self.send_header("Access-Control-Allow-Origin", origin)
-        self.send_header("Access-Control-Allow-Headers", "content-type")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.end_headers()
 
     def send_json(self, payload: dict[str, object], status: int = 200) -> None:
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
-        origin = self.headers.get("Origin", "")
-        if is_allowed_origin(origin, self.server.server_address) and origin:
-            self.send_header("Access-Control-Allow-Origin", origin)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()

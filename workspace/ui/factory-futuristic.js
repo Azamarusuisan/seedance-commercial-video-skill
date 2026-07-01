@@ -475,7 +475,7 @@ function renderFactoryVisual() {
         <img class="raw-blender-screen" src="${escapeHtml(toProjectPath(projectedFrame.path))}?t=${encodeURIComponent(cacheKey)}" alt="Blender実画面キャプチャ">
       ` : `
           <div class="blender-window-bar">
-            <span>Blender 5.1.2</span>
+            <span>${escapeHtml(appState.runtime?.blender?.version || "Blender")}</span>
             <strong>ビューポート</strong>
             <em>${escapeHtml(statusJa(blenderStatus))}</em>
           </div>
@@ -1002,7 +1002,12 @@ function renderAll() {
   renderSystemPerformance();
   renderTerminal();
   renderLowerData();
-  document.getElementById("nextInstruction").value = appState.state.meta?.next_terminal_instruction || "";
+  // Don't clobber what the user is typing: renderAll runs ~every second, so only
+  // seed the field when it isn't focused (otherwise live edits get wiped mid-type).
+  const nextInstruction = document.getElementById("nextInstruction");
+  if (nextInstruction && document.activeElement !== nextInstruction) {
+    nextInstruction.value = appState.state.meta?.next_terminal_instruction || "";
+  }
 }
 
 async function sendInstruction() {

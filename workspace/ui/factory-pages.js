@@ -350,8 +350,8 @@ function renderCastLibrary() {
 function renderScript() {
   const script = pageState.state.script || {};
   const beats = script.beats || [];
-  const voiceLines = script.voice_script || beats.map(beat => beat.narration).filter(Boolean);
-  const telopLines = script.telop_plan || beats.map(beat => beat.telop).filter(Boolean);
+  const voiceLines = script.voice_script?.length ? script.voice_script : beats.map(beat => beat.narration).filter(Boolean);
+  const telopLines = script.telop_plan?.length ? script.telop_plan : beats.map(beat => beat.telop).filter(Boolean);
   return `
     <section class="page-panel wide">
       <div class="panel-heading">

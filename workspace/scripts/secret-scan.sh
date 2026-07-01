@@ -5,6 +5,12 @@ source "$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/_common.sh"
 require_repo
 cd "$REPO_ROOT"
 
+# Fail closed: a secret scan that can't run must not report "clean".
+if ! command -v rg >/dev/null 2>&1; then
+  log_warn "ripgrep (rg) not found; cannot run the secret scan. Install rg and rerun."
+  exit 1
+fi
+
 high_confidence_hits="$(rg -l --hidden \
   --glob '!.git/**' \
   --glob '!node_modules/**' \
