@@ -632,17 +632,30 @@ function renderAssets() {
             ${card.image ? `<img src="${html(toProjectPath(card.image))}" alt="${html(card.title)}">` : `<div class="p0-asset-empty">未生成</div>`}
             <strong>${html(card.title)}</strong>
             <div class="p0-badges">
-              <span>${html(card.kind)}</span>
-              <span>${html(card.role)}</span>
-              <span>${html(card.approval)}</span>
-              <span>${html(card.rights)}</span>
-              <span>${card.allowed ? "入力可" : "入力不可"}</span>
+              ${assetBadges(card).map(label => `<span>${html(label)}</span>`).join("")}
             </div>
           </article>
         `).join("")}
       </section>
     </section>
   `;
+}
+
+function assetBadges(card) {
+  const kind = {
+    blender_previs: "Blender",
+    photoreal_key_visual: "写真キー",
+    support_reference_only: "補助参照",
+    external_reference: "外部参考",
+  }[card.kind] || card.kind;
+  const role = {
+    composition_only: "構図のみ",
+    visual_truth: "画作り",
+    "lips-skin-tone only": "唇色参照",
+    reference_only: "参考のみ",
+  }[card.role] || card.role;
+  const status = card.allowed ? "入力可" : card.kind === "photoreal_key_visual" ? "未生成" : "入力不可";
+  return [kind, role, status].filter(Boolean);
 }
 
 function renderCastLibrary() {
