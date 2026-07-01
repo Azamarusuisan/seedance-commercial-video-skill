@@ -139,7 +139,7 @@ For story content, especially Japanese Vlog narration:
 
 - Keep Seedance visual-only: `generate_audio=false`.
 - Write exact narration first.
-- Generate voice-over with the approved TTS provider, e.g. Higgsfield ElevenLabs when available.
+- Generate voice-over with the approved TTS provider, e.g. Palmier Pro `generate_audio` when available.
 - Add subtitles/telop during editing, after the audio timing is known.
 - Do not ask Seedance to render readable subtitles inside the video.
 

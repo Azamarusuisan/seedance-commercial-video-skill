@@ -8,7 +8,7 @@ cd "$REPO_ROOT"
 if [ "$#" -ne 2 ]; then
   cat >&2 <<'EOF'
 Usage:
-  bash workspace/scripts/record-mcp-json.sh <account|model|cost|job|narration> <mcp-response.json>
+  bash workspace/scripts/record-mcp-json.sh <account|model|cost|job> <mcp-response.json>
 
 This records a sanitized Higgsfield MCP JSON response into the standard workspace log.
 Do not pass files containing cookies, sessions, tokens, payment data, or browser storage exports.
@@ -36,9 +36,6 @@ case "$kind" in
     ;;
   job)
     output="$LOG_DIR/job-v1.json"
-    ;;
-  narration)
-    output="$LOG_DIR/narration-result.json"
     ;;
   *)
     log_warn "Unknown kind: $kind"
@@ -85,4 +82,3 @@ with open(url_log, "w", encoding="utf-8") as f:
 PY
   log_info "Updated $LOG_DIR/result-urls.md"
 fi
-

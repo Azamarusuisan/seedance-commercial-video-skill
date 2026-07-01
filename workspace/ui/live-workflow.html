@@ -73,6 +73,8 @@
 
       <section class="metric-row" id="metricRow" aria-label="生成指標"></section>
 
+      <section class="glass-panel requirements-panel" id="requirementsPanel"></section>
+
       <div class="dashboard-grid">
         <aside class="side-stack left-stack" aria-label="工場監視パネル">
           <section class="glass-panel" id="factoryOverviewPanel"></section>
@@ -150,6 +152,10 @@
             </div>
           </article>
 
+          <section class="glass-panel blender-review-panel" id="blenderReview"></section>
+
+          <section class="glass-panel storyboard-review-panel" id="storyboardReview"></section>
+
           <section class="glass-panel pipeline-panel" id="pipeline">
             <div class="panel-heading">
               <div>
@@ -175,15 +181,15 @@
           <section class="glass-panel inbox-panel">
             <div class="panel-heading">
               <div>
-                <span class="eyebrow">Codex受信箱ブリッジ</span>
-                <h3>次のターミナル指示</h3>
+                <span class="eyebrow">次の判断</span>
+                <h3>生成前の確認メモ</h3>
               </div>
-              <span class="thin-pill danger">有料生成未実行</span>
+              <span class="thin-pill danger">生成許可待ち</span>
             </div>
             <textarea id="nextInstruction" readonly></textarea>
             <div class="button-row">
-              <button id="sendInstruction" type="button">この内容をCodexに送信</button>
-              <button id="copyInstruction" class="ghost-button" type="button">指示をコピー</button>
+              <button id="copyInstruction" type="button">確認メモをコピー</button>
+              <button id="sendInstruction" class="ghost-button" type="button">Codexへ送信</button>
               <span id="sendStatus">未送信</span>
             </div>
           </section>
@@ -208,12 +214,18 @@
         </div>
       </section>
 
-      <section class="lower-data-grid" id="assets">
-        <article class="glass-panel" id="library"></article>
-        <article class="glass-panel" id="script"></article>
-        <article class="glass-panel" id="jobs"></article>
-        <article class="glass-panel" id="conversation"></article>
-        <article class="glass-panel" id="gates"></article>
+      <section class="lower-data-section collapsed" id="lowerDataSection">
+        <button class="section-toggle" id="lowerDataToggle" type="button" aria-expanded="false">
+          <span>詳細データパネル</span>
+          <strong>開く</strong>
+        </button>
+        <div class="lower-data-grid" id="assets">
+          <article class="glass-panel" id="library"></article>
+          <article class="glass-panel" id="script"></article>
+          <article class="glass-panel" id="jobs"></article>
+          <article class="glass-panel" id="conversation"></article>
+          <article class="glass-panel" id="gates"></article>
+        </div>
       </section>
     </main>
   </div>

@@ -11,6 +11,11 @@ workspace/**/secrets*.json
 workspace/tmp/
 workspace/logs/*.raw.json
 workspace/logs/*.err
+workspace/logs/*.json
+workspace/logs/*.md
+workspace/logs/result-urls.md
+workspace/mcp-requests/*.json
+workspace/ui/state/*.json
 workspace/ui/state/codex-inbox.jsonl
 workspace/ui/state/codex-terminal-forward.jsonl
 workspace/ui/**/__pycache__/
