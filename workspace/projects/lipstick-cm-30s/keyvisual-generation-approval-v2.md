@@ -8,6 +8,12 @@ No paid image generation, Seedance generation, audio generation, or publishing h
 
 Create four photoreal key visuals from the approved composition sources. These images are not final videos. They are the only candidates that may become Seedance primary images after human approval.
 
+The storyboard board is the review surface for the full flow before any paid generation:
+
+- Board JSON: `workspace/projects/lipstick-cm-30s/storyboard/storyboard-board.json`
+- Board HTML: `workspace/projects/lipstick-cm-30s/storyboard/storyboard-board.html`
+- Rule: approve the board first, then generate/approve the four photoreal key visuals, then prepare Seedance.
+
 ## Shared Conditions
 
 - Project: lipstick-cm-30s
