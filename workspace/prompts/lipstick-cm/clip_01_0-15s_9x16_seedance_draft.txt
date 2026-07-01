@@ -8,6 +8,9 @@ ROUGE NOIR, placeholder luxury lipstick brand. This is an original fictional pro
 Reference image:
 Use the provided Blender lipstick previs render and camera storyboard panels as the primary visual anchor. Preserve the black lacquer lipstick tube, champagne-gold rim light, dark premium background, deep red bullet, floating gold/red particles, anamorphic light blades, orbit glow rings, macro product photography mood, and large negative space.
 
+Non-negotiable flesh-out rule:
+Do not replace the Blender storyboard with a different lipstick commercial. Flesh out the exact Blender previs: keep the same product silhouette, cap position, gold rings, black tube, vertical 9:16 packshot framing, orbit light rings, floating particles, camera cuts, and dark stage geometry. Add high-end CG polish, cinematic reflections, volumetric light, depth of field, and premium motion on top of that structure.
+
 Visual direction:
 Hollywood-level CG cosmetics reveal, quiet luxury, restrained color palette, glossy black and deep red, champagne-gold highlights, macro lens, shallow depth of field, slow motion, volumetric light, premium studio reflections, controlled lens bloom, elegant silence, no salesy mood.
 

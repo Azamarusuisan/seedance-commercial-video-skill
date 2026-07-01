@@ -8,6 +8,9 @@ ROUGE NOIR, placeholder luxury lipstick brand. This is an original fictional pro
 Reference image:
 Use the provided Blender lipstick previs render and camera storyboard panels as the product anchor. Use `workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png` only as a lips/skin-tone reference for the color-application close-up. Preserve the black lacquer tube, champagne-gold highlight, deep red lipstick color, floating gold/red particles, anamorphic light blades, orbit glow rings, dark luxury studio mood, and minimal composition.
 
+Non-negotiable flesh-out rule:
+Do not replace the Blender storyboard with a different beauty ad. Flesh out the exact Blender previs: keep the same product silhouette, gold rings, black tube, vertical 9:16 packshot framing, orbit light rings, floating particles, camera cuts, and dark stage geometry. Use the Rina Hayun crop only for the anonymous lips color-on close-up, then cut back to the same Blender product hero structure. Add high-end CG polish, cinematic reflections, volumetric light, depth of field, and premium motion on top of that structure.
+
 Visual direction:
 Hollywood-level CG beauty finish, macro product and anonymous lips close-up, glossy red lip color appearing on lips, slow camera movement, match cuts, shallow depth of field, controlled particles, cinematic gold bloom, restrained premium lighting, no loud ad language.
 
