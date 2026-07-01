@@ -23,6 +23,7 @@ ASSET_LIBRARY_PATH = STATE_DIR / "asset-library.json"
 ASSET_3D_DIR = REPO_ROOT / "workspace" / "assets" / "3d"
 MCP_REQUEST_DIR = REPO_ROOT / "workspace" / "mcp-requests"
 LOG_DIR = REPO_ROOT / "workspace" / "logs"
+PROJECTS_DIR = REPO_ROOT / "workspace" / "projects"
 LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1"}
 
 
@@ -244,9 +245,21 @@ def higgsfield_mcp_state() -> dict[str, object]:
     }
 
 
+def latest_project_state() -> tuple[dict[str, object] | None, Path | None]:
+    candidates = [path for path in PROJECTS_DIR.glob("*/project-state.json") if path.is_file()]
+    if not candidates:
+        return None, None
+    latest = max(candidates, key=lambda path: path.stat().st_mtime_ns)
+    state = read_json(latest, {})
+    return (state if isinstance(state, dict) else None), latest
+
+
 def factory_data(server_address: tuple[str, int]) -> dict[str, object]:
     state = read_json(STATE_PATH, {})
     library = read_json(ASSET_LIBRARY_PATH, {})
+    project_state, project_state_path = latest_project_state()
+    if project_state:
+        state = project_state
 
     cast_manifest_path = REPO_ROOT / "workspace" / "assets" / "cast" / "generated_20260629" / "cast-manifest.json"
     manifest_ref = library.get("generated_cast_manifest", {}) if isinstance(library, dict) else {}
@@ -301,6 +314,10 @@ def factory_data(server_address: tuple[str, int]) -> dict[str, object]:
             "terminal_forward_app": os.environ.get("CODEX_TERMINAL_APP", "Terminal"),
         },
         "state": state,
+        "active_project": {
+            "path": rel(project_state_path) if project_state_path else rel(STATE_PATH),
+            "source": "project-state.json" if project_state_path else "generation-state.json",
+        },
         "library": library,
         "cast_manifest": cast_manifest,
         "inbox": inbox,
@@ -330,6 +347,7 @@ def factory_data(server_address: tuple[str, int]) -> dict[str, object]:
         },
         "files": {
             "state": file_record(STATE_PATH),
+            "active_project_state": file_record(project_state_path) if project_state_path else file_record(STATE_PATH),
             "asset_library": file_record(ASSET_LIBRARY_PATH),
             "codex_inbox": file_record(INBOX_PATH),
             "terminal_forward_log": file_record(TERMINAL_FORWARD_LOG),

@@ -289,20 +289,21 @@ function normalizeFactoryState(runtime, state, library) {
   const jobs = state.jobs || [];
   const gates = state.gates || [];
   const handoff = visualHandoff();
+  const firstJob = jobs[0] || {};
   return {
-    project: state.meta?.project || state.script?.title || "新作リップCM 30s / ROUGE NOIR",
+    project: state.meta?.project || state.script?.title || "新規CM",
     updatedAt: state.meta?.updated_at || runtime?.generated_at || "",
-    blockReason: "承認済みphotoreal key visualが未生成 / 未承認",
-    nextAction: "4枚の写真キー画像を生成 → レビュー → 承認する",
+    blockReason: state.visual_handoff?.block_reason || state.block_reason || "承認待ちです",
+    nextAction: state.current_work?.summary || state.meta?.operator_message || "生成条件を確認して承認する",
     handoff,
     panels,
     jobs,
     gates,
     counts: runtime?.counts || {},
-    blenderImage: state.blender?.render_path || panels[0]?.generated_image || "",
+    blenderImage: state.blender?.render_path || firstJob.reference_image || panels[0]?.generated_image || "",
     supportImage: jobs.find(job => job.reference_image && isSupportOnly(job.reference_image))?.reference_image || "",
-    keySlots: [0, 1, 2, 3],
-    approvedKeyCount: 0,
+    keySlots: jobs.length ? jobs : [0, 1, 2, 3],
+    approvedKeyCount: jobs.filter(job => /approved|ready/i.test(String(job.approval_status || job.status || ""))).length,
     library,
   };
 }
@@ -741,29 +742,35 @@ function renderGates() {
 
 function renderGeneration() {
   const data = normalizeFactoryState(pageState.runtime, pageState.state || {}, pageState.library || {});
+  const usesBlender = pageState.state.visual_handoff?.blender_role !== "not_used";
+  const sourceTitle = usesBlender ? "Blender構図（構図の正）" : "参照素材（商品の正）";
+  const sourceBadge = usesBlender ? "Seedance入力不可" : "承認後入力可";
+  const sourceNote = usesBlender ? "構図・カメラ・動きの設計図です。画作りの正ではありません。" : "ユーザー提供の商品素材です。費用・権利・最終生成許可の確認後にSeedance参照へ進めます。";
+  const candidateLabel = usesBlender ? "写真キー候補（画作りの正）" : "Seedance生成条件";
+  const candidateStatus = pageState.state.seedance_generation_allowed ? "生成可" : "未承認";
   return `
     <section class="p0-review">
       <header class="p0-page-alert">
         <div>
           <span class="danger-label">BLOCKED</span>
-          <h3>承認済みphotoreal key visualが必要です</h3>
-          <p>この画像はBlender構図コンポジションです。Seedanceへ投入するには、承認済みの写実キー画像が必要です。BlenderはSeedance入力不可。</p>
+          <h3>${html(data.blockReason)}</h3>
+          <p>${html(data.nextAction)}</p>
         </div>
         <a href="assets.html">素材分類を見る</a>
       </header>
       <main class="p0-review-board">
         <article class="p0-review-card p0-blender-card">
-          <div class="p0-card-head"><span>Blender構図（構図の正）</span><b>Seedance入力不可</b></div>
-          ${data.blenderImage ? `<img src="${html(toProjectPath(data.blenderImage))}" alt="Blender構図コンポ">` : `<div class="image-placeholder">BLENDER</div>`}
-          <p>構図・カメラ・動きの設計図です。画作りの正ではありません。</p>
+          <div class="p0-card-head"><span>${html(sourceTitle)}</span><b>${html(sourceBadge)}</b></div>
+          ${data.blenderImage ? `<img src="${html(toProjectPath(data.blenderImage))}" alt="${html(sourceTitle)}">` : `<div class="image-placeholder">SOURCE</div>`}
+          <p>${html(sourceNote)}</p>
         </article>
         <article class="p0-review-card p0-key-card">
-          <div class="p0-card-head"><span>写真キー候補（画作りの正）</span><b>未生成</b></div>
+          <div class="p0-card-head"><span>${html(candidateLabel)}</span><b>${html(candidateStatus)}</b></div>
           <div class="p0-empty-key">
-            <strong>未生成</strong>
-            <span>写真キー画像を4枚生成してください</span>
+            <strong>${html(candidateStatus)}</strong>
+            <span>${html(pageState.state.current_work?.status_text || "承認後に次工程へ進めます")}</span>
           </div>
-          <p>承認後のみSeedance primary image候補になります。</p>
+          <p>UI承認は記録用です。実生成はmanifest/permissionゲートで別途止まります。</p>
         </article>
       </main>
       <aside class="p0-checklist">
@@ -783,9 +790,9 @@ function renderGeneration() {
           ${data.keySlots.map((_, index) => `
             <article>
               <i>0${index + 1}</i>
-              <strong>写真キー候補 ${index + 1}</strong>
-              <span>not_generated</span>
-              <small>Seedance入力不可</small>
+              <strong>${html(data.jobs[index]?.title || `候補 ${index + 1}`)}</strong>
+              <span>${html(data.jobs[index]?.status || "not_generated")}</span>
+              <small>${html(data.jobs[index]?.cost_credits ? `${data.jobs[index].cost_credits} credits` : "承認待ち")}</small>
             </article>
           `).join("")}
         </div>

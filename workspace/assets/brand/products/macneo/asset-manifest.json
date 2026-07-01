@@ -1,0 +1,34 @@
+{
+  "schema_version": "asset_manifest.v1",
+  "asset_id": "macneo_user_product_refs",
+  "project_id": "macneo-pc-cm-15s",
+  "asset_kind": "rights_confirmed_user_asset",
+  "role": "visual_truth",
+  "rights_status": "user_provided_publication_review_required",
+  "use_scope": "internal_draft_until_rights_review",
+  "approval_status": "pending",
+  "seedance_input_allowed": false,
+  "known_failure_checked_at": "2026-07-01T20:58:00+09:00",
+  "learning_preflight": "workspace/projects/macneo-pc-cm-15s/learning-preflight.md",
+  "assets": [
+    {
+      "id": "macneo_hero_table",
+      "path": "workspace/assets/brand/products/macneo/hero.webp",
+      "role": "primary_visual_anchor",
+      "notes": "Wide hero reference with multiple colorful laptops on a white desk."
+    },
+    {
+      "id": "macneo_color_gallery",
+      "path": "workspace/assets/brand/products/macneo/color-gallery.jpeg",
+      "role": "color_and_form_reference",
+      "notes": "Color lineup and hinge/profile reference."
+    },
+    {
+      "id": "macneo_blush_product",
+      "path": "workspace/assets/brand/products/macneo/blush-product.jpg",
+      "role": "single_product_finish_reference",
+      "notes": "Blush/pink finish and clean product back reference."
+    }
+  ],
+  "notes": "User provided product references. Apple/logo/publication rights must be checked before external publishing."
+}

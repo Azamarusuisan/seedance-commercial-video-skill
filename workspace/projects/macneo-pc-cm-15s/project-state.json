@@ -1,0 +1,174 @@
+{
+  "meta": {
+    "project": "MacNeo PC CM 15s",
+    "project_id": "macneo-pc-cm-15s",
+    "updated_at": "2026-07-01T20:58:00+09:00",
+    "active_stage": "seedance_generation_preapproval",
+    "codex_status": "blocked_before_paid_generation",
+    "operator_message": "新作PCの15秒CM。参照画像3枚を使用し、電気が走るようなVFXで製品の凄さを表現する。"
+  },
+  "route": "light",
+  "current_stage": "seedance_generation_preapproval",
+  "generation_blocked": true,
+  "block_reason": "cost_model_final_approval_missing",
+  "image_generation_allowed": false,
+  "seedance_generation_allowed": false,
+  "audio_generation_allowed": false,
+  "post_edit_allowed": false,
+  "current_work": {
+    "title": "MacNeo PC CM 生成前承認",
+    "summary": "15秒のPC商品CM。Seedance生成前にモデル・費用・参照素材・出力先の確認が必要。",
+    "owner": "Human + Codex + Seedance",
+    "input": "workspace/projects/macneo-pc-cm-15s/brief.md",
+    "output": "workspace/outputs/macneo-pc-cm-15s.mp4",
+    "status_text": "Palmier Editor unavailable。生成条件提示まで。"
+  },
+  "visual_handoff": {
+    "status": "user_product_refs_ready",
+    "blender_role": "not_used",
+    "storyboard_status": "not_required_for_user_product_refs",
+    "seedance_primary_image_allowed": false,
+    "block_reason": "費用見積と最終生成承認が未完了です",
+    "approval_board": "workspace/projects/macneo-pc-cm-15s/seedance-approval.md"
+  },
+  "audio_post": {
+    "status": "blocked_until_visual_approval",
+    "narration": "not_started",
+    "bgm": "not_started",
+    "sfx": "not_started",
+    "subtitles": "not_started",
+    "palmier": "not_started",
+    "note": "日本語字幕と final title macneo apple は後編集で追加。"
+  },
+  "script": {
+    "title": "MacNeo PC CM 15s",
+    "beats": [
+      {
+        "time": "0-2s",
+        "clip": "Clip 1",
+        "visual": "カラーPCのエッジをマクロでなめる。青白い電流が走る。",
+        "caption": "軽さ、走る。"
+      },
+      {
+        "time": "2-6s",
+        "clip": "Clip 1",
+        "visual": "ピンク、ブルー、イエロー、シルバーが順番に開く。",
+        "caption": "色で選べる、新しいPC。"
+      },
+      {
+        "time": "6-11s",
+        "clip": "Clip 1",
+        "visual": "ラインナップをカメラが回り込み、電気の軌跡がデバイス間をつなぐ。",
+        "caption": "毎日を、もっと速く。"
+      },
+      {
+        "time": "11-15s",
+        "clip": "Clip 1",
+        "visual": "白いスタジオで全色ラインナップ。余白に後編集タイトル。",
+        "caption": "macneo apple"
+      }
+    ]
+  },
+  "storyboard": {
+    "status": "user_assets_ready",
+    "panels": [
+      {
+        "id": "panel_01",
+        "time": "0-2s",
+        "title": "Electric Edge Hook",
+        "generated_image": "workspace/assets/brand/products/macneo/blush-product.jpg",
+        "reference_image": "workspace/assets/brand/products/macneo/blush-product.jpg",
+        "seedance_use": "product macro start"
+      },
+      {
+        "id": "panel_02",
+        "time": "2-6s",
+        "title": "Color Lineup Open",
+        "generated_image": "workspace/assets/brand/products/macneo/color-gallery.jpeg",
+        "reference_image": "workspace/assets/brand/products/macneo/color-gallery.jpeg",
+        "seedance_use": "color lineup support"
+      },
+      {
+        "id": "panel_03",
+        "time": "6-15s",
+        "title": "Hero Desk Finish",
+        "generated_image": "workspace/assets/brand/products/macneo/hero.webp",
+        "reference_image": "workspace/assets/brand/products/macneo/hero.webp",
+        "seedance_use": "primary visual anchor"
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "id": "macneo_clip_01",
+      "title": "MacNeo PC CM / 15s",
+      "status": "pending_cost",
+      "duration_seconds": 15,
+      "aspect_ratio": "9:16",
+      "resolution": "1080p",
+      "bitrate_mode": "high",
+      "generate_audio": false,
+      "prompt_path": "workspace/prompts/macneo-pc-cm/seedance-15s-9x16.txt",
+      "reference_image": "workspace/assets/brand/products/macneo/hero.webp",
+      "secondary_reference": "workspace/assets/brand/products/macneo/color-gallery.jpeg",
+      "asset_manifest": "workspace/assets/brand/products/macneo/asset-manifest.json",
+      "permission_manifest": "workspace/run/macneo-pc-cm-15s.permission.json",
+      "output_path": "workspace/outputs/macneo-pc-cm-15s.mp4",
+      "cost_credits": "pending"
+    }
+  ],
+  "gates": [
+    {
+      "id": "cost_model_check",
+      "label": "モデル/費用確認",
+      "status": "blocked"
+    },
+    {
+      "id": "human_generation_approval",
+      "label": "最終生成許可",
+      "status": "blocked"
+    },
+    {
+      "id": "publication_rights",
+      "label": "Apple表記/公開権利確認",
+      "status": "blocked"
+    },
+    {
+      "id": "post_subtitle_audio",
+      "label": "字幕/音声は映像承認後",
+      "status": "locked"
+    }
+  ],
+  "workflow": [
+    {
+      "id": "brief",
+      "label": "案件化",
+      "status": "done",
+      "output": "workspace/projects/macneo-pc-cm-15s/brief.md"
+    },
+    {
+      "id": "reference_assets",
+      "label": "素材登録",
+      "status": "done",
+      "output": "workspace/assets/brand/products/macneo/asset-manifest.json"
+    },
+    {
+      "id": "seedance_conditions",
+      "label": "生成条件確認",
+      "status": "active",
+      "output": "workspace/projects/macneo-pc-cm-15s/seedance-approval.md"
+    },
+    {
+      "id": "seedance_generation",
+      "label": "Seedance生成",
+      "status": "blocked",
+      "output": "最終承認待ち"
+    },
+    {
+      "id": "post_edit",
+      "label": "日本語字幕/BGM/SFX",
+      "status": "locked",
+      "output": "映像レビュー後"
+    }
+  ]
+}
