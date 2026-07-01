@@ -4499,6 +4499,14 @@ body[data-page="assets"] {
   font-weight: 900;
 }
 
+.p0-asset-file {
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
 .p0-next {
   display: grid;
   align-content: start;
@@ -4952,7 +4960,7 @@ body[data-page="assets"] {
   flex-wrap: wrap;
 }
 
-.p0-tabs span {
+.p0-tabs button {
   display: inline-flex;
   min-height: 32px;
   align-items: center;
@@ -4961,6 +4969,9 @@ body[data-page="assets"] {
   border-radius: 9px;
   color: var(--muted);
   background: rgba(255, 255, 255, 0.04);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
 }
 
 .p0-tabs .active {

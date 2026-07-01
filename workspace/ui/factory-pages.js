@@ -4,6 +4,7 @@ const PAGE_LIBRARY_PATH = "state/asset-library.json";
 
 const PAGE_NAV = [
   { id: "factory", label: "ダッシュボード", href: "live-workflow.html", note: "全体管制" },
+  { id: "preflight", label: "最終確認", href: "preflight.html", note: "生成前チェック" },
   { id: "generation-review", label: "生成レビュー", href: "generation-review.html", note: "承認判断" },
   { id: "storyboard", label: "絵コンテ", href: "storyboard.html", note: "画像確認" },
   { id: "studio-lines", label: "制作ライン", href: "studio-lines.html", note: "工程フロー" },
@@ -23,6 +24,13 @@ const PAGE_META = {
     intent: "何を作っていて、どこで止まり、次に何をすれば進むかを見る。",
     source: "/api/factory-data",
     decision: "次にやることとブロック理由を確認する。",
+  },
+  preflight: {
+    title: "最終確認",
+    subtitle: "Seedance投入前の全素材チェック",
+    intent: "台本、素材、絵コンテ、音声、字幕、生成条件、停止理由を一画面で確認する。",
+    source: "project-state.json / production_assets / storyboard / script",
+    decision: "写真キー生成、Seedance見積、Seedance生成のどこへ進めるかを判断する。",
   },
   "generation-review": {
     title: "生成レビュー",
@@ -116,6 +124,7 @@ const pageState = {
   state: {},
   library: {},
   castManifest: {},
+  assetFilter: "all",
 };
 
 function html(value) {
@@ -340,7 +349,7 @@ function normalizeFactoryState(runtime, state, library) {
     storyboardImage: state.storyboard?.generated_contact_sheet_local_path || state.storyboard?.generated_contact_sheet || panels[0]?.generated_image || "",
     blenderImage: state.blender?.render_path || firstJob.reference_image || panels[0]?.generated_image || "",
     supportImage: jobs.find(job => job.reference_image && isSupportOnly(job.reference_image))?.reference_image || "",
-    keySlots: jobs.length ? jobs : [0, 1, 2, 3],
+    keySlots: state.storyboard?.keyvisuals?.length ? state.storyboard.keyvisuals : (jobs.length ? jobs : [0, 1, 2, 3]),
     approvedKeyCount: jobs.filter(job => /approved|ready/i.test(String(job.approval_status || job.status || ""))).length,
     library,
   };
@@ -587,21 +596,39 @@ function renderAssets() {
   const lib = data.library || {};
   const refs = lib.external_references || [];
   const cast = pageState.castManifest?.cast || [];
-  const blenderCards = data.panels.slice(0, 4).map(panel => ({
+  const productionCards = (pageState.state.production_assets || []).map(item => {
+    const path = item.path || item.image || "";
+    const category = assetCategory(item.kind);
+    return {
+      title: item.title || item.id,
+      image: /\.(png|jpe?g|webp)$/i.test(path) ? path : "",
+      href: path,
+      kind: item.kind || "production_asset",
+      category,
+      role: item.role || "asset",
+      approval: item.approval_status || item.status || "",
+      rights: item.rights_status || "",
+      allowed: Boolean(item.seedance_input_allowed),
+    };
+  });
+  const blenderCards = productionCards.length ? [] : data.panels.slice(0, 4).map(panel => ({
     title: panel.title || panel.id,
     image: panel.generated_image,
     kind: "blender_previs",
+    category: "blender",
     role: "composition_only",
     approval: "承認構図",
     rights: "OK",
     allowed: false,
   }));
-  const keyCards = data.keySlots.map((_, index) => ({
-    title: `写真キー候補0${index + 1}`,
-    image: "",
+  const keyCards = data.keySlots.map((slot, index) => ({
+    title: slot.title || `写真キー候補0${index + 1}`,
+    image: slot.local_path || "",
+    href: slot.prompt_path || "",
     kind: "photoreal_key_visual",
+    category: "storyboard",
     role: "visual_truth",
-    approval: "未生成",
+    approval: slot.status || "未生成",
     rights: "未確認",
     allowed: false,
   }));
@@ -609,6 +636,7 @@ function renderAssets() {
     title: "Rina唇クロップ",
     image: data.supportImage,
     kind: "support_reference_only",
+    category: "cast",
     role: "lips-skin-tone only",
     approval: "補助",
     rights: "OK",
@@ -618,12 +646,33 @@ function renderAssets() {
     title: item.id || "外部参考",
     image: item.thumbnail_path || item.path,
     kind: "external_reference",
+    category: "external",
     role: "reference_only",
     approval: "参考のみ",
     rights: item.rights_status || "要確認",
     allowed: false,
   }));
-  const cards = [...blenderCards, ...keyCards, ...supportCards, ...refCards];
+  const castCards = cast.map(item => ({
+    title: item.name || item.id || "キャスト",
+    image: item.asset_path || "",
+    href: item.asset_path || "",
+    kind: "cast_reference",
+    category: "cast",
+    role: item.role || "cast",
+    approval: item.rights_status || item.use_scope || "",
+    allowed: false,
+  }));
+  const cards = [...productionCards, ...blenderCards, ...keyCards, ...supportCards, ...castCards, ...refCards];
+  const activeFilter = pageState.assetFilter || "all";
+  const visibleCards = activeFilter === "all" ? cards : cards.filter(card => card.category === activeFilter);
+  const tabs = [
+    ["all", "すべて"],
+    ["blender", "Blender"],
+    ["storyboard", "ストーリーボード"],
+    ["product", "商品素材"],
+    ["cast", "キャスト"],
+    ["external", "外部参考"],
+  ];
   return `
     <section class="p0-assets">
       <header class="p0-page-alert">
@@ -635,7 +684,7 @@ function renderAssets() {
       </header>
       <section class="p0-panel p0-asset-summary">
         <div class="p0-metrics">
-          <article><span>総素材</span><strong>${cards.length}</strong></article>
+          <article><span>表示素材</span><strong>${visibleCards.length}/${cards.length}</strong></article>
           <article><span>Blender</span><strong>${blenderCards.length}</strong></article>
           <article><span>写真キー承認済み</span><strong>0</strong></article>
           <article><span>Seedance入力可</span><strong>0</strong></article>
@@ -652,37 +701,60 @@ function renderAssets() {
         </div>
       </section>
       <nav class="p0-tabs">
-        ${["すべて", "Blender", "ストーリーボード", "商品素材", "キャスト", "外部参考"].map((tab, index) => `<span class="${index === 0 ? "active" : ""}">${html(tab)}</span>`).join("")}
+        ${tabs.map(([value, label]) => `<button type="button" data-asset-filter="${html(value)}" class="${value === activeFilter ? "active" : ""}">${html(label)}</button>`).join("")}
       </nav>
       <section class="p0-asset-grid">
-        ${cards.map(card => `
+        ${visibleCards.map(card => `
           <article class="${card.allowed ? "allowed" : "blocked"}">
             ${card.image ? `<img src="${html(toProjectPath(card.image))}" alt="${html(card.title)}">` : `<div class="p0-asset-empty">未生成</div>`}
             <strong>${html(card.title)}</strong>
+            ${card.href ? `<a class="p0-asset-file" href="${html(toProjectPath(card.href))}" target="_blank" rel="noopener">素材を開く</a>` : ""}
             <div class="p0-badges">
               ${assetBadges(card).map(label => `<span>${html(label)}</span>`).join("")}
             </div>
           </article>
-        `).join("")}
+        `).join("") || `<article class="blocked"><div class="p0-asset-empty">このカテゴリの素材はありません</div><strong>未登録</strong></article>`}
       </section>
     </section>
   `;
 }
 
+function assetCategory(kind) {
+  if (/blender|previs/i.test(kind || "")) return "blender";
+  if (/product/i.test(kind || "")) return "product";
+  if (/cast|support/i.test(kind || "")) return "cast";
+  if (/external/i.test(kind || "")) return "external";
+  return "storyboard";
+}
+
 function assetBadges(card) {
   const kind = {
     blender_previs: "Blender",
+    storyboard_conte_sheet: "絵コンテ",
+    product_reference: "商品素材",
     photoreal_key_visual: "写真キー",
+    script_beats: "台本",
+    audio_plan: "音声",
+    subtitle_plan: "字幕",
+    seedance_prompt: "Prompt",
+    mcp_request: "MCP要求",
     support_reference_only: "補助参照",
     external_reference: "外部参考",
   }[card.kind] || card.kind;
   const role = {
     composition_only: "構図のみ",
+    structure_truth: "構成の正",
+    support_reference_only: "補助参照",
+    post_and_prompt_source: "台本ソース",
+    post_or_seedance_audio_plan: "音設計",
+    post_production_only: "後編集",
+    motion_prompt_pending_keyvisual: "映像Prompt",
+    higgsfield_image2_pending: "image2待ち",
     visual_truth: "画作り",
     "lips-skin-tone only": "唇色参照",
     reference_only: "参考のみ",
   }[card.role] || card.role;
-  const status = card.allowed ? "入力可" : card.kind === "photoreal_key_visual" ? "未生成" : "入力不可";
+  const status = card.allowed ? "Seedance入力可" : (card.approval || (card.kind === "photoreal_key_visual" ? "未生成" : "入力不可"));
   return [kind, role, status].filter(Boolean);
 }
 
@@ -911,6 +983,90 @@ function renderStoryboardPage() {
   `;
 }
 
+function renderPreflight() {
+  const state = pageState.state || {};
+  const storyboard = state.storyboard || {};
+  const script = state.script || {};
+  const beats = script.beats || [];
+  const assets = state.production_assets || [];
+  const board = storyboard.generated_contact_sheet_local_path || storyboard.generated_contact_sheet || "";
+  const keyvisuals = storyboard.keyvisuals || [];
+  const canSeedance = Boolean(state.seedance_generation_allowed);
+  const checks = [
+    ["絵コンテ", storyboard.approval_status === "approved" ? "ok" : "bad", storyboard.approval_status || "未承認"],
+    ["写真キー", keyvisuals.some(item => item.local_path && /approved/i.test(item.status || "")) ? "ok" : "bad", "未生成 / 未承認"],
+    ["商品素材", assets.filter(item => item.kind === "product_reference").length ? "ok" : "bad", `${assets.filter(item => item.kind === "product_reference").length}件`],
+    ["台本", beats.length ? "ok" : "bad", `${beats.length}ビート`],
+    ["音声", state.audio_post?.status ? "ok" : "warn", state.audio_post?.narration || "未設定"],
+    ["字幕", script.telop_plan?.length ? "ok" : "warn", `${script.telop_plan?.length || 0}本`],
+    ["Seedance", canSeedance ? "ok" : "bad", canSeedance ? "許可" : "停止中"],
+  ];
+  return `
+    <section class="p0-assets">
+      <header class="p0-page-alert">
+        <div>
+          <span class="${canSeedance ? "ok" : "danger-label"}">${canSeedance ? "生成可能" : "生成停止中"}</span>
+          <h3>${html(state.current_work?.title || "最終確認")}</h3>
+          <p>${html(state.current_work?.summary || state.block_reason || "")}</p>
+        </div>
+        <a href="storyboard.html">絵コンテを見る</a>
+      </header>
+
+      <section class="p0-panel p0-asset-summary">
+        <div class="p0-metrics">
+          ${checks.map(([label, cls, value]) => `<article class="${html(cls)}"><span>${html(label)}</span><strong>${html(value)}</strong></article>`).join("")}
+        </div>
+      </section>
+
+      <section class="storyboard-review-page">
+        <article class="storyboard-main-panel">
+          <div class="p0-panel-head"><span>承認済み絵コンテ</span><strong>${html(storyboard.approval_status || "未承認")}</strong></div>
+          ${board ? `<a href="${html(toProjectPath(board))}" target="_blank" rel="noopener"><img src="${html(toProjectPath(board))}" alt="Generated storyboard"></a>` : `<div class="image-placeholder">絵コンテ未生成</div>`}
+        </article>
+        <aside class="storyboard-side-panel">
+          <div class="p0-panel-head"><span>現在の停止理由</span><strong>次工程</strong></div>
+          <div class="p0-gate-list">
+            <span class="bad">${html(state.visual_handoff?.block_reason || state.block_reason || "写真キー承認待ち")}</span>
+            <span class="warn">Seedance主画像: approved photoreal key visualのみ</span>
+            <span class="ok">公開前: 人間レビュー必須</span>
+          </div>
+          <a class="p0-link" href="assets.html">素材一覧へ</a>
+          <a class="p0-link" href="generation-review.html">生成レビューへ</a>
+        </aside>
+      </section>
+
+      <section class="p0-panel storyboard-beat-panel">
+        <div class="p0-panel-head"><span>台本 / 秒割り / テロップ</span><strong>${html(script.title || state.meta?.project || "")}</strong></div>
+        <div class="script-timeline">
+          ${beats.map(beat => `
+            <article>
+              <time>${html(beat.time || "")}</time>
+              <strong>${html(beat.telop || beat.caption || "")}</strong>
+              <p>${html(beat.visual || "")}</p>
+              <span>${html(beat.narration || "")}</span>
+            </article>
+          `).join("") || `<article><strong>台本未登録</strong></article>`}
+        </div>
+      </section>
+
+      <section class="p0-panel">
+        <div class="p0-panel-head"><span>使用素材</span><strong>${assets.length}件</strong></div>
+        <div class="p0-gate-list">
+          ${assets.map(item => `<a class="p0-link" href="${html(toProjectPath(item.path || ""))}" target="_blank" rel="noopener">${html(item.title || item.id)} / ${html(item.kind || "")} / ${html(item.approval_status || "")}</a>`).join("") || `<span class="bad">素材未登録</span>`}
+        </div>
+      </section>
+
+      <section class="p0-panel">
+        <div class="p0-panel-head"><span>音声 / 字幕</span><strong>後編集確認</strong></div>
+        <div class="p0-gate-list">
+          <span class="ok">音声: ${html(state.audio_post?.note || "未設定")}</span>
+          ${(script.telop_plan || []).map(line => `<span class="warn">字幕: ${html(line)}</span>`).join("")}
+        </div>
+      </section>
+    </section>
+  `;
+}
+
 function broadcastPostText() {
   const state = pageState.state || {};
   const project = compactText(state.meta?.project || state.script?.title || "新作リップCM", 34);
@@ -981,6 +1137,7 @@ function renderActivity() {
 function renderPageContent() {
   const renderers = {
     factory: renderFactory,
+    preflight: renderPreflight,
     generation: renderGeneration,
     "generation-review": renderGeneration,
     storyboard: renderStoryboardPage,
@@ -998,6 +1155,20 @@ function renderPageContent() {
   setupBroadcastCopy();
   setupGenerationCopy();
   setupReviewChecklist();
+  setupAssetTabs();
+}
+
+function setupAssetTabs() {
+  const tabs = [...document.querySelectorAll("[data-asset-filter]")];
+  if (!tabs.length) return;
+  tabs.forEach(tab => {
+    if (tab.dataset.ready) return;
+    tab.dataset.ready = "1";
+    tab.addEventListener("click", () => {
+      pageState.assetFilter = tab.dataset.assetFilter || "all";
+      renderPageContent();
+    });
+  });
 }
 
 function setupReviewChecklist() {
