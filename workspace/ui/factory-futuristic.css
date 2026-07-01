@@ -2328,6 +2328,7 @@ button:disabled {
 }
 
 .detail-page .page-panel {
+  align-self: start;
   min-height: 0;
   overflow: hidden;
 }
@@ -3720,17 +3721,18 @@ body:is([data-page="generation"], [data-page="generation-review"]) .theater-lock
 
 .job-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 8px;
-  max-height: min(56vh, 500px);
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 .job-card-grid article {
   min-width: 0;
   display: grid;
-  grid-template-columns: 86px minmax(0, 1fr);
+  grid-template-columns: 72px minmax(0, 1fr);
   gap: 9px;
+  align-items: center;
   padding: 8px;
   border: 1px solid rgba(34, 211, 238, 0.16);
   border-radius: 10px;
@@ -3745,8 +3747,8 @@ body:is([data-page="generation"], [data-page="generation-review"]) .theater-lock
 .job-card-media,
 .job-card-grid img,
 .job-card-grid video {
-  width: 86px;
-  height: 112px;
+  width: 72px;
+  height: 72px;
   object-fit: cover;
   display: block;
   border-radius: 8px;
@@ -4892,7 +4894,7 @@ body[data-page="assets"] {
 }
 
 .p0-asset-grid {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 188px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
   max-width: 100%;
   overflow-x: hidden;
 }
@@ -4928,15 +4930,16 @@ body[data-page="assets"] {
 .p0-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 4px;
   margin-top: 7px;
 }
 
 .p0-badges span {
   max-width: 100%;
-  padding: 3px 6px;
+  min-width: 0;
+  padding: 3px 7px;
   border: 1px solid rgba(34, 211, 238, 0.14);
-  border-radius: 999px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.04);
   font-size: 10px;
   line-height: 1.1;
