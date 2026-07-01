@@ -13,6 +13,7 @@ workspace/logs/*.raw.json
 workspace/logs/*.err
 workspace/logs/*.json
 workspace/logs/*.md
+workspace/logs/*.result_url.txt
 workspace/logs/result-urls.md
 workspace/mcp-requests/*.json
 workspace/ui/state/*.json

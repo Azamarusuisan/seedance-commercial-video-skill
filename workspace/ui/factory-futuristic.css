@@ -4315,6 +4315,10 @@ body:is([data-page="factory"], [data-page="assets"], [data-page="publish"], [dat
   display: block;
 }
 
+body[data-page="assets"] {
+  overflow-x: hidden;
+}
+
 .danger-label,
 .warn-label {
   display: inline-flex;
@@ -4348,6 +4352,7 @@ body:is([data-page="factory"], [data-page="assets"], [data-page="publish"], [dat
   display: grid;
   gap: 12px;
   min-width: 0;
+  max-width: 100%;
 }
 
 .p0-dashboard {
@@ -4887,11 +4892,17 @@ body:is([data-page="factory"], [data-page="assets"], [data-page="publish"], [dat
 }
 
 .p0-asset-grid {
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 188px), 1fr));
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .p0-asset-grid article {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  align-content: start;
   padding: 8px;
+  overflow: hidden;
 }
 
 .p0-asset-grid article.blocked {
@@ -4900,14 +4911,16 @@ body:is([data-page="factory"], [data-page="assets"], [data-page="publish"], [dat
 
 .p0-asset-grid img,
 .p0-asset-empty {
-  height: 132px;
+  height: 96px;
 }
 
 .p0-asset-grid strong {
   display: block;
-  margin-top: 8px;
+  margin-top: 7px;
   overflow: hidden;
   color: var(--ink);
+  font-size: 13px;
+  line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -4916,7 +4929,7 @@ body:is([data-page="factory"], [data-page="assets"], [data-page="publish"], [dat
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  margin-top: 8px;
+  margin-top: 7px;
 }
 
 .p0-badges span {
@@ -4925,6 +4938,8 @@ body:is([data-page="factory"], [data-page="assets"], [data-page="publish"], [dat
   border: 1px solid rgba(34, 211, 238, 0.14);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
+  font-size: 10px;
+  line-height: 1.1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

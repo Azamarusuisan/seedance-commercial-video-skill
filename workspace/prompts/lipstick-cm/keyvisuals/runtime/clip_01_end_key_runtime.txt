@@ -1,0 +1,9 @@
+Create a photoreal 9:16 luxury lipstick commercial key visual.
+
+Use the source image only as a structure reference: centered product hero composition, vertical packshot framing, camera distance, product silhouette, and negative space. Do not preserve the low-poly Blender render look.
+
+Target image:
+Full premium product hero shot of a fictional luxury lipstick, settled center-frame. Glossy black lacquer tube with real micro-reflections, champagne-gold metal rings with brushed-polished specular response, deep red lipstick bullet with photoreal wax texture and elegant gloss. Real dark studio background, commercial-grade lighting, soft volumetric haze, warm rim light, controlled lens bloom, premium reflections, clean negative space for a small brand tag to be added later.
+
+Avoid:
+Visible placeholder geometry, blockout planes, low-poly edges, flat CG gold, drawn lines, rings, dots, floating graphic overlays, real brand logos, Dior references, readable packaging text, people, hands, faces.

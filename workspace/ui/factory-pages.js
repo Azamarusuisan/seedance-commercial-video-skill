@@ -564,7 +564,7 @@ function renderAssets() {
     image: panel.generated_image,
     kind: "blender_previs",
     role: "composition_only",
-    approval: "承認済み構図",
+    approval: "承認構図",
     rights: "OK",
     allowed: false,
   }));
@@ -573,7 +573,7 @@ function renderAssets() {
     image: "",
     kind: "photoreal_key_visual",
     role: "visual_truth",
-    approval: "未生成 / 未承認",
+    approval: "未生成",
     rights: "未確認",
     allowed: false,
   }));
@@ -582,7 +582,7 @@ function renderAssets() {
     image: data.supportImage,
     kind: "support_reference_only",
     role: "lips-skin-tone only",
-    approval: "補助参照",
+    approval: "補助",
     rights: "OK",
     allowed: false,
   }] : [];
@@ -636,7 +636,7 @@ function renderAssets() {
               <span>${html(card.role)}</span>
               <span>${html(card.approval)}</span>
               <span>${html(card.rights)}</span>
-              <span>${card.allowed ? "Seedance入力可" : "Seedance入力不可"}</span>
+              <span>${card.allowed ? "入力可" : "入力不可"}</span>
             </div>
           </article>
         `).join("")}
@@ -754,8 +754,8 @@ function renderGeneration() {
         </article>
       </main>
       <aside class="p0-checklist">
-        <div class="p0-panel-head"><span>承認チェックリスト</span><strong>未完了 0/5</strong></div>
-        ${["構図は意図通りか", "商品が美しく見えるか", "質感・ライティングの品質", "色味はブランドに合うか", "権利・素材の利用範囲"].map(item => `<label><input type="checkbox" disabled> ${html(item)}</label>`).join("")}
+        <div class="p0-panel-head"><span>承認チェックリスト</span><strong id="reviewChecklistCount">未完了 0/5</strong></div>
+        ${["構図は意図通りか", "商品が美しく見えるか", "質感・ライティングの品質", "色味はブランドに合うか", "権利・素材の利用範囲"].map((item, index) => `<label><input type="checkbox" data-review-check="${index}"> ${html(item)}</label>`).join("")}
         <div class="p0-actions">
           <button type="button">差し戻し</button>
           <button type="button">修正依頼</button>
@@ -865,6 +865,30 @@ function renderPageContent() {
   document.getElementById("pageContent").innerHTML = (renderers[pageState.page] || renderStudioLines)();
   setupBroadcastCopy();
   setupGenerationCopy();
+  setupReviewChecklist();
+}
+
+function setupReviewChecklist() {
+  if (!document.querySelectorAll) return;
+  const checks = [...document.querySelectorAll("[data-review-check]")];
+  const count = document.getElementById("reviewChecklistCount");
+  if (!checks.length || !count) return;
+  const key = `seedance-review-checklist:${pageState.state.meta?.project || "default"}`;
+  const storage = typeof localStorage === "undefined" ? null : localStorage;
+  const saved = storage ? JSON.parse(storage.getItem(key) || "{}") : {};
+  const update = () => {
+    const done = checks.filter(input => input.checked).length;
+    count.textContent = done === checks.length ? `完了 ${done}/${checks.length}` : `未完了 ${done}/${checks.length}`;
+    storage?.setItem(key, JSON.stringify(Object.fromEntries(checks.map(input => [input.dataset.reviewCheck, input.checked]))));
+  };
+  checks.forEach(input => {
+    input.checked = Boolean(saved[input.dataset.reviewCheck]);
+    if (!input.dataset.ready) {
+      input.dataset.ready = "1";
+      input.addEventListener("change", update);
+    }
+  });
+  update();
 }
 
 function setupBroadcastCopy() {

@@ -1,0 +1,9 @@
+Create a photoreal 9:16 luxury lipstick commercial final key visual.
+
+Use the source image only as a structure reference: final packshot framing, dark stage intent, calm negative space, camera pull-back feeling, and closing composition. Do not preserve the low-poly Blender render look.
+
+Target image:
+Premium final frame for a fictional luxury lipstick campaign. The lipstick product appears as a photoreal hero object in the same world as the previous key visuals: glossy black lacquer tube, champagne-gold metal, deep red bullet, elegant dark studio background, warm rim light, soft photographic bokeh, subtle volumetric haze, controlled lens bloom. Calm high-brand ending with generous clean negative space for a small "ROUGE NOIR" title to be added later.
+
+Avoid:
+Visible placeholder geometry, blockout planes, low-poly CG, drawn rings, lines, dots, graphic overlays, real brand logos, Dior references, readable packaging text, visible person, hand, full face, clutter.
