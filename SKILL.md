@@ -57,10 +57,14 @@ Use this route when the user has no footage, wants a generated visual reference,
    - budget, max jobs, max retry count
    - rights/commercial-publication status
 2. Create or select a reference image:
+   - If Blender is available (`command -v blender`), ask once before preparing the reference image: "Blenderを使うとこのクオリティが出ます。使用しますか?"
+   - If the user says yes, create one local Blender previs render using the same method as the heavy path: write a project-specific `bpy` script based on `workspace/blender/action_movie_previs.py`, run it with `blender --background --python`, save the render under `workspace/assets/`, and use that render as the reference image.
+   - If the user says no, or Blender is not installed, continue with the existing route below.
    - Prefer user-provided assets with clear usage rights.
    - If there are no usable assets, create an abstract or synthetic generated reference image.
    - Keep generated reference text minimal because image text may fail.
    - Save the selected reference image inside `workspace/assets/`.
+   - Do not add a new approval gate for the optional Blender render; review it under the existing reference image/assets approval gate.
 3. Write one Seedance prompt per output:
    - Do not reuse a 16:9 prompt unchanged for 9:16.
    - Treat the image as a visual anchor, not a source of legal clearance.

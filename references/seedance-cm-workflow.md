@@ -45,10 +45,16 @@ Capture these before generation:
 
 Use this route when a still reference image should drive the Seedance video:
 
-1. Prepare the reference prompt in `workspace/prompts/reference-image-v1.txt` or a project-specific prompt file.
-2. Generate or select a reference image and save it under `workspace/assets/`.
-3. Use that image as `IMAGE_FILE` when preparing Seedance cost/generation requests.
-4. Keep the Seedance prompt explicit about what to inherit from the image:
+1. Check whether Blender can be used before preparing the reference image:
+   - Run `command -v blender`.
+   - If Blender is available, ask once: "Blenderを使うとこのクオリティが出ます。使用しますか?"
+   - YES: use the same local previs method as the heavy path: create a project-specific `bpy` script based on `workspace/blender/action_movie_previs.py`, run `blender --background --python`, render one still, save it under `workspace/assets/`, and use that render as the reference image.
+   - NO, or Blender is not installed: continue with the existing reference-image route.
+   - Do not create a new approval gate. The Blender render is reviewed through the existing reference image/assets approval gate.
+2. Prepare the reference prompt in `workspace/prompts/reference-image-v1.txt` or a project-specific prompt file if a generated reference image is still needed.
+3. Generate or select a reference image and save it under `workspace/assets/`.
+4. Use that image as `IMAGE_FILE` when preparing Seedance cost/generation requests.
+5. Keep the Seedance prompt explicit about what to inherit from the image:
    - subject
    - mood
    - composition
@@ -57,8 +63,8 @@ Use this route when a still reference image should drive the Seedance video:
    - product details
    - style
    - safe text areas
-5. Do not ask Seedance to infer legal rights from the reference image.
-6. If the image has too much text, reduce video text and restate text explicitly in the Seedance prompt.
+6. Do not ask Seedance to infer legal rights from the reference image.
+7. If the image has too much text, reduce video text and restate text explicitly in the Seedance prompt.
 
 Example:
 
@@ -302,4 +308,3 @@ Before final response, verify:
 - If quality is weak, recommend a second pass with stronger references or fewer requirements.
 - Delivery package or delivery notes are prepared.
 - Rights, budget, and limitations are recorded.
-

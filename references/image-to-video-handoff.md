@@ -5,6 +5,7 @@ This guide documents the intended path from generated/reference image to Higgsfi
 ## What Is Already Wired
 
 - `workspace/scripts/gpt-image-reference.sh` can create a reference image from a prompt file and save it to `workspace/assets/reference-image-v1.png`.
+- A local Blender previs render can also be used as the reference image when Blender is available and the user explicitly chooses it.
 - `workspace/scripts/_common.sh` resolves the reference image in this order:
   1. `IMAGE_FILE`, when explicitly provided.
   2. `workspace/assets/reference-image-v1.png`.
@@ -14,6 +15,14 @@ This guide documents the intended path from generated/reference image to Higgsfi
 - The scripts do not execute a local Higgsfield CLI. They prepare request JSON for the host-provided Higgsfield MCP tool.
 
 ## Standard Flow
+
+Optional first step:
+
+- Run `command -v blender`.
+- If Blender is available, ask once: "Blenderを使うとこのクオリティが出ます。使用しますか?"
+- If yes, create one local Blender previs render using the heavy-path method (`workspace/blender/action_movie_previs.py` as the base, project-specific `bpy`, `blender --background --python`), save it under `workspace/assets/`, and use that file as `IMAGE_FILE`.
+- If no, or Blender is not installed, use the existing generated/user-provided reference image route below.
+- This does not add a new gate; the render is approved through the existing reference image/assets approval.
 
 ```bash
 # 1. Generate or update a reference image.
@@ -52,4 +61,3 @@ Do not prepare cost or generation with `APPROVED=1` until:
 - If `OPENAI_API_KEY` is missing, `gpt-image-reference.sh` blocks safely. Do not store the key in this repo.
 - If a generated reference image is only a draft, label it as such in delivery notes.
 - For multi-reference jobs, verify the current Higgsfield MCP media schema first. If uncertain, use one strong visual reference plus explicit text description in the prompt.
-

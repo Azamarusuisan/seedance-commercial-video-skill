@@ -8,7 +8,7 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 - 2026-07-01: `references/end-to-end-movie-pipeline.md`は、画像生成(絵コンテ)・音声生成(ElevenLabsナレーション)・動画生成(Seedance)をすべてHiggsfield MCP経由にする方針へ更新済み。重量パスでは`gpt-image-reference.sh`を使わない。
 - 未検証: Higgsfield MCPの画像生成モデル名とimg2img(参照画像入力)対応可否。接続環境で最初に確認する。
 - §5のUI簡素化は未着手。ユーザーに「Factory UIの世界観を残すか、承認専用UIへ寄せるか」を確認してから行う。
-- 2026-07-01: `WORKFLOW.md`(全体フローの1〜100言語化)を新規作成し、ユーザーとすり合わせ済み。承認ゲート粒度・フォルダ規約・Palmier Pro仕上げ順は確定。**新たに軽量パスへBlender previsを任意オプションとして追加することが確定した(§6タスク8、未着手)。**
+- 2026-07-01: `WORKFLOW.md`(全体フローの1〜100言語化)を新規作成し、ユーザーとすり合わせ済み。承認ゲート粒度・フォルダ規約・Palmier Pro仕上げ順は確定。軽量パスへBlender previsを任意オプションとして追加する方針も反映済み。
 
 このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装記録。実際のコード状態と食い違いが出た場合は、このファイルの最新の確定方針(§2以降)を正としてコードを合わせること。全体フローの完成形は`WORKFLOW.md`を参照(このファイルは実装タスクと決定の経緯、`WORKFLOW.md`は完成後の姿)。
 
@@ -128,7 +128,7 @@ Codexへの提案(優先度順):
 5. **対応済み:** §2b(c): 重量パス用に`workspace/projects/<project_id>/shots/<shot_id>/`のフォルダ規約を`end-to-end-movie-pipeline.md`に追記した。軽量パスの既存命名は変更しない。
 6. **未着手:** §5のUI簡素化は、ユーザーに方針確認したうえで着手する(先に実装しない)。
 7. **未着手:** §7の「軽量パスもHiggsfield画像生成に切り替えるか」は、ユーザーに確認してから着手する(このドキュメントの決定は重量パスのみに適用する)。
-8. **未着手・ユーザー確定済み: 軽量パスにBlender previsを任意オプションとして追加する。** `WORKFLOW.md`§6のステップ1を正とする。実装内容:
+8. **対応済み: 軽量パスにBlender previsを任意オプションとして追加する。** `WORKFLOW.md`§6のステップ1を正とする。実装内容:
    - `references/seedance-cm-workflow.md`(Image-To-Video Route)と`SKILL.md`のImage-To-Video Route、`references/image-to-video-handoff.md`に、参照画像を用意する前段として次の分岐を追加する。
    - `command -v blender`でBlenderが使える場合のみ、ユーザーに一度尋ねる:「Blenderを使うとこのクオリティが出ます。使用しますか?」
    - YESの場合: 重量パス(`references/end-to-end-movie-pipeline.md`のBlenderプリビズ手順、`workspace/blender/action_movie_previs.py`が土台)と同じ手法でBlenderプリビズを1枚レンダーし、そのレンダーをこの案件の参照画像として使う。
