@@ -3,10 +3,58 @@
   "title": "Visual Handoff",
   "description": "Per-shot record of the Blender-previs-to-photoreal-storyboard handoff. Written by workspace/scripts/build-visual-handoff.py, lives at workspace/projects/<project_id>/shots/<shot_id>/visual-handoff.json.",
   "type": "object",
-  "required": ["project_id", "shot_id", "blender_role", "storyboard_status", "seedance_primary_image_allowed"],
+  "required": ["schema_version", "project_id", "shot_id", "source", "composition_truth", "output"],
   "properties": {
+    "schema_version": { "type": "string", "const": "visual_handoff.v1" },
     "project_id": { "type": "string" },
     "shot_id": { "type": "string" },
+    "route": { "type": "string", "enum": ["light", "heavy"] },
+    "source": {
+      "type": "object",
+      "required": ["asset_path", "asset_kind", "role", "seedance_input_allowed"],
+      "properties": {
+        "asset_path": { "type": "string" },
+        "asset_kind": { "type": "string", "enum": ["blender_previs", "viewport_screenshot", "blender_render", "user_asset", "generated_reference"] },
+        "role": { "type": "string", "const": "composition_only" },
+        "seedance_input_allowed": { "type": "boolean", "const": false }
+      }
+    },
+    "composition_truth": {
+      "type": "object",
+      "properties": {
+        "camera_angle": { "type": "string" },
+        "lens_feel": { "type": "string" },
+        "framing": { "type": "string" },
+        "subject_positions": { "type": "array", "items": { "type": "string" } },
+        "spatial_relationships": { "type": "array", "items": { "type": "string" } },
+        "motion_intent": { "type": "string" }
+      }
+    },
+    "do_preserve_from_blender": { "type": "array", "items": { "type": "string" } },
+    "do_not_preserve_from_blender": { "type": "array", "items": { "type": "string" } },
+    "storyboard_goal": {
+      "type": "object",
+      "properties": {
+        "visual_style": { "type": "string" },
+        "lighting": { "type": "string" },
+        "materials": { "type": "string" },
+        "mood": { "type": "string" },
+        "platform": { "type": "string" },
+        "aspect_ratio": { "type": "string" }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["prompt_path", "storyboard_image_path", "asset_kind", "role", "approval_status", "seedance_input_allowed"],
+      "properties": {
+        "prompt_path": { "type": "string" },
+        "storyboard_image_path": { "type": "string" },
+        "asset_kind": { "type": "string", "enum": ["photoreal_key_visual", "approved_storyboard_frame"] },
+        "role": { "type": "string", "const": "visual_truth" },
+        "approval_status": { "type": "string", "enum": ["pending", "approved", "blocked"] },
+        "seedance_input_allowed": { "type": "boolean" }
+      }
+    },
     "blender_role": {
       "type": "string",
       "const": "composition_only",

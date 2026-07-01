@@ -1,0 +1,74 @@
+{
+  "schema_version": "visual_handoff.v1",
+  "project_id": "lipstick-cm-30s",
+  "shot_id": "clip_02_final",
+  "route": "light",
+  "source": {
+    "asset_path": "workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png",
+    "asset_kind": "blender_previs",
+    "role": "composition_only",
+    "seedance_input_allowed": false
+  },
+  "composition_truth": {
+    "camera_angle": "final packshot pullback angle",
+    "lens_feel": "clean product endcard lens",
+    "framing": "vertical 9:16 final product with title-safe negative space",
+    "subject_positions": [
+      "product returns with generous safe area"
+    ],
+    "spatial_relationships": [
+      "product smaller than hero, more environment visible"
+    ],
+    "motion_intent": "settled final end frame"
+  },
+  "do_preserve_from_blender": [
+    "composition",
+    "camera angle",
+    "object placement",
+    "scale relationship",
+    "shot continuity",
+    "negative space"
+  ],
+  "do_not_preserve_from_blender": [
+    "low-poly look",
+    "viewport lighting",
+    "temporary materials",
+    "flat shader",
+    "gray background",
+    "cheap CG preview look",
+    "drawn rings",
+    "floating dots",
+    "graphic line overlays"
+  ],
+  "storyboard_goal": {
+    "visual_style": "photoreal luxury final packshot storyboard",
+    "lighting": "warm rim light, soft bokeh, controlled lens bloom",
+    "materials": "black lacquer, champagne gold, deep rouge bullet",
+    "mood": "quiet final brand frame",
+    "platform": "internal_review",
+    "aspect_ratio": "9:16"
+  },
+  "output": {
+    "prompt_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_final/gpt-image-storyboard-prompt.txt",
+    "storyboard_image_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_final/storyboard.png",
+    "asset_kind": "photoreal_key_visual",
+    "role": "visual_truth",
+    "approval_status": "pending",
+    "seedance_input_allowed": false
+  },
+  "blender_role": "composition_only",
+  "blender_source": {
+    "blend_path": "",
+    "render_path": "workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png",
+    "camera_notes": "final packshot pullback angle",
+    "placement_notes": "product returns with generous safe area",
+    "scale_notes": "product smaller than hero, more environment visible",
+    "motion_intent": "settled final end frame"
+  },
+  "storyboard_prompt_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_final/gpt-image-storyboard-prompt.txt",
+  "storyboard_status": "prompt_prepared",
+  "storyboard_image_path": "",
+  "seedance_primary_image_allowed": false,
+  "block_reason": "写実キービジュアル未生成・未承認のため、Seedanceの主参照にはまだ使えません。",
+  "updated_at": "2026-07-01T10:22:23.461186+00:00"
+}

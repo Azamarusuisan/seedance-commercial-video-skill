@@ -1,0 +1,74 @@
+{
+  "schema_version": "visual_handoff.v1",
+  "project_id": "lipstick-cm-30s",
+  "shot_id": "clip_01_start",
+  "route": "light",
+  "source": {
+    "asset_path": "workspace/assets/3d/renders/lipstick_cm_panel_01_silhouette.png",
+    "asset_kind": "blender_previs",
+    "role": "composition_only",
+    "seedance_input_allowed": false
+  },
+  "composition_truth": {
+    "camera_angle": "extreme macro silhouette angle",
+    "lens_feel": "macro luxury product lens",
+    "framing": "vertical 9:16 centered silhouette with negative space",
+    "subject_positions": [
+      "lipstick silhouette centered in dark space"
+    ],
+    "spatial_relationships": [
+      "large product silhouette, close camera"
+    ],
+    "motion_intent": "silent hook, slow reveal"
+  },
+  "do_preserve_from_blender": [
+    "composition",
+    "camera angle",
+    "object placement",
+    "scale relationship",
+    "shot continuity",
+    "negative space"
+  ],
+  "do_not_preserve_from_blender": [
+    "low-poly look",
+    "viewport lighting",
+    "temporary materials",
+    "flat shader",
+    "gray background",
+    "cheap CG preview look",
+    "drawn rings",
+    "floating dots",
+    "graphic line overlays"
+  ],
+  "storyboard_goal": {
+    "visual_style": "photoreal luxury cosmetics storyboard",
+    "lighting": "deep black studio, warm rim light, photographic bokeh",
+    "materials": "black lacquer and champagne-gold metal hinted in shadow",
+    "mood": "quiet luxury opening",
+    "platform": "internal_review",
+    "aspect_ratio": "9:16"
+  },
+  "output": {
+    "prompt_path": "workspace/projects/lipstick-cm-30s/shots/clip_01_start/gpt-image-storyboard-prompt.txt",
+    "storyboard_image_path": "workspace/projects/lipstick-cm-30s/shots/clip_01_start/storyboard.png",
+    "asset_kind": "photoreal_key_visual",
+    "role": "visual_truth",
+    "approval_status": "pending",
+    "seedance_input_allowed": false
+  },
+  "blender_role": "composition_only",
+  "blender_source": {
+    "blend_path": "",
+    "render_path": "workspace/assets/3d/renders/lipstick_cm_panel_01_silhouette.png",
+    "camera_notes": "extreme macro silhouette angle",
+    "placement_notes": "lipstick silhouette centered in dark space",
+    "scale_notes": "large product silhouette, close camera",
+    "motion_intent": "silent hook, slow reveal"
+  },
+  "storyboard_prompt_path": "workspace/projects/lipstick-cm-30s/shots/clip_01_start/gpt-image-storyboard-prompt.txt",
+  "storyboard_status": "prompt_prepared",
+  "storyboard_image_path": "",
+  "seedance_primary_image_allowed": false,
+  "block_reason": "写実キービジュアル未生成・未承認のため、Seedanceの主参照にはまだ使えません。",
+  "updated_at": "2026-07-01T10:22:21.791172+00:00"
+}

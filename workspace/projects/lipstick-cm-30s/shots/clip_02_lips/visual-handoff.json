@@ -1,0 +1,74 @@
+{
+  "schema_version": "visual_handoff.v1",
+  "project_id": "lipstick-cm-30s",
+  "shot_id": "clip_02_lips",
+  "route": "light",
+  "source": {
+    "asset_path": "workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png",
+    "asset_kind": "user_asset",
+    "role": "composition_only",
+    "seedance_input_allowed": false
+  },
+  "composition_truth": {
+    "camera_angle": "anonymous macro lips close-up",
+    "lens_feel": "beauty macro lens",
+    "framing": "lips only, no full face, no eyes",
+    "subject_positions": [
+      "anonymous lips centered, no product in frame"
+    ],
+    "spatial_relationships": [
+      "macro crop, skin texture visible"
+    ],
+    "motion_intent": "rouge color appears on lips"
+  },
+  "do_preserve_from_blender": [
+    "composition",
+    "camera angle",
+    "object placement",
+    "scale relationship",
+    "shot continuity",
+    "negative space"
+  ],
+  "do_not_preserve_from_blender": [
+    "low-poly look",
+    "viewport lighting",
+    "temporary materials",
+    "flat shader",
+    "gray background",
+    "cheap CG preview look",
+    "drawn rings",
+    "floating dots",
+    "graphic line overlays"
+  ],
+  "storyboard_goal": {
+    "visual_style": "photoreal luxury beauty storyboard",
+    "lighting": "same dark premium lighting world as product shots",
+    "materials": "real skin texture, deep rouge gloss",
+    "mood": "refined beauty application moment",
+    "platform": "internal_review",
+    "aspect_ratio": "9:16"
+  },
+  "output": {
+    "prompt_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_lips/gpt-image-storyboard-prompt.txt",
+    "storyboard_image_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_lips/storyboard.png",
+    "asset_kind": "photoreal_key_visual",
+    "role": "visual_truth",
+    "approval_status": "pending",
+    "seedance_input_allowed": false
+  },
+  "blender_role": "composition_only",
+  "blender_source": {
+    "blend_path": "",
+    "render_path": "workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png",
+    "camera_notes": "anonymous macro lips close-up",
+    "placement_notes": "anonymous lips centered, no product in frame",
+    "scale_notes": "macro crop, skin texture visible",
+    "motion_intent": "rouge color appears on lips"
+  },
+  "storyboard_prompt_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_lips/gpt-image-storyboard-prompt.txt",
+  "storyboard_status": "prompt_prepared",
+  "storyboard_image_path": "",
+  "seedance_primary_image_allowed": false,
+  "block_reason": "写実キービジュアル未生成・未承認のため、Seedanceの主参照にはまだ使えません。",
+  "updated_at": "2026-07-01T10:22:22.094235+00:00"
+}

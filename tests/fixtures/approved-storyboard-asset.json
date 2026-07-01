@@ -4,6 +4,8 @@
   "seedance_input_allowed": true,
   "approval_status": "approved",
   "rights_status": "generated",
+  "known_failure_checked_at": "2026-07-01T00:00:00Z",
+  "learning_preflight": "tests/fixtures/learning-preflight-pass.md",
   "source_path": "workspace/projects/demo/shots/shot_01/storyboard.png",
   "notes": "Fixture: must pass validate-seedance-input.py."
 }

@@ -1,0 +1,17 @@
+{
+  "schema_version": "asset_manifest.v1",
+  "asset_id": "clip_02_final_key_pending",
+  "project_id": "lipstick-cm-30s",
+  "shot_id": "clip_02_final",
+  "path": "workspace/assets/references/lipstick-cm/keyvisuals/clip_02_final_key.png",
+  "asset_kind": "photoreal_key_visual",
+  "role": "visual_truth",
+  "rights_status": "generated",
+  "use_scope": "internal_draft",
+  "approval_status": "pending",
+  "seedance_input_allowed": false,
+  "source_handoff": "workspace/projects/lipstick-cm-30s/shots/clip_02_final/visual-handoff.json",
+  "known_failure_checked_at": "2026-07-01T00:00:00Z",
+  "learning_preflight": "workspace/projects/lipstick-cm-30s/shots/clip_02_final/learning-preflight.md",
+  "notes": "Pending photoreal key visual. Must be generated and human-approved before Seedance."
+}

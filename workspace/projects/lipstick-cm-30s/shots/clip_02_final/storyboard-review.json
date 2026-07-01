@@ -1,0 +1,16 @@
+{
+  "schema_version": "storyboard_review.v1",
+  "project_id": "lipstick-cm-30s",
+  "shot_id": "clip_02_final",
+  "storyboard_image_path": "workspace/assets/references/lipstick-cm/keyvisuals/clip_02_final_key.png",
+  "approval_status": "pending",
+  "seedance_input_allowed": false,
+  "review_required": [
+    "composition_preserved",
+    "blender_preview_look_removed",
+    "photoreal_material_quality",
+    "clean_safe_area_for_post_text",
+    "no_baked_text_or_logo",
+    "no_graphic_overlay"
+  ]
+}

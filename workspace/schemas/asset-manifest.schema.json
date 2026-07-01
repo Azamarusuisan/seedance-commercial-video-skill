@@ -40,6 +40,18 @@
       "type": "string",
       "description": "Repo-relative path to the actual image/video file."
     },
+    "known_failure_checked_at": {
+      "type": "string",
+      "description": "Timestamp proving references/known-failure-patterns.md was checked before this asset is used for Seedance."
+    },
+    "learning_preflight": {
+      "type": "string",
+      "description": "Path to learning-preflight.md that contains can_prepare_seedance_request: true."
+    },
+    "source_handoff": {
+      "type": "string",
+      "description": "Path to visual-handoff.json if this asset came from Blender-previs-to-storyboard flow."
+    },
     "project_id": { "type": "string" },
     "shot_id": { "type": "string" },
     "notes": { "type": "string" },
@@ -61,6 +73,8 @@
       "seedance_input_allowed": true,
       "approval_status": "approved",
       "rights_status": "generated",
+      "known_failure_checked_at": "2026-07-01T00:00:00Z",
+      "learning_preflight": "workspace/projects/demo/shots/shot_01/learning-preflight.md",
       "source_path": "workspace/assets/references/lipstick-cm/clip_01_end_key.png",
       "notes": "Approved by user after side-by-side review against Blender panels."
     }

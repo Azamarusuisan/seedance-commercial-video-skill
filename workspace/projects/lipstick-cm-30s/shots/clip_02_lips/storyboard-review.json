@@ -1,0 +1,16 @@
+{
+  "schema_version": "storyboard_review.v1",
+  "project_id": "lipstick-cm-30s",
+  "shot_id": "clip_02_lips",
+  "storyboard_image_path": "workspace/assets/references/lipstick-cm/keyvisuals/clip_02_lips_key.png",
+  "approval_status": "pending",
+  "seedance_input_allowed": false,
+  "review_required": [
+    "lips_only_anonymous_crop",
+    "no_full_face",
+    "no_hand_or_product_near_mouth",
+    "lighting_matches_product_world",
+    "no_baked_text_or_logo",
+    "no_graphic_overlay"
+  ]
+}

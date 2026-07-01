@@ -272,14 +272,16 @@ function renderTop() {
   const statusStrip = document.getElementById("statusStrip");
   const sourceRefs = state.assets?.source_ref_count ?? 0;
   const currentWork = state.current_work?.title || "費用見積が進行中";
+  const visual = state.visual_handoff || {};
   statusStrip.innerHTML = [
     ["現在作業", currentWork, "magenta"],
     ["人間承認", "必須", "warning"],
     ["公開", "停止中", "danger"],
     ["外部素材参照", String(sourceRefs), ""],
-    ["ライン", "稼働中", "success"],
-    ["音声", "ElevenLabs", ""],
-    ["字幕", "後編集", ""],
+    ["Blender", "構図参照/入力不可", "warning"],
+    ["写実絵コンテ", visual.storyboard_status || "未承認", visual.seedance_primary_image_allowed ? "success" : "warning"],
+    ["Seedance主画像", visual.seedance_primary_image_allowed ? "許可" : "BLOCKED", visual.seedance_primary_image_allowed ? "success" : "danger"],
+    ["音声/字幕", "後編集", ""],
     ["有料生成", "未実行", "danger"],
   ].map(([label, value, tone]) => (
     `<span class="thin-pill ${tone}">${escapeHtml(label)} ${escapeHtml(displayText(value))}</span>`
@@ -290,6 +292,8 @@ function renderMetrics() {
   const counts = appState.runtime?.counts || {};
   const jobs = appState.state.jobs || [];
   const credits = estimatedCredits(jobs);
+  const visual = appState.state.visual_handoff || {};
+  const learning = appState.state.learning || {};
   const blocked = counts.blocked_gates ?? (appState.state.gates || []).filter(gate => gate.status === "blocked").length;
   const phase = String(appState.state.current_work?.title || appState.state.meta?.active_stage || "待機中")
     .replace("Workflow locked: ", "")
@@ -300,7 +304,8 @@ function renderMetrics() {
     ["見積クレジット", credits === null ? "未見積" : credits.toFixed(1), "jobs[].cost_credits"],
     ["MCP要求", counts.higgsfield_mcp_requests ?? 0, "workspace/mcp-requests"],
     ["Blender画面", counts.blender_screen_captures ?? counts.blender_live_frames ?? counts.blender_renders ?? 0, "workspace/assets/3d/live"],
-    ["演者素材", counts.generated_cast_files ?? appState.state.assets?.generated_cast_count ?? 0, "cast manifest"],
+    ["主画像", visual.seedance_primary_image_allowed ? "許可" : "不可", "approved photoreal only"],
+    ["学習確認", learning.last_preflight_check || "未実行", "known failures"],
     ["承認ゲート", `${blocked}停止`, "人間承認必須"],
   ];
   const row = document.getElementById("metricRow");
@@ -727,26 +732,40 @@ function renderBlenderReview() {
   const target = document.getElementById("blenderReview");
   if (!target) return;
   const review = appState.state.blender_to_seedance || {};
+  const visual = appState.state.visual_handoff || {};
+  const learning = appState.state.learning || {};
   const source = review.blender_source || {};
   const outputs = review.seedance_outputs || [];
   target.innerHTML = `
     <div class="panel-heading">
       <div>
-        <span class="eyebrow">Blender to Seedance</span>
-        <h3>プリビズ肉付けレビュー</h3>
+        <span class="eyebrow">Blender構図参照</span>
+        <h3>Seedance投入前レビュー</h3>
       </div>
       <span class="thin-pill warning">追加生成はレビュー後</span>
     </div>
     <div class="blender-review-grid">
       <article class="blender-source-card">
         <div class="review-card-head">
-          <span>SOURCE / BLENDER PREVIS</span>
-          <strong>主素材</strong>
+          <span>BLENDER PREVIS / 構図ソース</span>
+          <strong>Seedance入力不可</strong>
         </div>
         <img src="${escapeHtml(toProjectPath(source.render_path || appState.state.blender?.render_path || ""))}?t=${Date.now()}" alt="Blenderプリビズ">
         <div class="review-paths">
           <span>${escapeHtml(source.render_path || "")}</span>
           <span>${escapeHtml(source.blend_path || "")}</span>
+        </div>
+      </article>
+      <article class="blender-source-card">
+        <div class="review-card-head">
+          <span>PHOTOREAL STORYBOARD / 画作りの正</span>
+          <strong>${escapeHtml(visual.seedance_primary_image_allowed ? "入力候補" : "BLOCKED")}</strong>
+        </div>
+        <div class="review-focus-list stacked">
+          <span>status: ${escapeHtml(statusJa(visual.storyboard_status || "pending"))}</span>
+          <span>role: visual_truth required</span>
+          <span>${escapeHtml(visual.block_reason || "承認済み写実キービジュアルが必要です。")}</span>
+          <span>learning: ${escapeHtml(learning.last_preflight_check || "pending")}</span>
         </div>
       </article>
       <div class="seedance-output-grid">
@@ -771,8 +790,8 @@ function renderBlenderReview() {
     </div>
     <div class="support-reference-note">
       <strong>補助参照</strong>
-      <span>${escapeHtml(review.support_only?.generated_storyboard || "")}</span>
-      <em>${escapeHtml(review.support_only?.note || "生成絵コンテは補助。主軸はBlenderプリビズ。")}</em>
+      <span>${escapeHtml(visual.index_path || review.support_only?.generated_storyboard || "")}</span>
+      <em>${escapeHtml(review.support_only?.note || "Blenderは構図補助。主軸は承認済みphotoreal storyboard/key visual。Blender直渡しはブロック中。")}</em>
     </div>
   `;
 }

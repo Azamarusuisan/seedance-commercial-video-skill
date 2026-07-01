@@ -11,13 +11,15 @@
    ↓                              ↓
 軽量パス(単発CM等)          重量パス(複数ショット/短編/物語)
    ↓                              ↓
-[任意]Blenderプリビズ?         Blenderプリビズ(完全自動、必須。主参照)
+[任意]Blenderプリビズ?         Blenderプリビズ(完全自動、構図の正)
    ↓                              ↓
-参照画像を用意                承認ゲート:絵コンテ(=Blenderレンダーを見せる。無料)
+構図抽出/visual-handoff      承認ゲート:構図/カメラ/配置レビュー(Blender、無料)
    ↓                              ↓
-Seedance image-to-video       [任意]Higgsfield MCP画像生成(トーン確認用の補助参照のみ)
-                                   ↓
-                              セリフ有無の確認
+写実キービジュアル生成       Higgsfield MCP画像生成(写実storyboard/key visual)
+   ↓                              ↓
+承認ゲート:写実絵コンテ      承認ゲート:写実絵コンテ承認
+   ↓                              ↓
+Seedance image-to-video       セリフ有無の確認
                                    ↓
                               Higgsfield MCP ElevenLabsナレーション
                                    ↓
@@ -36,17 +38,17 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 納品(delivery package)
 ```
 
-認証が必要な窓口は実質2つだけ: **Higgsfieldログイン**(音声・動画の生成、および任意で使う画像生成がここに依存)と**Palmier Proサインイン**(仕上げ工程 + BGM/SFX生成)。個別サービスのAPIキー(OPENAI_API_KEY等)は重量パスでは使わない。BGM/SFX生成だけは唯一「Higgsfieldに一本化」の例外で、Palmier Pro自身の生成ツールを使う(§2、理由は生成プラットフォームの節を参照)。
+認証が必要な窓口は実質2つだけ: **Higgsfieldログイン**(画像・音声・動画の生成がここに依存)と**Palmier Proサインイン**(仕上げ工程 + BGM/SFX生成)。個別サービスのAPIキー(OPENAI_API_KEY等)は重量パスでは使わない。BGM/SFX生成だけは唯一「Higgsfieldに一本化」の例外で、Palmier Pro自身の生成ツールを使う(§2、理由は生成プラットフォームの節を参照)。
 
-**絵コンテについて: Blenderレンダーが主参照。Higgsfield画像生成(image2)は任意の補助トーン確認であり、必須の通過点ではない。** これは同リポジトリの別プロジェクト(`workspace/briefs/ascension-line-workflow-runbook.md`)で既に検証済みの原則を踏襲する: 「Blenderで作った3Dプリビズを主素材にして、Seedanceで映画的に肉付けする。生成絵コンテは補助参照。主素材ではない。」承認ゲートは、image2の生成結果ではなくBlenderレンダーそのものを見せて行う(無料、Higgsfield非依存)。
+**絵コンテについて: Blenderレンダーは主参照ではない。** Blenderは構図・カメラ・位置関係の正(`composition_only`)で、Seedance入力不可。Seedanceの主画像は、Blender構図を元にGPT Image/Higgsfield画像生成で作った写実storyboard/key visual(`visual_truth`)だけ。リップCMで「Blenderレンダーをそのままstart_imageにしてテキストで肉付け」は実際に失敗済みなので、ここを省略しない。
 
 ## 2. 登場するシステムと役割
 
 | システム | 役割 | 接続方式 |
 |---|---|---|
 | エージェント(Claude Code / Codex / Hermes / OpenCrew) | 全工程のオーケストレーター。ブリーフ解釈、プロンプト作成、スクリプト実行、承認確認 | ローカルシェル + MCP |
-| Blender | 3Dプレビズ・最終アニメーションのローカルレンダー。**主素材・主参照(絵コンテを兼ねる)** | `blender --background --python <script>`(ローカル、課金なし) |
-| Higgsfield MCP | ElevenLabs音声生成・Seedance動画生成(必須)、画像生成(任意・補助トーン確認のみ) | ホスト側が提供するMCPツール。このリポジトリのシェルスクリプトはMCPリクエストJSONを準備するだけで、実行はホストのMCPツールが行う |
+| Blender | 3Dプリビズ・最終アニメーションのローカルレンダー。**構図の正(composition truth)。Seedance入力不可** | `blender --background --python <script>`(ローカル、課金なし) |
+| Higgsfield MCP | 写実storyboard/key visual生成、ElevenLabs音声生成、Seedance動画生成 | ホスト側が提供するMCPツール。このリポジトリのシェルスクリプトはMCPリクエストJSONを準備するだけで、実行はホストのMCPツールが行う |
 | Palmier Pro | 動画編集の仕上げ(字幕・色・アップスケール・書き出し)+ **BGM/SFX生成**(`generate_audio`、唯一のHiggsfield一本化の例外) | `mcp__palmier-pro__*` ツール群をエージェントが直接呼ぶ |
 | note | ブログ/記事の下書き(このツールの外側の話) | 手動のみ。公開ボタンは絶対に押さない |
 
@@ -83,16 +85,16 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 単発CM・素材差し替えだけで足りる案件。詳細は`references/seedance-cm-workflow.md`と`references/image-to-video-handoff.md`。
 
 1. **Blender使用確認(新規)**: `command -v blender`でBlenderが使える場合、参照画像を用意する前に一度確認する:「Blenderを使うとこのクオリティが出ます。使用しますか?」
-   - **YES**: 重量パス§7-2と同じ手法(エージェントがブリーフからbpyスクリプトを新規に書き、`blender --background --python`で無人実行、`workspace/blender/action_movie_previs.py`を土台にする)でBlenderプリビズを1枚レンダーし、そのレンダーをこの案件の参照画像として使う(下記2に進む)。
+   - **YES**: 重量パス§7-2と同じ手法(エージェントがブリーフからbpyスクリプトを新規に書き、`blender --background --python`で無人実行、`workspace/blender/action_movie_previs.py`を土台にする)でBlenderプリビズを1枚レンダーする。この画像は構図参照専用で、Seedanceの`IMAGE_FILE`には使わない。
    - **NO(デフォルト)/Blender未インストール**: 従来通り、ユーザー提供素材を優先し、なければ`workspace/scripts/gpt-image-reference.sh`で生成する。
    - どちらの場合も、参照画像の承認は既存のG2(参照素材承認)ゲートで扱う。専用の新規ゲートは作らない。
-2. 参照画像を`workspace/assets/`に保存する。高級CM・写実CMでは、低ポリ/ブロックアウトのBlenderレンダーをSeedanceへ直接渡さない。Blenderは構図・カメラ・商品形状の設計図として使い、そこから写実のキービジュアルを作って承認してからSeedanceに渡す。
+2. 参照画像を`workspace/assets/`または`workspace/projects/<project_id>/shots/<shot_id>/`に保存する。Blenderを使った場合は`build-visual-handoff.py`で構図情報を抽出し、写実のキービジュアルを作って承認してからSeedanceに渡す。
 3. アスペクト比ごとにSeedanceプロンプトを1本ずつ書く(`workspace/prompts/`)。16:9のプロンプトを9:16にそのまま流用しない。
 4. `bash workspace/scripts/higgsfield-status.sh` でアカウント/モデル状態のMCPリクエストを準備し、ホストのHiggsfield MCPツールで実行して結果を確認する。
-5. `APPROVED=1 bash workspace/scripts/seedance-cost.sh` でコスト見積もりMCPリクエストを準備する(プロンプトに`pending`/`proposal`等のマーカーが残っていると`APPROVED=1`でもブロックされる)。
+5. `PERMISSION_MANIFEST=<permission.json> ASSET_MANIFEST=<approved-keyvisual.json> APPROVED={{SET_TO_1_ONLY_AFTER_GATE_CHECK}} bash workspace/scripts/seedance-cost.sh` でコスト見積もりMCPリクエストを準備する。`APPROVED=1`単独では通らない。
 6. Higgsfield MCPでコスト見積もりを実行し、結果を`bash workspace/scripts/record-mcp-json.sh cost <response.json>`で記録する。
 7. ユーザーが予算・プロンプト・参照素材・権利を最終承認する。
-8. `APPROVED=1 bash workspace/scripts/seedance-generate.sh` で生成MCPリクエストを準備し、Higgsfield MCPで実行、`record-mcp-json.sh job <response.json>`で記録する。
+8. `PERMISSION_MANIFEST=<permission.json> ASSET_MANIFEST=<approved-keyvisual.json> APPROVED={{SET_TO_1_ONLY_AFTER_GATE_CHECK}} bash workspace/scripts/seedance-generate.sh` で生成MCPリクエストを準備し、Higgsfield MCPで実行、`record-mcp-json.sh job <response.json>`で記録する。生成実行は別承認。
 9. 必要ならBGM/SFX生成(§7-9bと同じ手順)とPalmier Proで仕上げ(§7-10と同じ手順)。
 10. 出力・設定・権利注意事項を`workspace/delivery/`にまとめる。
 
@@ -116,7 +118,7 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 - **7-2のBlenderレンダーは絵コンテであり、構図・カメラ・商品形状の正。** ただし高級CM・写実CMでは、低ポリ/ブロックアウトのBlender画像をSeedanceの`start_image`に直接渡さない。直接渡すと「肉付け」ではなく、生のBlender感を引きずる。
 - Seedanceへ渡す主画像は、Blender絵コンテを元に作った写実キービジュアルにする。Blenderレンダーはその写実化の入力・比較対象・承認用の設計図として残す。
 - `workspace/scripts/higgsfield-image.sh`(Higgsfield MCP画像生成)は、この写実キービジュアル生成に使ってよい。使う場合も、生成絵コンテだけを根拠に次に進まず、Blender設計図と並べて「構図は守れているか」を確認する。
-- 使うか迷う場合はデフォルトでスキップしてよい。
+- 写実キービジュアル生成をスキップしてよいのは、Seedanceへ進まない構図レビュー段階だけ。Seedanceへ進む場合は、承認済み`storyboard.png`/key visualが必須。
 
 ### 7-4. 承認ゲート1: 絵コンテ承認
 
@@ -270,7 +272,7 @@ MCPリクエスト自体(実行前のペイロード)は`workspace/mcp-requests/
 
 ## 14. 既知の制約・未検証事項
 
-- Higgsfield MCPの画像生成(任意・補助トーン確認用)のモデル実名(暫定`image2`)とimg2img対応可否は未検証だが、必須の通過点ではなくなったため、パイプライン全体のブロッカーにはならない。使わない選択も可。
+- Higgsfield MCPの画像生成モデル実名(暫定`image2`)とimg2img対応可否は未検証。Blenderを使う案件では写実storyboard/key visual生成が必須なので、接続環境で最初にモデル名と入力画像対応を確認する。
 - **検証済み・失敗: 「Blenderレンダーをそのまま`start_image`にして、テキストプロンプトの『肉付け』指示だけで写実化する」は実際に試して失敗した**(リップスティックCM、2026-07-01、270 credits消費)。低ポリ感が残り、図形的な光表現(`ring`/`particle`)が2Dグラフィックとして描画された。正しくは、写実キービジュアルを別途生成(GPT Image edit mode等)し、承認してからSeedanceに渡す。詳細は`references/known-failure-patterns.md`(FP-001〜003)。
 - **`gpt-image-reference.sh`と`seedance-cost.sh`/`seedance-generate.sh`は参照画像を1枚しか渡せない設計になっている。** しかしGPT Imageの実CLIは複数`--image`(役割付き)に対応済み(FP-004)。Higgsfield MCP側のSeedanceが`start_image`/`end_image`や複数参照に対応しているかは未確認。スクリプト側が複数画像に未対応だったため、これまで参照素材を1枚に事前合成する不自然な運用をしていた(FP-002の一因)。§6タスク12で修正予定。
 - Palmier Proの`mirelo-sfx-v1.5-video-to-audio`(動画からSFX生成)は`list_models`で存在を確認しただけで、実際に動画を渡して満足のいく効果音が返るかは未検証。`elevenlabs-music`等のBGM尺指定(`durations`)も同様に未実行。最初の1回は試し生成で品質を見る前提とする。
@@ -286,7 +288,7 @@ MCPリクエスト自体(実行前のペイロード)は`workspace/mcp-requests/
 | 重量パスの詳細仕様 | `references/end-to-end-movie-pipeline.md` |
 | 軽量パスの詳細仕様 | `references/seedance-cm-workflow.md`, `references/image-to-video-handoff.md` |
 | Blenderプレビュー規約 | `references/blender-3d-preview-workflow.md` |
-| 「Blender主素材・生成絵コンテは補助参照」原則の初出 | `workspace/briefs/ascension-line-workflow-runbook.md` |
+| Blender直渡し禁止・写実storyboard必須の共通ロジック | `workspace/agent-guides/generic-video-generation-logic.md` |
 | 自社素材ライブラリ(ローカルのみ、Supabase等クラウドDB非接続) | `workspace/assets/brand/README.md` |
 | 失敗パターンの蓄積台帳(生成前に必ず確認、§7-8) | `references/known-failure-patterns.md` |
 | 実装タスクと決定の経緯 | `CODEX.md` |

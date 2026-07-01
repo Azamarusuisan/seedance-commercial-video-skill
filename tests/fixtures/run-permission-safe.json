@@ -1,0 +1,39 @@
+{
+  "schema_version": "run_permission.v1",
+  "run_id": "fixture-safe",
+  "owner": "test",
+  "approved_by": "test",
+  "allowed_actions": {
+    "analyze_references": true,
+    "create_blender_previs": true,
+    "prepare_gpt_image_storyboard_prompt": true,
+    "prepare_image_generation_request": true,
+    "execute_image_generation": false,
+    "prepare_seedance_cost_request": true,
+    "prepare_seedance_generation_request": true,
+    "execute_paid_generation": false,
+    "publish_ad": false
+  },
+  "budget": {
+    "max_credits": 0,
+    "max_jobs": 0,
+    "max_retries_per_concept": 0
+  },
+  "asset_rules": {
+    "allow_blender_as_seedance_input": false,
+    "require_approved_storyboard_frame": true,
+    "allowed_seedance_primary_asset_kinds": [
+      "photoreal_key_visual",
+      "approved_storyboard_frame",
+      "rights_confirmed_user_asset",
+      "approved_product_reference"
+    ]
+  },
+  "stop_conditions": [
+    "missing_approved_storyboard",
+    "blender_previs_used_as_seedance_input",
+    "unknown_rights",
+    "budget_cap_reached",
+    "HERMES_STOP_exists"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "run_id": "fixture-blender-leak",
+  "project_id": "demo",
+  "shot_id": "shot_01",
+  "status": "rejected",
+  "source_image_kind": "blender_previs",
+  "blender_look_leaked": true,
+  "composition_preserved": "partial",
+  "visual_issue": "Raw Blender blockout look leaked into final video.",
+  "motion_issue": "",
+  "next_instruction": "Insert photoreal storyboard/key visual approval before Seedance retry."
+}

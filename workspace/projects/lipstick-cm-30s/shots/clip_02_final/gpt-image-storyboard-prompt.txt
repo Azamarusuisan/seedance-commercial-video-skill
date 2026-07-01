@@ -1,0 +1,99 @@
+# GPT Image Storyboard/Key-Visual Template — Blender Previs Bridge
+
+Status: template. Copy into a project-specific file, fill in the placeholders, remove this
+Status line, and check against `references/known-failure-patterns.md` before running.
+
+This is the mandatory bridge between Blender previs (composition truth) and Seedance
+(motion truth). Blender is never a Seedance primary input directly (FP-001). This prompt turns
+a Blender render into a photoreal storyboard frame / key visual that becomes the Seedance
+`start_image`/`end_image` once approved.
+
+Execution route: prefer Higgsfield-authenticated image generation over a raw OPENAI_API_KEY.
+Primary: `workspace/scripts/higgsfield-image.sh` (`HIGGSFIELD_IMAGE_SOURCE_IMAGE(S)`).
+Fallback (requires explicit user approval + OPENAI_API_KEY in the shell): `workspace/scripts/gpt-image-reference.sh` (`GPT_IMAGE_SOURCE_IMAGE(S)`).
+
+## Source image(s)
+
+workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png — structure/composition reference(s) only. Do not preserve their
+look (low-poly, viewport lighting, placeholder materials, gray/flat background).
+
+If more than one source image is needed (e.g. a product reference plus a separate
+person/character reference), pass them as separate ordered images with explicit roles
+(FP-004) — never pre-composite multiple unrelated subjects into one flattened image (FP-002).
+
+## Preserve from Blender (composition only)
+
+- camera angle, lens/framing
+- object placement and scale relationships
+- shot continuity / cut logic
+- rough motion intent
+
+## Do NOT preserve from Blender
+
+- viewport lighting
+- low-poly look
+- temporary/placeholder materials
+- gray or flat placeholder background
+- plastic/CG-primitive shader look
+- any "3D software render" quality
+
+## Replace with (this is the actual fix — photoreal quality)
+
+- photoreal materials appropriate to the subject (real specular response, real micro-texture)
+- commercial studio background and lighting, no visible placeholder geometry
+- Hollywood-level CG/photo polish appropriate to the brief's quality bar
+
+## Language rule (FP-003)
+
+Describe all light/atmosphere in photographic terms only: bokeh, soft glints, volumetric haze,
+lens flare, warm rim light. Do NOT use graphic-design nouns ("ring", "line", "dot", "particle")
+as countable drawn shapes — this renders as literal 2D graphic overlays, not photographic light.
+
+## Explicitly avoid
+
+- any visible low-poly edges, flat shading, or "3D render" look
+- any drawn/graphic line, ring, or dot overlay
+- real brand logos, real packaging, real fonts, or any real third-party brand reference unless rights-confirmed
+- project-specific unsafe claims, private data, unsupported logos, and unapproved text
+
+## Review criteria before this can be an approved Seedance primary image
+
+- Blender's blockout/low-poly look must not remain visible (FP-001)
+- no graphic line/ring/dot overlays anywhere in the frame (FP-003)
+- material/lighting quality must read as photoreal, not CG-primitive
+- if multiple subjects were combined, they must read as one integrated scene, not a collage (FP-002)
+- user has explicitly approved this specific image, shown beside the original Blender render(s)
+
+Only after all of the above hold, and `validate-seedance-input.py` passes with
+`asset_kind=photoreal_key_visual` (or `approved_storyboard_frame`) and `approval_status=approved`,
+may this image become a Seedance `start_image`/`end_image`.
+
+
+Project:
+lipstick-cm-30s
+
+Shot:
+clip_02_final
+
+Composition truth to preserve:
+{
+  "camera_angle": "final packshot pullback angle",
+  "lens_feel": "clean product endcard lens",
+  "framing": "vertical 9:16 final product with title-safe negative space",
+  "subject_positions": [
+    "product returns with generous safe area"
+  ],
+  "spatial_relationships": [
+    "product smaller than hero, more environment visible"
+  ],
+  "motion_intent": "settled final end frame"
+}
+
+Visual style:
+photoreal luxury final packshot storyboard
+
+Lighting:
+warm rim light, soft bokeh, controlled lens bloom
+
+Material / product realism:
+black lacquer, champagne gold, deep rouge bullet

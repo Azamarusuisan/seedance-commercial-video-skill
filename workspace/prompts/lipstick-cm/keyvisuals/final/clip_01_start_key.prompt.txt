@@ -1,0 +1,7 @@
+Use the attached composition guide only for framing, camera distance, and product placement.
+
+Create a photoreal luxury cosmetics opening key visual in vertical 9:16. A black lacquer lipstick silhouette stands in a dark premium studio, with champagne-gold metal barely revealed by warm rim light. The shot should feel like a high-brand beauty campaign macro: shallow depth of field, real material reflections, soft glints, subtle volumetric haze, and controlled lens bloom.
+
+Preserve the centered product silhouette and quiet opening mood. Replace every low-poly, viewport, flat material, or placeholder stage quality with final advertising-grade realism.
+
+No readable brand text, no real logos, no person, no hand, no graphic overlay, no UI look.

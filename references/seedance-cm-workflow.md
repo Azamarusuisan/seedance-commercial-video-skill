@@ -75,15 +75,19 @@ GPT_IMAGE_OUT=workspace/assets/reference-image-v1.png \
 bash workspace/scripts/gpt-image-reference.sh
 
 IMAGE_FILE=workspace/assets/reference-image-v1.png \
+ASSET_MANIFEST=workspace/projects/<project_id>/shots/<shot_id>/asset-manifest.json \
+PERMISSION_MANIFEST=workspace/run/<run_id>/permission.json \
 PROMPT_FILE=workspace/prompts/seedance-video-v1.txt \
 ASPECT_RATIO=9:16 \
-APPROVED=1 \
+APPROVED={{SET_TO_1_ONLY_AFTER_GATE_CHECK}} \
 bash workspace/scripts/seedance-cost.sh
 
 IMAGE_FILE=workspace/assets/reference-image-v1.png \
+ASSET_MANIFEST=workspace/projects/<project_id>/shots/<shot_id>/asset-manifest.json \
+PERMISSION_MANIFEST=workspace/run/<run_id>/permission.json \
 PROMPT_FILE=workspace/prompts/seedance-video-v1.txt \
 ASPECT_RATIO=9:16 \
-APPROVED=1 \
+APPROVED={{SET_TO_1_ONLY_AFTER_GATE_CHECK}} \
 bash workspace/scripts/seedance-generate.sh
 ```
 

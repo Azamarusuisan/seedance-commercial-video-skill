@@ -2,6 +2,15 @@
 
 Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
+## Current Canonical Override (2026-07-01)
+
+このリポジトリの現在の正は、`CLAUDE.md`の **Blender-To-Storyboard Safety Rewrite** と、`references/known-failure-patterns.md` FP-001/FP-005、`workspace/scripts/validate-seedance-input.py` の機械的ゲートである。
+
+- Blender previs/render は `composition_only`。構図・カメラ・配置・スケールの正であり、Seedanceの`IMAGE_FILE`/`start_image`/`end_image`には使わない。
+- Seedanceへ渡せる主画像は、承認済みの `photoreal_key_visual` / `approved_storyboard_frame` / `rights_confirmed_user_asset` / `approved_product_reference` だけ。
+- BlenderからSeedanceへ進む場合は、Blender previs -> visual handoff -> GPT Image/Higgsfield写実storyboard/key visual -> 人間承認 -> Seedance、の順番を省略しない。
+- このファイル内の旧記述で「Blenderレンダーが主参照」「Higgsfield画像生成は任意」「生成絵コンテは補助参照」と読める箇所は、リップCMの実失敗により撤回済み。現在は安全ゲート側を正とする。
+
 ## 実装ステータス(2026-07-01時点)
 
 - 2026-07-01: 旧方針コミット`7711779`のズレを修正済み。`workspace/scripts/elevenlabs-narration.sh`をHiggsfield MCP経由として復元し、`record-mcp-json.sh`の`narration`種別を復元し、`image`種別を追加し、`workspace/scripts/higgsfield-image.sh`を追加した。
@@ -10,7 +19,7 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 - §5のUI簡素化は未着手。ユーザーに「Factory UIの世界観を残すか、承認専用UIへ寄せるか」を確認してから行う。
 - 2026-07-01: `WORKFLOW.md`(全体フローの1〜100言語化)を新規作成し、ユーザーとすり合わせ済み。承認ゲート粒度・フォルダ規約・Palmier Pro仕上げ順は確定。軽量パスへBlender previsを任意オプションとして追加する方針も反映済み。
 - 2026-07-01: **BGM/SFX生成が抜けていたことが判明し、Palmier Pro経由で追加する方針が確定(§2b-d、§6タスク9、未着手)。** Higgsfield一本化の唯一の例外。`WORKFLOW.md`§7-9bに詳細。
-- 2026-07-01: **Higgsfield画像生成(image2)を必須から任意に格下げする方針が確定(§2c、§6タスク10、未着手)。** Blenderレンダーが絵コンテ・主参照を兼ねる。同リポジトリの`ascension-line-workflow-runbook.md`で既に検証済みの「Blender主素材・生成絵コンテは補助参照」原則を踏襲。上記7行目「画像生成…をHiggsfield MCP経由にする」は必須ステップとしては**古い**。画像生成は任意になった。
+- 2026-07-01: **撤回済みの旧方針:** Higgsfield画像生成(image2)を必須から任意に格下げし、Blenderレンダーを主参照にする案が一時的にあった。リップスティックCMで実際に270 creditsを使って失敗し、Blenderブロックアウト感が残ることが確認されたため、この案は破棄。現在は写実storyboard/key visual生成と承認が必須。
 - 2026-07-01: **未確定・検討中: BGM/SFXをPalmier ProからHiggsfield(Seed Audio 1.0)経由に戻すか。** Higgsfield MCPの音声生成はSeed Audio 1.0とElevenLabs v3の両方を裏に持ち、Seed Audio 1.0は会話・SFX・BGMを1回でまとめて生成できることが判明(Web検索で確認、Higgsfield MCP自体では未検証)。実現すれば§2b-dのPalmier Pro例外を撤回し「生成は完全にHiggsfieldのみ」に戻せる。**ユーザーの最終GOはまだ得ていない。方針変更前に確認すること。**
 - 2026-07-01: **対応済み: 自社ブランド素材ライブラリを新設した。** `workspace/assets/brand/`(logos/products/campaigns/guidelines + `brand-manifest.json`)。`workspace/assets/cast/`と同じマニフェスト方式。ローカルのみ、外部クラウドDB(Supabase等)には接続しない方針(ユーザーのセキュリティ判断)。画像/動画ファイルは`.gitignore`でデフォルト除外。`rights_status: "company_owned"`を新設し、Rights Gateで最優先の参照元として扱う(`WORKFLOW.md`§4/§11に反映済み)。
 - 2026-07-01: **対応済み: 「生成物は都度assetsに保存してpushする」を標準運用ポリシーとして明文化した(`WORKFLOW.md`§9「保存・pushポリシー」)。** Blenderレンダー・`.blend`・参照画像・絵コンテ・ドラフトプロンプトは生成のたびにコミット・push対象。**唯一の例外は`workspace/assets/brand/`配下の実体ファイル**(マニフェスト/READMEはpush対象だがローカルのみの方針は変更なし)。
@@ -21,7 +30,7 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
 このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装記録。実際のコード状態と食い違いが出た場合は、このファイルの最新の確定方針(§2以降)を正としてコードを合わせること。全体フローの完成形は`WORKFLOW.md`を参照(このファイルは実装タスクと決定の経緯、`WORKFLOW.md`は完成後の姿)。
 
-**確定方針(ユーザー最終確認済み): 音声生成(ElevenLabsナレーション)・動画生成(Seedance)は全てHiggsfield MCP経由。APIキー(OPENAI_API_KEYを含む)は一切使わない。画像生成(絵コンテ)は任意。Blenderレンダーが主参照を兼ねるため必須ではない(§2c)。** Palmier Proは生成ではなく仕上げ工程(字幕・色・アップスケール・書き出し)専用、**ただしBGM/SFX生成(`generate_audio`)だけは唯一の例外としてPalmier Proを使う。** 軽量パスではBlender previsを任意オプションとして使える(§6タスク8)。
+**確定方針(現在): 音声生成(ElevenLabsナレーション)・動画生成(Seedance)は全てHiggsfield MCP経由。APIキー(OPENAI_API_KEYを含む)は一切使わない。Blenderを使った案件では、画像生成(写実storyboard/key visual)と人間承認を挟む。Blenderレンダーは主参照ではなく構図参照。** Palmier Proは生成ではなく仕上げ工程(字幕・色・アップスケール・書き出し)専用、**ただしBGM/SFX生成(`generate_audio`)だけは唯一の例外としてPalmier Proを使う。** 軽量パスでもBlender previsを使った場合は同じく写実化を挟む。
 
 ## 0. ゴール
 
@@ -83,47 +92,48 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
 **修正: `references/end-to-end-movie-pipeline.md`にステップ7-9bとして、Seedance動画確定後・Palmier Pro仕上げ前にBGM/SFX生成を追加する(`WORKFLOW.md`§7-9bが正)。** `upscale_media`と同じ運用ルール(`list_models`でモデル仕様提示→ユーザー確認→実行、機械的な`APPROVED=1`ゲートはない)を適用する。
 
-## 2c. 方針転換: Higgsfield画像生成(image2)は必須ではなく任意にする
+## 2c. 撤回済み方針: Blenderを主参照にする案
 
-ユーザーから「Blenderからimage2をかませる必要あるか」と問われ、既に同リポジトリの別プロジェクト`workspace/briefs/ascension-line-workflow-runbook.md`(3Dアクション映画`ascension_line`)で検証済みの原則があることが分かった:
+一時期、「Blenderレンダーを主参照にして、Seedanceのプロンプトだけで写実的に肉付けする」案を検討した。
 
-> Blenderで作った3Dプリビズを主素材にして、Seedanceで映画的に肉付けする。生成絵コンテは補助参照です。主素材ではありません。
+これはリップスティックCMで実際に失敗した。低ポリ/仮マテリアル/viewport lightingがSeedance出力に残り、高級CM品質にならなかった。
 
-そのプロジェクトの明示的な禁止事項: 「補助参照を主素材として扱わない」「生成絵コンテだけを根拠にSeedanceへ進めない」。実際にClip 01/02はBlenderレンダーを主参照としてSeedance生成済みという実績もある。
+**現在の決定: この案は使わない。**
 
-**決定: この原則を`references/end-to-end-movie-pipeline.md`の重量パスにも適用する。**
+- Blenderは`composition_only`。構図・カメラ・配置・スケールの正。
+- BlenderレンダーはSeedanceの`IMAGE_FILE`/`start_image`/`end_image`にしない。
+- Higgsfield MCP画像生成またはGPT Image相当で、写実storyboard/key visualを作る。
+- その写実画像をBlender構図と横並びでレビューし、人間承認を取る。
+- 承認済みの`photoreal_key_visual`/`approved_storyboard_frame`だけがSeedance primary imageになれる。
 
-- Blenderレンダー(7-2)が絵コンテを兼ねる。承認ゲート1はこのBlenderレンダーを見せて行う(無料、Higgsfield非依存)。
-- Higgsfield MCP画像生成(`higgsfield-image.sh`)は**任意**。使う場合も「最終映像のトーン確認」用の補助参照に留め、Seedanceへの主参照として使わない。
-- Seedanceへ渡す主参照画像はBlenderレンダーそのもの。プロンプトは「肉付け」方針(構図・配置は保持しつつ、写実的な質感・光をテキストで指示する)で書く。
-- これにより、§2b(a)の「Higgsfield画像生成モデル名・img2img対応の未検証」はパイプラインのブロッカーではなくなる(任意機能の話になる)。
-
-`WORKFLOW.md`の§1図・§2システム表・§7-3/7-4・§8ゲート表・§14既知の制約に反映済み。
+`WORKFLOW.md`、`references/image-to-video-handoff.md`、`references/end-to-end-movie-pipeline.md`、`workspace/scripts/validate-seedance-input.py`を正とする。
 
 ## 3. 改訂後のパイプライン(Codexが`references/end-to-end-movie-pipeline.md`に反映すること)
 
 ```
 [自然言語ブリーフ]
    ↓
-[Blender previs] ローカル、完全自動、外部API不要。レンダーが絵コンテ=主参照を兼ねる(§2c)
+[Blender previs] ローカル、完全自動、外部API不要。構図・カメラ・配置の正
    ↓
-承認ゲート1: 絵コンテ承認(Blenderレンダーを見せる。無料)
+承認ゲート1: 構図承認(Blenderレンダーを見せる。無料)
    ↓
-[任意] Higgsfield MCP: 画像生成 — トーン確認用の補助参照のみ、使わなくてよい(§2c)
+[Higgsfield MCP: 画像生成] Blender構図から写実storyboard/key visualを作る
+   ↓
+承認ゲート2: 写実storyboard/key visual承認
    ↓
 [Higgsfield MCP: ElevenLabsナレーション] workspace/scripts/elevenlabs-narration.sh(既存のまま)
    ↓
 [Blender 本アニメーション最終化] 音声尺に合わせてカメラ/フレーム範囲確定
    ↓
-[Higgsfield MCP: Seedance image-to-video]
+[Higgsfield MCP: Seedance image-to-video] 承認済み写実画像だけをprimary imageにする
    ↓
-承認ゲート2: 素材承認(コスト承認・ログイン/クレジット確認を含む)
+承認ゲート3: 素材承認(コスト承認・ログイン/クレジット確認を含む)
    ↓
 [任意・承認後: Palmier Pro BGM/SFX生成] mirelo-sfx-v1.5-video-to-audio / elevenlabs-music等(唯一のHiggsfield一本化の例外、§2b-d)
    ↓
 [Palmier Pro: import_media → sync_audio → add_captions → apply_color → upscale_media → export_project]
    ↓
-承認ゲート3: 最終書き出し前承認
+承認ゲート4: 最終書き出し前承認
 ```
 
 セリフ確認ステップ(カメラ目線で喋るカットの有無)は既存の位置(絵コンテ承認の直後)のまま変更なし。認証が必要な生成系の窓口はHiggsfieldMCPひとつに統一されている(BGM/SFXのみPalmier Pro例外)。

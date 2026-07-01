@@ -1,0 +1,12 @@
+{
+  "project_id": "lipstick-cm-30s",
+  "status": "prepared_only",
+  "generation_executed": false,
+  "seedance_generation_allowed": false,
+  "shots": [
+    "workspace/projects/lipstick-cm-30s/shots/clip_01_start/visual-handoff.json",
+    "workspace/projects/lipstick-cm-30s/shots/clip_01_end/visual-handoff.json",
+    "workspace/projects/lipstick-cm-30s/shots/clip_02_lips/visual-handoff.json",
+    "workspace/projects/lipstick-cm-30s/shots/clip_02_final/visual-handoff.json"
+  ]
+}

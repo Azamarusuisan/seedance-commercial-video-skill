@@ -1,0 +1,23 @@
+{
+  "schema_version": "storyboard_request.v1",
+  "project_id": "lipstick-cm-30s",
+  "shot_id": "clip_02_lips",
+  "status": "prepared_only",
+  "execute_paid_generation": false,
+  "model_route": "higgsfield_mcp_image_generation_or_gpt_image_after_user_approval",
+  "prompt_path": "workspace/prompts/lipstick-cm/keyvisuals/final/clip_02_lips_key.prompt.txt",
+  "source_images": [
+    {
+      "path": "workspace/assets/references/lipstick-cm/keyvisuals/clip_01_end_key.png",
+      "role": "visual_world_reference",
+      "dependency": "clip_01_end_key must be generated and approved first"
+    },
+    {
+      "path": "workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png",
+      "role": "support_reference_only",
+      "seedance_input_allowed": false
+    }
+  ],
+  "output_path": "workspace/assets/references/lipstick-cm/keyvisuals/clip_02_lips_key.png",
+  "stop_condition": "missing_explicit_image_generation_approval"
+}

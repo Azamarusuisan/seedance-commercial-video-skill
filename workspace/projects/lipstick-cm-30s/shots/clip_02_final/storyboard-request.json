@@ -1,0 +1,18 @@
+{
+  "schema_version": "storyboard_request.v1",
+  "project_id": "lipstick-cm-30s",
+  "shot_id": "clip_02_final",
+  "status": "prepared_only",
+  "execute_paid_generation": false,
+  "model_route": "higgsfield_mcp_image_generation_or_gpt_image_after_user_approval",
+  "prompt_path": "workspace/prompts/lipstick-cm/keyvisuals/final/clip_02_final_key.prompt.txt",
+  "source_images": [
+    {
+      "path": "workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png",
+      "role": "composition_only",
+      "seedance_input_allowed": false
+    }
+  ],
+  "output_path": "workspace/assets/references/lipstick-cm/keyvisuals/clip_02_final_key.png",
+  "stop_condition": "missing_explicit_image_generation_approval"
+}

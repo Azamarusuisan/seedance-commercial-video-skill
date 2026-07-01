@@ -1,0 +1,68 @@
+{
+  "project_id": "lipstick-cm-30s",
+  "panels": [
+    {
+      "panel_id": "panel_01",
+      "source_path": "workspace/assets/3d/renders/lipstick_cm_panel_01_silhouette.png",
+      "role": "composition_only",
+      "seedance_input_allowed": false,
+      "maps_to": "clip_01_start"
+    },
+    {
+      "panel_id": "panel_02",
+      "source_path": "workspace/assets/3d/renders/lipstick_cm_panel_02_cap_macro.png",
+      "role": "composition_only",
+      "seedance_input_allowed": false,
+      "maps_to": "panel_02_material_reference"
+    },
+    {
+      "panel_id": "panel_03",
+      "source_path": "workspace/assets/3d/renders/lipstick_cm_panel_03_hero_vfx.png",
+      "role": "composition_only",
+      "seedance_input_allowed": false,
+      "maps_to": "clip_01_end"
+    },
+    {
+      "panel_id": "rina_lips",
+      "source_path": "workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png",
+      "role": "support_reference_only",
+      "seedance_input_allowed": false,
+      "maps_to": "clip_02_lips"
+    },
+    {
+      "panel_id": "panel_04",
+      "source_path": "workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png",
+      "role": "composition_only",
+      "seedance_input_allowed": false,
+      "maps_to": "clip_02_final"
+    },
+    {
+      "panel_id": "panel_05",
+      "source_path": "derived_from_clip_02_lips_key",
+      "role": "photoreal_storyboard_derivative",
+      "seedance_input_allowed": false,
+      "maps_to": "clip_02_mid_texture_reference"
+    },
+    {
+      "panel_id": "panel_06",
+      "source_path": "workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png",
+      "role": "composition_only",
+      "seedance_input_allowed": false,
+      "maps_to": "clip_02_final"
+    },
+    {
+      "panel_id": "panel_07",
+      "source_path": "derived_from_approved_product_keyvisuals",
+      "role": "photoreal_storyboard_derivative",
+      "seedance_input_allowed": false,
+      "maps_to": "brand_mood_bridge"
+    },
+    {
+      "panel_id": "panel_08",
+      "source_path": "derived_from_clip_02_final_key",
+      "role": "post_production_plate",
+      "seedance_input_allowed": false,
+      "maps_to": "title_safe_endcard"
+    }
+  ]
+}

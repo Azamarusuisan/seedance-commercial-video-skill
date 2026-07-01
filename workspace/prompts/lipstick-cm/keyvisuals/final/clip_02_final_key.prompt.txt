@@ -1,0 +1,7 @@
+Use the attached composition guide only for final packshot placement, camera distance, and safe empty space.
+
+Create a photoreal luxury cosmetics final key visual in vertical 9:16. The lipstick stands as a refined final packshot in a dark premium studio, with black lacquer, champagne-gold metal, and deep rouge wax rendered as real materials. Keep clean negative space for post-production title placement, but do not render any title or brand text inside the image.
+
+Preserve the calm final-frame composition and premium product focus. Replace every low-poly, viewport, flat material, or placeholder stage quality with final advertising-grade realism.
+
+No readable brand text, no real logos, no person, no hand, no graphic overlay, no UI look.
