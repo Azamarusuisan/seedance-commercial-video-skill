@@ -208,13 +208,24 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
     - `higgsfield-image.sh`は削除しない(任意で使う補助ツールとして残す)。
     - **注記(2026-07-01時点で判明): この方針(Blenderレンダーを直接start_imageにしてテキストの「肉付け」指示に頼る)は、リップスティックCMで実際に試して失敗した。** タスク11(写実キービジュアル生成)を必ず経由すること。「肉付け」記述はSeedanceへの動き付け指示としては有効だが、写実化そのものはテキストだけでは達成できない。
 
-11. **最優先・スキャフォールド完了/実行が唯一の残タスク: リップスティックCMのリトライ。** ユーザーがこの作業をCodexに依頼済み。Codex側で`workspace/projects/lipstick-cm-30s/shots/*/`と`storyboard/00〜06`の企画・承認ゲート定義は既に完成している(2026-07-01、Claude Codeが棚卸し確認済み)。**残っているのは4枚の写実キービジュアルを実際に生成することだけ。** 手順:
-    1. `references/known-failure-patterns.md`(FP-001〜006)と`references/cm-creative-craft-knowledge.md`(特に§3・§5・§10、2026-07-01完成)を読む。同じ失敗を絶対に繰り返さないこと。
-    2. `workspace/prompts/lipstick-cm/keyvisuals/final/*.prompt.txt`(4ファイル、最新版)を使って`workspace/scripts/gpt-image-reference.sh`または`workspace/scripts/higgsfield-image.sh`(edit/img2img mode)で実際に4枚を生成し、`workspace/assets/references/lipstick-cm/keyvisuals/`配下に保存する(このディレクトリはまだ存在しない=未実行の証拠)。各プロンプトの`Status: proposal`マーカーは、実行前にレビューした上で外す。
-    3. 生成した4枚を、元のBlenderパネル(`workspace/assets/3d/renders/lipstick_cm_panel_0{1,2,3,4}*.png`)と並べてユーザーに見せる。**この承認を得るまで、次のSeedance見積もり・生成は一切行わない。**
-    4. 承認後、各shotの`asset-manifest.json`/`storyboard-review.json`の`approval_status`を`approved`に、`seedance_input_allowed`を`true`に更新する(`storyboard/06-seedance-handoff-after-approval.md`のゲート条件を満たすこと)。その上で承認済みキービジュアルを`start_image`/`end_image`として`seedance-cost.sh`→`seedance-generate.sh`に渡す。生のBlenderレンダーには絶対に戻さない(`validate-seedance-input.py`が機械的にブロックする)。
-    5. コスト承認と生成承認は別物として扱う(`CLAUDE.md`のSafety/Cost Gate参照)。
-    6. 結果が今回も失敗なら、`references/known-failure-patterns.md`に新しいFPエントリを追記してから次を試す。成功なら、そのこと自体も同ファイルか案件のcondition mdに記録する(何が効いたかも財産になる)。
+11. **最優先・スキャフォールド完了/実行が唯一の残タスク: リップスティックCMのリトライ。** ユーザーがこの作業をCodexに依頼済み。Codex側で`workspace/projects/lipstick-cm-30s/shots/*/`と`storyboard/00〜06`の企画・承認ゲート定義は既に完成している(2026-07-01、Claude Codeが棚卸し確認済み)。**残っているのは4枚の写実キービジュアルを実際に生成することだけ。**
+
+    **2026-07-01追加(Claude Codeが実プロジェクトで統合テスト済み、FP-007参照): `visual-handoff.json`の`storyboard_prompt_path`/`output.prompt_path`が、未記入のテンプレート雛形(`shots/<shot_id>/gpt-image-storyboard-prompt.txt`)を指していて、具体的な写実プロンプト(`workspace/prompts/lipstick-cm/keyvisuals/final/*.prompt.txt`)を指していなかったバグを発見・修正済み。** 4ショット全ての`visual-handoff.json`を、実際に書き込んだ`final/*.prompt.txt`を指すよう修正した。**`workspace/scripts/prepare-storyboard-image-request.sh`(schema駆動の推奨実行入口)を、コストの発生しないリクエスト準備のみのモードで2ショット分(clip_01_start, clip_02_lips)実際に実行し、正しいプロンプトが読み込まれることを確認済み。** また`validate-seedance-input.py`が現在の(未承認)状態を正しくブロックすることも再確認済み。**なお、`final/*.prompt.txt`には`Status: proposal`のようなテキストマーカーは意図的に入れていない**(プロンプト本文に余計な地の文が混ざらないようにするため)。ゲートは`APPROVED=1`環境変数+人間による目視承認+`asset-manifest.json`の`approval_status`更新の3点で行う(テキストマーカーの削除ではない)。
+
+    手順:
+    1. `references/known-failure-patterns.md`(FP-001〜007)と`references/cm-creative-craft-knowledge.md`(特に§3・§5・§10、2026-07-01完成)を読む。同じ失敗を絶対に繰り返さないこと。
+    2. 各ショットについて、まだなければ`workspace/run/lipstick-cm-30s.permission.json`を`workspace/run/permission.example.json`をベースに作成する(`prepare_image_generation_request: true`、`execute_image_generation`/`execute_paid_generation`はまだ`false`のまま)。その上で、実際にHiggsfield MCPツールがある環境で以下を実行してリクエストを準備する:
+       ```
+       APPROVED=1 PERMISSION_MANIFEST=workspace/run/lipstick-cm-30s.permission.json \
+       bash workspace/scripts/prepare-storyboard-image-request.sh \
+         workspace/projects/lipstick-cm-30s/shots/clip_01_start/visual-handoff.json
+       ```
+       (他3ショットも同様。`workspace/mcp-requests/higgsfield-image.request.json`に準備される。1ショットずつ処理し、実行のたびに次のステップに進む前に上書きされる点に注意)
+    3. host提供のHiggsfield MCP画像生成ツールで準備済みリクエストを実行し、結果を`workspace/assets/references/lipstick-cm/keyvisuals/<shot>_key.png`に保存、`bash workspace/scripts/record-mcp-json.sh image <response.json>`で結果を記録する。
+    4. 生成した4枚を、元のBlenderパネル(`workspace/assets/3d/renders/lipstick_cm_panel_0{1,2,3,4}*.png`)と並べてユーザーに見せる。**この承認を得るまで、次のSeedance見積もり・生成は一切行わない。**
+    5. 承認後、各shotの`asset-manifest.json`/`storyboard-review.json`/`visual-handoff.json`の`approval_status`を`approved`に、`seedance_input_allowed`を`true`に更新する(`storyboard/06-seedance-handoff-after-approval.md`のゲート条件を満たすこと)。その上で承認済みキービジュアルを`start_image`/`end_image`として`seedance-cost.sh`→`seedance-generate.sh`に渡す。生のBlenderレンダーには絶対に戻さない(`validate-seedance-input.py`が機械的にブロックする)。
+    6. コスト承認と生成承認は別物として扱う(`CLAUDE.md`のSafety/Cost Gate参照)。
+    7. 結果が今回も失敗なら、`references/known-failure-patterns.md`に新しいFPエントリを追記してから次を試す。成功なら、そのこと自体も同ファイルか案件のcondition mdに記録する(何が効いたかも財産になる)。**この成功こそが、このプロジェクト全体で唯一の「パイプラインが実際にチューニングできている」ことの証明になる。**
 
 12. **対応済み(部分): マルチモーダル/複数参照画像への未対応を修正した(`references/known-failure-patterns.md`FP-004)。** ユーザー指摘: 「素材が結局1個しか入ってなかったり、マルチモーダルが強みなはずなのに全然活用できてない」。実装内容:
     - **完了:** `workspace/scripts/gpt-image-reference.sh`を拡張し、`GPT_IMAGE_SOURCE_IMAGES`(改行区切り)で複数の`--image`を渡せるようにした(`image_gen.py`のCLIの複数`--image`フラグ対応、`references/cli.md`確認済み)。既存の単数`GPT_IMAGE_SOURCE_IMAGE`は後方互換で残した。

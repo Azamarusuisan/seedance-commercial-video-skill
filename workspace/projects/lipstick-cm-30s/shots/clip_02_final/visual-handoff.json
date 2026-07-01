@@ -49,7 +49,7 @@
     "aspect_ratio": "9:16"
   },
   "output": {
-    "prompt_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_final/gpt-image-storyboard-prompt.txt",
+    "prompt_path": "workspace/prompts/lipstick-cm/keyvisuals/final/clip_02_final_key.prompt.txt",
     "storyboard_image_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_final/storyboard.png",
     "asset_kind": "photoreal_key_visual",
     "role": "visual_truth",
@@ -65,7 +65,7 @@
     "scale_notes": "product smaller than hero, more environment visible",
     "motion_intent": "settled final end frame"
   },
-  "storyboard_prompt_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_final/gpt-image-storyboard-prompt.txt",
+  "storyboard_prompt_path": "workspace/prompts/lipstick-cm/keyvisuals/final/clip_02_final_key.prompt.txt",
   "storyboard_status": "prompt_prepared",
   "storyboard_image_path": "",
   "seedance_primary_image_allowed": false,

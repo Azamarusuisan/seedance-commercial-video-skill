@@ -1,3 +1,7 @@
+SUPERSEDED (2026-07-01, Claude Code): this scaffold's composition-truth fields were hand-developed into a specific, execution-ready prompt at workspace/prompts/lipstick-cm/keyvisuals/final/clip_02_final_key.prompt.txt — visual-handoff.json's storyboard_prompt_path/output.prompt_path now point there. Use that file for actual generation, not the generic template body below.
+
+---
+
 # GPT Image Storyboard/Key-Visual Template — Blender Previs Bridge
 
 Status: template. Copy into a project-specific file, fill in the placeholders, remove this

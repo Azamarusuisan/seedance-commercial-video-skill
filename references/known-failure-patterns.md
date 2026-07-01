@@ -62,6 +62,15 @@ Seedance生成(cost見積もりも含む)前に、このファイルの全エン
 - **修正状況**: 対応済み(2026-07-01、Claude Code)。`check_path_heuristic()`を新設し、`check_manifest()`と`check_heuristic_only()`の両方から呼ぶように変更。再テストで、偽装manifestのブロックと、正当な承認済みstoryboardの通過(誤検知なし)の両方を確認済み。
 - **出典**: ユーザーからの指摘(「Codexの自己申告を鵜呑みにするな」)を受けて、Claude Codeが実際に敵対的テストを行い発見。
 
+## FP-007: visual-handoff.jsonのprompt_pathが、実行可能な最終プロンプトではなく未記入のテンプレート雛形を指していた
+
+- **症状**: `workspace/scripts/prepare-storyboard-image-request.sh`(schema駆動の実行入口)が`visual-handoff.json`の`storyboard_prompt_path`/`output.prompt_path`をそのまま読んで画像生成リクエストを準備するが、そのパスの実体(`shots/<shot_id>/gpt-image-storyboard-prompt.txt`)は`build-visual-handoff.py`が生成した汎用テンプレート(先頭に`Status: template. Copy into a project-specific file, fill in the placeholders, remove this Status line`が残ったまま)で、具体的な写実描写(材質・光・雰囲気の詳細な言葉)を欠いていた。一方、実際に人間が具体的に書き込んだ実行用プロンプト(`workspace/prompts/lipstick-cm/keyvisuals/final/*.prompt.txt`)は別の場所に存在し、どちらが「正」か`visual-handoff.json`からは判別できなかった。
+- **原因**: per-shotの雛形生成(`build-visual-handoff.py`)と、実際の創造的プロンプト執筆(人間/エージェントが手で書く工程)が別々のファイルに分かれる設計だったため、両者をつなぐ「どちらを実行に使うか」のポインタ更新が漏れた。schemaの`prompt_path`フィールドは雛形生成時点の値のまま放置され、実際の執筆完了後に更新されていなかった。
+- **再現方法**: `lipstick-cm-30s`の4ショットすべてで確認(2026-07-01、Claude Codeが`workspace/prompts/lipstick-cm/keyvisuals/final/`と`shots/*/gpt-image-storyboard-prompt.txt`の内容を突き合わせて発見)。`prepare-storyboard-image-request.sh`をそのまま実行すると、具体性の低い雛形プロンプトでリクエストが準備されてしまうところだった(実行前に発見、実際の生成は行っていない)。
+- **修正ルール**: per-shotの実行用プロンプトを別ファイルに書き上げたら、**その場で`visual-handoff.json`の`storyboard_prompt_path`と`output.prompt_path`を実際のファイルへ更新する**。雛形ファイル自体は削除せず、冒頭に「この内容は`<実際のファイルパス>`に置き換えられた」という注記を残す(参照した人が迷わないように)。schema駆動のパイプラインでは、「箱(schema/JSON)の中身が最新か」を実行前に必ず目視確認する。
+- **修正状況**: 対応済み(2026-07-01、Claude Code)。4ショット全ての`visual-handoff.json`の`storyboard_prompt_path`/`output.prompt_path`を`workspace/prompts/lipstick-cm/keyvisuals/final/*.prompt.txt`に更新し、雛形ファイル側にも注記を追加した。`prepare-storyboard-image-request.sh`を実際に(スクラッチ領域への出力先で、コスト発生なしに)2ショット分実行し、正しいプロンプトが読み込まれることを確認済み。同時に`validate-seedance-input.py`が現在の(未承認)状態で正しくブロックすることも再確認した。
+- **出典**: Claude Codeによる実プロジェクトの棚卸し・統合テスト(2026-07-01)。
+
 ---
 
 ## 新規エントリのテンプレート

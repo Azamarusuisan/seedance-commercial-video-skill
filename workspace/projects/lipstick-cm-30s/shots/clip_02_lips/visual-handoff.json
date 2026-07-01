@@ -49,7 +49,7 @@
     "aspect_ratio": "9:16"
   },
   "output": {
-    "prompt_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_lips/gpt-image-storyboard-prompt.txt",
+    "prompt_path": "workspace/prompts/lipstick-cm/keyvisuals/final/clip_02_lips_key.prompt.txt",
     "storyboard_image_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_lips/storyboard.png",
     "asset_kind": "photoreal_key_visual",
     "role": "visual_truth",
@@ -65,7 +65,7 @@
     "scale_notes": "macro crop, skin texture visible",
     "motion_intent": "rouge color appears on lips"
   },
-  "storyboard_prompt_path": "workspace/projects/lipstick-cm-30s/shots/clip_02_lips/gpt-image-storyboard-prompt.txt",
+  "storyboard_prompt_path": "workspace/prompts/lipstick-cm/keyvisuals/final/clip_02_lips_key.prompt.txt",
   "storyboard_status": "prompt_prepared",
   "storyboard_image_path": "",
   "seedance_primary_image_allowed": false,
