@@ -4,10 +4,16 @@ Purpose: Clip 2 final key visual (photoreal), per postmortem-20260701-blender-fl
 and references/known-failure-patterns.md (FP-001, FP-003). Checked against known-failure-patterns.md
 before writing this version.
 
-Execution route: `workspace/scripts/gpt-image-reference.sh` in edit mode.
-GPT_IMAGE_SOURCE_IMAGE=workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png
-GPT_IMAGE_PROMPT_FILE=<this file>
-GPT_IMAGE_OUT=workspace/assets/references/lipstick-cm/clip_02_final_key.png
+Execution route: prefer Higgsfield-authenticated image generation over a raw OPENAI_API_KEY (CLAUDE.md).
+Primary: `workspace/scripts/higgsfield-image.sh`.
+  HIGGSFIELD_IMAGE_SOURCE_IMAGE=workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png
+  PROMPT_FILE=<this file>
+  IMAGE_OUT=workspace/assets/references/lipstick-cm/clip_02_final_key.png
+Fallback only if Higgsfield MCP image generation is unavailable: `workspace/scripts/gpt-image-reference.sh` in edit mode.
+  GPT_IMAGE_SOURCE_IMAGE=workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png
+  GPT_IMAGE_PROMPT_FILE=<this file>
+  GPT_IMAGE_OUT=workspace/assets/references/lipstick-cm/clip_02_final_key.png
+  (requires OPENAI_API_KEY in the shell — ask the user before using this fallback)
 
 Source image (structure/composition reference only, do not preserve blockout look, FP-001):
 workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png

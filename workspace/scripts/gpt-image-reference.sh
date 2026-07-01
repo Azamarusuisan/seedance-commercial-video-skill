@@ -12,6 +12,7 @@ MODEL="${GPT_IMAGE_MODEL:-gpt-image-2}"
 SIZE="${GPT_IMAGE_SIZE:-1024x1536}"
 QUALITY="${GPT_IMAGE_QUALITY:-high}"
 SOURCE_IMAGE="${GPT_IMAGE_SOURCE_IMAGE:-${GPT_IMAGE_IMAGE:-}}"
+SOURCE_IMAGES="${GPT_IMAGE_SOURCE_IMAGES:-}"
 MASK_IMAGE="${GPT_IMAGE_MASK:-}"
 INPUT_FIDELITY="${GPT_IMAGE_INPUT_FIDELITY:-high}"
 LOG_PATH="$LOG_DIR/gpt-image-cli-status.json"
@@ -40,6 +41,24 @@ if [ -n "$SOURCE_IMAGE" ] && [ ! -f "$SOURCE_IMAGE" ]; then
   exit 1
 fi
 
+# Multi-image edit (references/cli.md: "pass repeated --image flags. Their order is
+# meaningful, so describe each image by index and role in the prompt."). One path per
+# line in GPT_IMAGE_SOURCE_IMAGES; takes priority over the single-image variables above.
+image_args=()
+if [ -n "$SOURCE_IMAGES" ]; then
+  while IFS= read -r img; do
+    [ -z "$img" ] && continue
+    if [ ! -f "$img" ]; then
+      write_status_json "$LOG_PATH" "GPT Image reference generation" "blocked" "Source image was not found: $img"
+      log_warn "Missing source image: $img"
+      exit 1
+    fi
+    image_args+=(--image "$img")
+  done <<< "$SOURCE_IMAGES"
+elif [ -n "$SOURCE_IMAGE" ]; then
+  image_args=(--image "$SOURCE_IMAGE")
+fi
+
 if [ -n "$MASK_IMAGE" ] && [ ! -f "$MASK_IMAGE" ]; then
   write_status_json "$LOG_PATH" "GPT Image reference generation" "blocked" "Mask image was not found: $MASK_IMAGE"
   log_warn "Missing mask image: $MASK_IMAGE"
@@ -51,7 +70,7 @@ if [ "${FORCE:-0}" = "1" ]; then
   force_args=(--force)
 fi
 
-if [ -n "$SOURCE_IMAGE" ]; then
+if [ "${#image_args[@]}" -gt 0 ]; then
   mask_args=()
   if [ -n "$MASK_IMAGE" ]; then
     mask_args=(--mask "$MASK_IMAGE")
@@ -59,7 +78,7 @@ if [ -n "$SOURCE_IMAGE" ]; then
   python3 "$IMAGE_GEN" edit \
     --model "$MODEL" \
     --prompt-file "$PROMPT_FILE" \
-    --image "$SOURCE_IMAGE" \
+    "${image_args[@]}" \
     "${mask_args[@]}" \
     --input-fidelity "$INPUT_FIDELITY" \
     --size "$SIZE" \

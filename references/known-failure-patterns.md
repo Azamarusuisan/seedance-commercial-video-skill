@@ -43,6 +43,7 @@ Seedance生成(cost見積もりも含む)前に、このファイルの全エン
 - **原因**: ツール自体はマルチモーダル・複数参照画像に対応していることが多いが、それをラップするシェルスクリプトが単一の`image=`/`--image`パラメータしか実装していないため、使う側が「1枚に収めないといけない」と誤解する。具体例: `workspace/scripts/gpt-image-reference.sh`は`--image`を1つしか渡せないが、`image_gen.py`のCLI(`references/cli.md`)は「For multi-image edits, pass repeated `--image` flags. Their order is meaningful, so describe each image by index and role in the prompt.」と明記しており、複数画像+役割指定に対応している。`seedance-cost.sh`/`seedance-generate.sh`も`image=`単数のみで、Higgsfield MCP側が`start_image`/`end_image`や複数参照に対応しているかは未確認のまま。
 - **修正ルール**: 新しい参照画像の渡し方を実装する前に、**ラップ先のツール本来のAPI/CLIが複数画像・マルチモーダル入力に対応していないか必ず確認する。** 対応していれば、事前合成で1枚に潰すのではなく、複数画像をそのまま渡し、プロンプト側で各画像の役割(index/role)を明記する。スクリプトが単一画像しかサポートしていないという理由だけで設計を単純化しない。
 - **出典**: `${CODEX_HOME}/skills/.system/imagegen/references/cli.md`(2026-07-01、Claude Codeが確認)、ユーザー指摘「素材が結局1個しか入ってなかったり、マルチモーダルが強みなはずなのに全然活用できてない」。
+- **修正状況**: 対応済み(2026-07-01、Claude Code)。`gpt-image-reference.sh`(`GPT_IMAGE_SOURCE_IMAGES`)と`higgsfield-image.sh`(`HIGGSFIELD_IMAGE_SOURCE_IMAGES`、`path:role`形式)の両方に複数画像対応を実装、dry-runで確認済み。Seedance側(`start_image`/`end_image`対応)はHiggsfield MCP接続環境での確認が未着手(`CODEX.md`§6タスク12)。
 
 ---
 

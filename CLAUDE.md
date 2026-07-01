@@ -116,6 +116,19 @@ Rewrote all 4 key-visual prompts to fix FP-003 (photographic light vocabulary on
 
 Each still carries a `Status: proposal` pending marker. **Not executed yet.** Do not use `OPENAI_API_KEY` as a default route for this project. Prefer the Higgsfield-authenticated GPT Image 2 / image workflow when available, but only after explicit user approval. Show the generated results beside the original Blender panels, and get user approval before any new Seedance cost estimate or generation. `WORKFLOW.md` §7-8 now requires checking `references/known-failure-patterns.md` before every future Seedance generation, not just this project's.
 
+### Status (Claude Code, this session — Work Order execution, 2026-07-01)
+
+Worked through the Work Order steps that don't require paid execution:
+
+1. Pulled latest, no dirty/conflicting files.
+2. Set local stop-state understanding: `generation_blocked` / `keyvisual_review_required` / `no_seedance_before_keyvisual_approval` (see `workspace/projects/lipstick-cm-30s/keyvisual-approval-package.md`).
+3. Could not inspect the live Higgsfield/Seedance media schema — no Higgsfield MCP tool connected in this session. Documented this as an open item; whoever has a live connection must run a `model_get`-style check for `start_image`/`end_image`/multi-reference support before generating.
+4. **Patched the actual gap (FP-004), not just documented it**: both `workspace/scripts/gpt-image-reference.sh` and `workspace/scripts/higgsfield-image.sh` now accept multiple source images (`GPT_IMAGE_SOURCE_IMAGES` / `HIGGSFIELD_IMAGE_SOURCE_IMAGES`, one per line, `path:role` for the Higgsfield variant). Verified both with dry-run tests (request JSON inspection for Higgsfield; argument-building path for GPT Image, blocked correctly at the `OPENAI_API_KEY` check since none is set here).
+5. Rewrote all 4 key-visual prompts: Higgsfield route is now primary (GPT Image is an explicit, user-approval-gated fallback only), and `clip_02_lips_key.txt` was redesigned to use the confirmed multi-image path — two images with explicit roles (Clip 1's product hero key visual for lighting/world, the lips crop for shape/tone) — instead of a single lips-only image relying on text-described lighting-matching, and instead of any pre-composited image.
+6. Wrote `workspace/projects/lipstick-cm-30s/keyvisual-approval-package.md`: the actual approval package requested — table of all 4 generations, tool/route, source images, output paths, and an explicit "cost unknown from this session, must be checked live before approval" note. **Nothing has been executed. No image or video generation has run.**
+
+Steps 6-8 of the Work Order (execute key visuals, build the comparison board, proceed to Seedance) require either a live Higgsfield MCP connection or explicit user approval to use the `OPENAI_API_KEY` fallback — neither is available in this session. Next agent/session with one of those should read `keyvisual-approval-package.md` and continue from there.
+
 ## Safety / Cost Gate
 
 Paid generation is blocked until the user explicitly approves:

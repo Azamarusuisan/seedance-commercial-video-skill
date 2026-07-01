@@ -1,30 +1,44 @@
 Status: proposal. Do not run until approved and this marker is removed.
 
 Purpose: Clip 2 lips key visual (photoreal), per postmortem-20260701-blender-fleshout-mismatch.md
-and references/known-failure-patterns.md (FP-002, FP-003). Checked against known-failure-patterns.md
-before writing this version.
+and references/known-failure-patterns.md (FP-002, FP-003, FP-004). Checked against
+known-failure-patterns.md before writing this version.
 
-Execution route: `workspace/scripts/gpt-image-reference.sh` in edit mode.
-GPT_IMAGE_SOURCE_IMAGE=workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png
-GPT_IMAGE_PROMPT_FILE=<this file>
-GPT_IMAGE_OUT=workspace/assets/references/lipstick-cm/clip_02_lips_key.png
+PREREQUISITE: run clip_01_end_key.txt first. Its output
+(workspace/assets/references/lipstick-cm/clip_01_end_key.png) is image 1 below.
 
-IMPORTANT: use the lips-only reference below, NOT the combined product+lips composite
-(workspace/assets/references/lipstick-cm/clip_02_product_plus_rina_lips_clean.png). FP-002's
-root cause was combining product and lips into one pasted-together image, which read as a collage.
-This key visual must be a single, integrated beauty-campaign shot, not a composite.
+This version uses the tool's real multi-image input instead of a single lips-only image plus
+text-described lighting-matching, and instead of pre-compositing product+lips into one flattened
+image (FP-002's root cause). Two separate images are passed with explicit roles (FP-004); the
+model does the integration, not a manual paste.
 
-Source image (lips-only reference, skin tone / lip shape anchor):
-workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png
+Execution route: prefer Higgsfield-authenticated image generation over a raw OPENAI_API_KEY (CLAUDE.md).
+Primary: `workspace/scripts/higgsfield-image.sh`.
+  HIGGSFIELD_IMAGE_SOURCE_IMAGES="workspace/assets/references/lipstick-cm/clip_01_end_key.png:world/lighting/color-grade reference, do not repeat this exact product framing
+workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png:lips shape and skin-tone reference only"
+  PROMPT_FILE=<this file>
+  IMAGE_OUT=workspace/assets/references/lipstick-cm/clip_02_lips_key.png
+Fallback only if Higgsfield MCP image generation is unavailable: `workspace/scripts/gpt-image-reference.sh` in edit mode.
+  GPT_IMAGE_SOURCE_IMAGES="workspace/assets/references/lipstick-cm/clip_01_end_key.png
+workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png"
+  GPT_IMAGE_PROMPT_FILE=<this file>
+  GPT_IMAGE_OUT=workspace/assets/references/lipstick-cm/clip_02_lips_key.png
+  (requires OPENAI_API_KEY in the shell — ask the user before using this fallback. Note: image order is
+  meaningful for gpt-image-reference.sh's repeated --image flags — image 1 is the world/lighting
+  reference, image 2 is the lips reference. Describe each by that order below.)
+
+Image roles (describe explicitly in these terms, referencing image 1 / image 2 by order):
+- Image 1 (product hero key visual): defines the studio world — dark premium background, champagne-gold
+  rim light, bokeh, color grade. Do not reproduce the product itself in this shot; use it only for
+  lighting/world/color continuity.
+- Image 2 (lips crop): defines lip shape and skin tone only, as an anonymous reference (not an
+  identifiable person).
 
 Target: anonymous luxury lips close-up, integrated into the same premium studio world as Clip 1's product shots. This is the mid beat (15-21s to 21-26s) key visual for Clip 2.
 
-Preserve from source:
-- lip shape and general skin tone as an anonymous reference (not an identifiable person)
-
-Build fresh around it (this is a new integrated scene, not a composite):
-- same dark premium studio lighting family as Clip 1 (champagne-gold rim light, controlled bloom, shallow depth of field)
-- single continuous lighting/camera setup — the lips must look lit by the same world as the product, not pasted in from a different photo
+Build (a new integrated scene, using both images' roles — not a composite of the two literal images):
+- same dark premium studio lighting family as image 1 (champagne-gold rim light, controlled bloom, shallow depth of field)
+- single continuous lighting/camera setup — the lips must look lit by the same world as image 1, generated as one coherent shot
 - macro beauty-campaign framing: lips only, no full face, no eyes, no identifiable features
 - deep red lipstick color transfer application implied or in progress on the lips
 
@@ -33,7 +47,7 @@ volumetric haze, warm rim light). Do NOT use graphic-design nouns like "ring", "
 "particle" as countable drawn shapes.
 
 Explicitly avoid:
-- any visible seam, collage edge, or mismatched lighting between a "product photo" and a "lips photo" (FP-002)
+- any visible seam, collage edge, or mismatched lighting between image 1 and image 2 (FP-002)
 - any drawn/graphic line, ring, or dot overlay (FP-003)
 - full face, selfie framing, hand holding product, visible person identity
 - real brand logos, real packaging, real fonts, Dior or any real brand reference
