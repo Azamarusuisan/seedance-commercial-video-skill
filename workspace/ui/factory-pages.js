@@ -768,12 +768,13 @@ function renderGeneration() {
       </main>
       <aside class="p0-checklist">
         <div class="p0-panel-head"><span>承認チェックリスト</span><strong id="reviewChecklistCount">未完了 0/5</strong></div>
+        <small id="reviewChecklistStatus" class="p0-checklist-status">未確認</small>
         ${["構図は意図通りか", "商品が美しく見えるか", "質感・ライティングの品質", "色味はブランドに合うか", "権利・素材の利用範囲"].map((item, index) => `<label><input type="checkbox" data-review-check="${index}"> ${html(item)}</label>`).join("")}
         <div class="p0-actions">
-          <button type="button">差し戻し</button>
-          <button type="button">修正依頼</button>
-          <button type="button" disabled>承認する</button>
-          <button type="button" disabled>次へ</button>
+          <button type="button" id="reviewReject">差し戻し</button>
+          <button type="button" id="reviewRequestChange">修正依頼</button>
+          <button type="button" id="reviewApprove" disabled>承認する</button>
+          <button type="button" id="reviewNext" disabled>次へ</button>
         </div>
       </aside>
       <section class="p0-key-slots">
@@ -885,22 +886,38 @@ function setupReviewChecklist() {
   if (!document.querySelectorAll) return;
   const checks = [...document.querySelectorAll("[data-review-check]")];
   const count = document.getElementById("reviewChecklistCount");
+  const status = document.getElementById("reviewChecklistStatus");
+  const reject = document.getElementById("reviewReject");
+  const requestChange = document.getElementById("reviewRequestChange");
+  const approve = document.getElementById("reviewApprove");
+  const next = document.getElementById("reviewNext");
   if (!checks.length || !count) return;
   const key = `seedance-review-checklist:${pageState.state.meta?.project || "default"}`;
   const storage = typeof localStorage === "undefined" ? null : localStorage;
   const saved = storage ? JSON.parse(storage.getItem(key) || "{}") : {};
+  const save = nextState => storage?.setItem(key, JSON.stringify({ ...saved, ...nextState, updatedAt: new Date().toISOString() }));
   const update = () => {
     const done = checks.filter(input => input.checked).length;
-    count.textContent = done === checks.length ? `完了 ${done}/${checks.length}` : `未完了 ${done}/${checks.length}`;
-    storage?.setItem(key, JSON.stringify(Object.fromEntries(checks.map(input => [input.dataset.reviewCheck, input.checked]))));
+    const allDone = done === checks.length;
+    const decision = allDone ? JSON.parse(storage?.getItem(key) || "{}").decision : "";
+    const approved = decision === "approved";
+    count.textContent = approved ? `承認済み ${done}/${checks.length}` : allDone ? `確認済み ${done}/${checks.length}` : `未完了 ${done}/${checks.length}`;
+    if (status) status.textContent = decision === "rejected" ? "差し戻し済み" : decision === "change_requested" ? "修正依頼済み" : approved ? "承認済み / 次へ進めます" : allDone ? "5項目確認済み。承認できます。" : "全項目の確認が必要です。";
+    if (approve) approve.disabled = !allDone;
+    if (next) next.disabled = !approved;
+    save({ checks: Object.fromEntries(checks.map(input => [input.dataset.reviewCheck, input.checked])), decision: allDone ? decision : "" });
   };
   checks.forEach(input => {
-    input.checked = Boolean(saved[input.dataset.reviewCheck]);
+    input.checked = Boolean(saved.checks?.[input.dataset.reviewCheck] ?? saved[input.dataset.reviewCheck]);
     if (!input.dataset.ready) {
       input.dataset.ready = "1";
       input.addEventListener("change", update);
     }
   });
+  reject?.addEventListener("click", () => { save({ decision: "rejected" }); if (status) status.textContent = "差し戻し済み"; update(); });
+  requestChange?.addEventListener("click", () => { save({ decision: "change_requested" }); if (status) status.textContent = "修正依頼済み"; update(); });
+  approve?.addEventListener("click", () => { save({ decision: "approved" }); update(); });
+  next?.addEventListener("click", () => { window.location.href = "jobs.html"; });
   update();
 }
 
