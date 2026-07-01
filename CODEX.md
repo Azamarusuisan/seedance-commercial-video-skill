@@ -2,12 +2,14 @@
 
 Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
-## 実装ステータス
+## 実装ステータス(2026-07-01時点、要修正)
 
-- 2026-07-01: §6の1〜7を反映済み。Palmier Pro音声生成への切替、`record-mcp-json.sh`の`narration`削除、`gpt-image-reference.sh`の`edit --image`対応、重量パスのフォルダ規約/課金ゲートを実装。
-- §5のUI簡素化は未着手。これはユーザーに「Factory UIの世界観を残すか、承認専用UIへ寄せるか」を確認してから行う。
+- Codexが2026-07-01 14:31に実装した内容(コミット`7711779`)は、**このファイルの旧バージョン(ユーザーの最終決定より前の版)に基づいている。** 具体的には: `workspace/scripts/elevenlabs-narration.sh`を削除してPalmier Pro `generate_audio`へ切替、`record-mcp-json.sh`の`narration`種別を削除、`gpt-image-reference.sh`に`edit --image`(OPENAI_API_KEY前提のまま)を追加、というもの。
+- **これはユーザーの最終決定(画像・音声・動画は全てHiggsfield MCP経由、APIキー一切不使用)と矛盾している。** §2に決定の経緯を記録済み。
+- **要修正:** `elevenlabs-narration.sh`の復元(Higgsfield MCP経由に戻す)、`record-mcp-json.sh`の`narration`種別の復元、`gpt-image-reference.sh`ベースの絵コンテ生成をHiggsfield MCP画像生成(§2b-a、`higgsfield-image.sh`新規作成)に置き換える作業がまだ残っている。
+- §5のUI簡素化は未着手。ユーザーに「Factory UIの世界観を残すか、承認専用UIへ寄せるか」を確認してから行う。
 
-このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装記録。未実装項目は「実装ステータス」に残す。
+このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装記録。実際のコード状態と食い違いが出た場合は、このファイルの最新の確定方針(§2以降)を正としてコードを合わせること。
 
 **確定方針(ユーザー最終確認済み): 画像生成(絵コンテ)・音声生成(ElevenLabsナレーション)・動画生成(Seedance)は全てHiggsfield MCP経由。APIキー(OPENAI_API_KEYを含む)は一切使わない。** Palmier Proは生成ではなく仕上げ工程(字幕・色・アップスケール・書き出し)専用。
 
@@ -17,12 +19,12 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
 ## 1. 現状(このセッションまでに実装済みのもの)
 
-- `references/end-to-end-movie-pipeline.md`: 重量パス(11ステップ)の定義。**§3の内容で更新が必要(画像生成をHiggsfield MCP経由に書き換え)。**
+- `references/end-to-end-movie-pipeline.md`: 重量パス(11ステップ)の定義。**Codexが2026-07-01にPalmier Pro音声前提で書き換え済み。§3の内容(Higgsfield MCP画像生成 + Higgsfield MCPナレーション)に再度書き換えが必要。**
 - `workspace/blender/action_movie_previs.py`: Blenderプリビズの雛形。プロジェクトごとにこれを土台に新規bpyスクリプトを書き、`blender --background --python` で無人実行する運用は既に確立済み。**変更不要。**
-- `workspace/scripts/gpt-image-reference.sh`: `OPENAI_API_KEY`を使うGPT Image直接呼び出し。**重量パスでは使わない方針が確定(§2)。既存の軽量パス(単発CM)で使うかは§7の未決事項。削除はしない。**
+- `workspace/scripts/gpt-image-reference.sh`: `OPENAI_API_KEY`を使うGPT Image直接呼び出し。Codexが`edit --image`対応を追加済みだが、**重量パスでは使わない方針が確定(§2)。** 重量パスの絵コンテ生成は`higgsfield-image.sh`(新規)に置き換える。既存の軽量パス(単発CM)でこのスクリプトを使い続けるかは§7の未決事項。ファイル自体の削除はしない。
 - `workspace/scripts/seedance-cost.sh` / `seedance-generate.sh`: Higgsfield MCP経由のSeedance動画生成リクエスト準備。**変更不要。**
-- `workspace/scripts/elevenlabs-narration.sh`: Higgsfield MCP経由でElevenLabsナレーションのMCPリクエストを準備するスクリプト。**この方針で確定。変更不要。**
-- `workspace/scripts/record-mcp-json.sh`: `account|model|cost|job|narration`の5種別に対応済み。**変更不要。**
+- `workspace/scripts/elevenlabs-narration.sh`: **Codexが2026-07-01に削除済み。復元が必要。** Higgsfield MCP経由でElevenLabsナレーションのMCPリクエストを準備する、この方針で確定している内容。
+- `workspace/scripts/record-mcp-json.sh`: **Codexが`narration`種別を削除済み(現状`account|model|cost|job`の4種別)。復元が必要。**
 - `workspace/ui/*`: 「工場/トレーディング端末」風の多パネルダッシュボード(Factory UI)。**§5でUI/UXの見直しを提案。**
 
 ## 2. 生成プラットフォームの最終確定
