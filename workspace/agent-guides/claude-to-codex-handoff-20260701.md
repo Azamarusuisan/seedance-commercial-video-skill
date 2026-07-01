@@ -66,6 +66,13 @@ connected there, that may be a second, real execution path for Track B — poten
 chasing down a separate Higgsfield MCP connection. Record whatever you find (works / still
 "Editor not available" / model names returned) in `CODEX.md` or `known-failure-patterns.md`.
 
+**Codex follow-up**: Palmier Pro is connected in the Codex session. `get_timeline` returned
+`canGenerate: true`; `list_models(type=image)` returned `nano-banana-pro`, `gpt-image-2`, and
+other image models; `list_models(type=video)` returned `seedance-2`, `seedance-2-fast`, and
+other video models. This confirms a technically viable Palmier execution path exists, but it is
+still a paid generation path and a route change from the earlier Higgsfield-only decision. Do not
+run it without fresh user approval.
+
 ## Exact next steps, in order
 
 1. Pull latest `main`.
