@@ -113,9 +113,15 @@ Codexへの提案(優先度順):
 
 ## 6. Codexへの実装タスク(優先順)
 
+**0番台は、以前のCodex実装(コミット`7711779`、旧方針ベース)の巻き戻し。最優先で対応すること。**
+
+0-a. **`workspace/scripts/elevenlabs-narration.sh`を復元する。** git履歴のコミット`b940bd0`時点の内容(Higgsfield MCP経由、`write_mcp_request_with_prompt`パターン、`approval_gate`でpending markerチェック)をそのまま復元する。`git show b940bd0:workspace/scripts/elevenlabs-narration.sh`で参照可能。
+0-b. **`workspace/scripts/record-mcp-json.sh`の`narration`種別を復元する。** 現状`account|model|cost|job`の4種別のみ。`narration`(出力先`$LOG_DIR/narration-result.json`)を追加し直す。`git show b940bd0:workspace/scripts/record-mcp-json.sh`参照。
+0-c. **`workspace/scripts/gpt-image-reference.sh`は重量パスの絵コンテ生成として使わない。** ファイル自体(`edit --image`対応含む)は残してよいが、`end-to-end-movie-pipeline.md`のステップ3から参照を外し、代わりに1番のスクリプトを使うよう書き換える。
+
 1. **`workspace/scripts/higgsfield-image.sh`を新規作成する**(§2b-a)。`seedance-cost.sh`と同じ`write_mcp_request_with_prompt`パターンでHiggsfield MCP画像生成リクエストを準備する。モデル名・img2img対応可否は接続後に確認してから確定する。
-2. `workspace/scripts/record-mcp-json.sh`に`image`種別を追加する(account/model/cost/job/narrationと同じパターン)。
-3. `references/end-to-end-movie-pipeline.md`のステップ3(絵コンテ生成)を「GPT Image」から「Higgsfield MCP画像生成(`higgsfield-image.sh`)」に書き換える。前提セクションの「絵コンテ生成はGPT Imageを使う」という記述も削除・更新する。
+2. `workspace/scripts/record-mcp-json.sh`に`image`種別を追加する(0-bで復元した`narration`を含む、account/model/cost/job/narration/imageの6種別になる)。
+3. `references/end-to-end-movie-pipeline.md`のステップ3(絵コンテ生成)を「GPT Image」から「Higgsfield MCP画像生成(`higgsfield-image.sh`)」に、ステップ6(ナレーション)を「Higgsfield MCP経由の`elevenlabs-narration.sh`」に書き換える。前提セクションの記述も整合させる。
 4. §2b(b): `upscale_media`呼び出し前に「モデル仕様提示 → ユーザー確認」を必須にするルールを`end-to-end-movie-pipeline.md`に追記する。
 5. §2b(c): 重量パス用に`workspace/projects/<project_id>/shots/<shot_id>/`のフォルダ規約を`end-to-end-movie-pipeline.md`に追記する。軽量パスの既存命名は変更しない。
 6. §5のUI簡素化は、ユーザーに方針確認したうえで着手する(先に実装しない)。
