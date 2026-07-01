@@ -31,12 +31,12 @@ For high-brand photoreal CM work:
 
 ## Current Stop State
 
-The generated Seedance clips are rejected:
+The generated Seedance clips are rejected and committed for review because the user explicitly asked to keep them in Git as learning material:
 
 - `workspace/outputs/lipstick-cm-30s/clip_01_9x16.mp4`
 - `workspace/outputs/lipstick-cm-30s/clip_02_9x16.mp4`
 
-They may exist only on the local machine. Treat them as failed review material, not assets for finishing.
+Treat them as failed review material, not assets for finishing.
 
 Do not send them to Palmier Pro.
 Do not add music, SFX, subtitles, color, or export.
@@ -86,5 +86,6 @@ Do not run paid jobs because a previous generation was already approved; the fai
 
 - Commit and push useful documentation, prompts, and approved reference images.
 - Do not commit credentials, cookies, tokens, or session files.
-- Do not commit heavy failed MP4s unless the user explicitly asks.
+- Heavy failed MP4s are normally not committed. This lipstick CM exception is intentional because the user explicitly asked to include them for Claude review/training context.
+- Do not commit `workspace/logs/` as training material. Use the sanitized learning manifest instead: `workspace/projects/lipstick-cm-30s/learning-materials-20260701.md`.
 - Keep failed-output notes in project markdown files so the next agent does not repeat the same mistake.
