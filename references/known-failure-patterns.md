@@ -53,6 +53,15 @@ Seedance生成(cost見積もりも含む)前に、このファイルの全エン
 - **修正ルール**: Blenderに関する表示・記述は必ず「構図参照専用、Seedance入力不可」であることを明記する。UI文言は`構図参照: Blender Previs / Seedance入力不可`のように、役割と禁止事項をセットで書く。`主素材`という言葉をBlenderに使わない。
 - **出典**: `CLAUDE.md`(2026-07-01、UI Update指示)。
 
+## FP-006: asset-manifestの自己申告を無条件で信用すると、Blenderレンダーを誤ってラベル付けしただけで通ってしまう
+
+- **症状**: `validate-seedance-input.py`に`--asset-manifest`を渡すと、パスが実際にはBlenderレンダーの保存場所(`workspace/assets/3d/renders/`等)であっても、manifest側が`asset_kind=photoreal_key_visual`・`approval_status=approved`と(誤って、または早まって)書いていれば通ってしまっていた。
+- **原因**: パスヒューリスティック(`BLOCKED_PATH_HINTS`)が、`--asset-manifest`が指定されていない場合のフォールバックとしてしか実装されていなかった。manifestがある場合はその自己申告を全面的に信用し、パス自体との整合性を確認していなかった。悪意ある攻撃ではなく、「エージェントが写実キービジュアルの保存先を間違えた/承認前に`approved`と書いてしまった」という単純ミスで再現する。
+- **再現方法**: `workspace/assets/3d/renders/lipstick_cm_previs.png`(生のBlenderレンダー)を指すmanifestに`asset_kind=photoreal_key_visual`と書いて渡すと、`known_failure_checked_at`・`learning_preflight`・`permission-manifest`など他の必須項目を全部揃えても通過した(2026-07-01、Claude Codeが独自の敵対的テストで発見)。
+- **修正ルール**: パスヒューリスティックは、manifestの有無に関わらず常に実行する(defense-in-depth)。manifestの自己申告とパスの見た目が矛盾する場合はブロックする。
+- **修正状況**: 対応済み(2026-07-01、Claude Code)。`check_path_heuristic()`を新設し、`check_manifest()`と`check_heuristic_only()`の両方から呼ぶように変更。再テストで、偽装manifestのブロックと、正当な承認済みstoryboardの通過(誤検知なし)の両方を確認済み。
+- **出典**: ユーザーからの指摘(「Codexの自己申告を鵜呑みにするな」)を受けて、Claude Codeが実際に敵対的テストを行い発見。
+
 ---
 
 ## 新規エントリのテンプレート

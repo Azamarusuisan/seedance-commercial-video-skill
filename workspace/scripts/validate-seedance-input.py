@@ -78,6 +78,23 @@ def check_permission(permission: dict, require_generation: bool) -> None:
         fail("permission manifestで execute_paid_generation=true が確認できません。")
 
 
+def check_path_heuristic(image_path: str, context: str) -> None:
+    """Defense-in-depth: run regardless of whether a manifest is present. A manifest's
+    asset_kind is self-reported (by an agent, possibly by mistake); this catches the case
+    where the path itself still looks like a Blender render/blend file even though the
+    manifest claims otherwise (found by independent testing, 2026-07-01 — a mislabeled
+    manifest pointing at a real Blender previs path was previously accepted)."""
+    normalized = image_path.replace("\\", "/").lower()
+    for hint in BLOCKED_PATH_HINTS:
+        if hint in normalized:
+            fail(
+                f"{context}パスがBlenderプリビズ/レンダーらしき場所を指しています: {image_path}。"
+                "manifestの申告(asset_kind等)に関わらず、パス自体がBlender由来に見える場合はブロックします。"
+                "写実キービジュアルは別の出力パス(例: workspace/assets/references/.../*.png)に保存してから"
+                "manifestで渡してください(references/known-failure-patterns.md FP-001)。"
+            )
+
+
 def check_manifest(image_path: str, manifest: dict, learning_preflight: str) -> None:
     manifest_image = manifest.get("path") or manifest.get("source_path")
     asset_kind = manifest.get("asset_kind")
@@ -87,6 +104,8 @@ def check_manifest(image_path: str, manifest: dict, learning_preflight: str) -> 
     rights_status = manifest.get("rights_status")
     known_failure_checked_at = manifest.get("known_failure_checked_at")
     learning_preflight = learning_preflight or manifest.get("learning_preflight") or manifest.get("learning_preflight_path")
+
+    check_path_heuristic(image_path, "asset-manifestがありますが、")
 
     if manifest_image and Path(manifest_image).as_posix() != Path(image_path).as_posix():
         fail(f"asset manifestの画像パスと --image が一致しません: manifest={manifest_image} image={image_path}")
@@ -127,15 +146,7 @@ def check_heuristic_only(image_path: str) -> None:
     """No asset-manifest was given. Fall back to a path heuristic so Blender renders can
     never slip through silently, but don't hard-block unrelated images from projects that
     predate this gate."""
-    normalized = image_path.replace("\\", "/").lower()
-    for hint in BLOCKED_PATH_HINTS:
-        if hint in normalized:
-            fail(
-                f"アセットマニフェストがなく、パスがBlenderプリビズ/レンダーらしき場所を指しています: "
-                f"{image_path}。写実キービジュアルを生成・承認してから、そのファイルを"
-                f"asset_kind='photoreal_key_visual' のasset-manifest付きで渡してください"
-                "(references/known-failure-patterns.md FP-001)。"
-            )
+    check_path_heuristic(image_path, "アセットマニフェストがなく、")
     warn(
         f"アセットマニフェストが指定されていません: {image_path}。"
         "後方互換のため許可しますが、今後は --asset-manifest を用意することを推奨します"
