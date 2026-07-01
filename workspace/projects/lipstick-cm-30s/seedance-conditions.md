@@ -3,7 +3,8 @@
 Status:
 - Reference image and camera storyboard approved by user.
 - Cost estimate completed on 2026-07-01.
-- Paid Seedance generation is not approved yet.
+- Paid Seedance generation ran on 2026-07-01 at `1080p/high`, 2 clips, total 270 credits.
+- Review result: failed. The clips kept the raw Blender blockout look and did not satisfy the "Blender flesh-out" requirement.
 
 ## Video Generation
 
@@ -97,10 +98,10 @@ Generation command must still wait for final human permission. Cost approval is 
 
 ## Next Approval
 
-Next step is final paid-generation permission, not automatic generation.
+Next step is not another Seedance run. First create and approve realistic key visuals derived from the Blender storyboard.
 
 Ask:
-`1080p/high、合計270 creditsでSeedance 2本を生成して`
+`Blender絵コンテから写実キー画像を作って見せて`
 
 Alternative:
-`720p/high、合計134 creditsでSeedance 2本を生成して`
+`今回の失敗テイクをレビューして、修正版プロンプトと参照画像案を出して`
