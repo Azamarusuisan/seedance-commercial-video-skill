@@ -10,10 +10,11 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 - §5のUI簡素化は未着手。ユーザーに「Factory UIの世界観を残すか、承認専用UIへ寄せるか」を確認してから行う。
 - 2026-07-01: `WORKFLOW.md`(全体フローの1〜100言語化)を新規作成し、ユーザーとすり合わせ済み。承認ゲート粒度・フォルダ規約・Palmier Pro仕上げ順は確定。軽量パスへBlender previsを任意オプションとして追加する方針も反映済み。
 - 2026-07-01: **BGM/SFX生成が抜けていたことが判明し、Palmier Pro経由で追加する方針が確定(§2b-d、§6タスク9、未着手)。** Higgsfield一本化の唯一の例外。`WORKFLOW.md`§7-9bに詳細。
+- 2026-07-01: **Higgsfield画像生成(image2)を必須から任意に格下げする方針が確定(§2c、§6タスク10、未着手)。** Blenderレンダーが絵コンテ・主参照を兼ねる。同リポジトリの`ascension-line-workflow-runbook.md`で既に検証済みの「Blender主素材・生成絵コンテは補助参照」原則を踏襲。上記7行目「画像生成…をHiggsfield MCP経由にする」は必須ステップとしては**古い**。画像生成は任意になった。
 
 このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装記録。実際のコード状態と食い違いが出た場合は、このファイルの最新の確定方針(§2以降)を正としてコードを合わせること。全体フローの完成形は`WORKFLOW.md`を参照(このファイルは実装タスクと決定の経緯、`WORKFLOW.md`は完成後の姿)。
 
-**確定方針(ユーザー最終確認済み): 画像生成(絵コンテ)・音声生成(ElevenLabsナレーション)・動画生成(Seedance)は全てHiggsfield MCP経由。APIキー(OPENAI_API_KEYを含む)は一切使わない。** Palmier Proは生成ではなく仕上げ工程(字幕・色・アップスケール・書き出し)専用、**ただしBGM/SFX生成(`generate_audio`)だけは唯一の例外としてPalmier Proを使う。** 軽量パスではBlender previsを任意オプションとして使える(§6タスク8)。
+**確定方針(ユーザー最終確認済み): 音声生成(ElevenLabsナレーション)・動画生成(Seedance)は全てHiggsfield MCP経由。APIキー(OPENAI_API_KEYを含む)は一切使わない。画像生成(絵コンテ)は任意。Blenderレンダーが主参照を兼ねるため必須ではない(§2c)。** Palmier Proは生成ではなく仕上げ工程(字幕・色・アップスケール・書き出し)専用、**ただしBGM/SFX生成(`generate_audio`)だけは唯一の例外としてPalmier Proを使う。** 軽量パスではBlender previsを任意オプションとして使える(§6タスク8)。
 
 ## 0. ゴール
 
@@ -50,6 +51,8 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
 **未検証・要確認: Higgsfield MCP側の実際の画像生成モデル名(ユーザーは"image2"と呼んでいる)、および入力画像(Blenderレンダー)を渡せるimg2img相当の機能があるか。** 今回のセッションではHiggsfield MCPツール自体が接続されていないため確認できなかった。Higgsfield MCPが接続された環境(別PC側)で、`higgsfield-status.sh`と同じ要領で対象モデルのmodel_get相当のリクエストを準備し、実行結果を見てから`higgsfield-image.sh`のモデル名・パラメータを確定すること。
 
+**方針転換(2026-07-01、§2c参照): この画像生成ステップは必須ではなく任意になった。** `higgsfield-image.sh`自体は削除しない(使いたい時のための補助ツールとして残す)が、パイプラインの必須経路ではなくなったため、上記の未検証事項はブロッカーではなくなった。
+
 ### (b) Palmier Proの仕上げ生成系(アップスケール等)に、Seedanceと同等の承認/予算ゲートがない
 
 生成そのものはHiggsfield MCPに統一したが、Palmier Proの`upscale_media`は依然として課金対象の生成系ツールであり、`generate_audio`等は使わないとしても`upscale_media`は仕上げ工程で使う想定(§3ステップ10)。現行の設計は Higgsfield/Seedance側の`APPROVED=1`+コスト見積フローしか定義しておらず、**Palmier Pro側の`upscale_media`呼び出しには承認なしで課金が発生しうる抜け穴が残る。**
@@ -73,16 +76,33 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
 **修正: `references/end-to-end-movie-pipeline.md`にステップ7-9bとして、Seedance動画確定後・Palmier Pro仕上げ前にBGM/SFX生成を追加する(`WORKFLOW.md`§7-9bが正)。** `upscale_media`と同じ運用ルール(`list_models`でモデル仕様提示→ユーザー確認→実行、機械的な`APPROVED=1`ゲートはない)を適用する。
 
+## 2c. 方針転換: Higgsfield画像生成(image2)は必須ではなく任意にする
+
+ユーザーから「Blenderからimage2をかませる必要あるか」と問われ、既に同リポジトリの別プロジェクト`workspace/briefs/ascension-line-workflow-runbook.md`(3Dアクション映画`ascension_line`)で検証済みの原則があることが分かった:
+
+> Blenderで作った3Dプリビズを主素材にして、Seedanceで映画的に肉付けする。生成絵コンテは補助参照です。主素材ではありません。
+
+そのプロジェクトの明示的な禁止事項: 「補助参照を主素材として扱わない」「生成絵コンテだけを根拠にSeedanceへ進めない」。実際にClip 01/02はBlenderレンダーを主参照としてSeedance生成済みという実績もある。
+
+**決定: この原則を`references/end-to-end-movie-pipeline.md`の重量パスにも適用する。**
+
+- Blenderレンダー(7-2)が絵コンテを兼ねる。承認ゲート1はこのBlenderレンダーを見せて行う(無料、Higgsfield非依存)。
+- Higgsfield MCP画像生成(`higgsfield-image.sh`)は**任意**。使う場合も「最終映像のトーン確認」用の補助参照に留め、Seedanceへの主参照として使わない。
+- Seedanceへ渡す主参照画像はBlenderレンダーそのもの。プロンプトは「肉付け」方針(構図・配置は保持しつつ、写実的な質感・光をテキストで指示する)で書く。
+- これにより、§2b(a)の「Higgsfield画像生成モデル名・img2img対応の未検証」はパイプラインのブロッカーではなくなる(任意機能の話になる)。
+
+`WORKFLOW.md`の§1図・§2システム表・§7-3/7-4・§8ゲート表・§14既知の制約に反映済み。
+
 ## 3. 改訂後のパイプライン(Codexが`references/end-to-end-movie-pipeline.md`に反映すること)
 
 ```
 [自然言語ブリーフ]
    ↓
-[Blender previs] ローカル、完全自動、外部API不要
+[Blender previs] ローカル、完全自動、外部API不要。レンダーが絵コンテ=主参照を兼ねる(§2c)
    ↓
-[Higgsfield MCP: 画像生成(絵コンテ)] モデル名・img2img対応は要確認(§2b-a)
+承認ゲート1: 絵コンテ承認(Blenderレンダーを見せる。無料)
    ↓
-承認ゲート1: 絵コンテ承認
+[任意] Higgsfield MCP: 画像生成 — トーン確認用の補助参照のみ、使わなくてよい(§2c)
    ↓
 [Higgsfield MCP: ElevenLabsナレーション] workspace/scripts/elevenlabs-narration.sh(既存のまま)
    ↓
@@ -160,6 +180,12 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
    - 実行前に`list_models`でモデル仕様を提示し、費用発生をユーザーに自然言語で確認する(`upscale_media`と同じ運用ルール、§2b-b/§8のG8)。
    - ユーザーがBGM/SFXを希望しない場合はスキップする(必須ステップではない)。
    - Palmier Proの`import_media`/`sync_audio`のステップ説明に、BGM/SFXも取り込み対象として追記する。
+10. **未着手・ユーザー確定済み: Higgsfield画像生成(image2)を必須から任意に格下げする。** `WORKFLOW.md`§2c/§7-3/§7-4を正とする。実装内容:
+    - `references/end-to-end-movie-pipeline.md`のステップ3(絵コンテ生成)を「Blenderレンダー(7-2)がそのまま絵コンテ・主参照。Higgsfield画像生成は任意の補助トーン確認」に書き換える。
+    - 承認ゲート1(絵コンテ承認)は、Blenderレンダーを見せて行う形に書き換える(Higgsfield画像生成の結果を承認の根拠にしない)。
+    - ステップ8(Seedance生成)のプロンプト方針に「肉付け」の考え方(構図・配置はBlenderレンダーのまま保持し、写実的な質感・光はテキスト指示で引き出す)を追記する。
+    - `workspace/briefs/ascension-line-workflow-runbook.md`の原則(主素材/補助参照の区別、禁止事項)を参照元として明記する。
+    - `higgsfield-image.sh`は削除しない(任意で使う補助ツールとして残す)。
 
 ## 7. 未確定・ユーザー判断が必要な点
 
