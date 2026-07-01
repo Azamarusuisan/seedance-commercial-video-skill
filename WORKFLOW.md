@@ -117,6 +117,7 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 
 ### 7-3. 絵コンテ = Blenderレンダー(構図参照、無料)
 
+- **写実キービジュアルのプロンプトを書く前に、必ず`references/cm-creative-craft-knowledge.md`(構成・ショット文法・光と色の型・プロンプト語彙)を読む。** 「なんとなく」で書くと出力がガチャ化する(実際に起きた問題)。
 - **7-2のBlenderレンダーは絵コンテであり、構図・カメラ・商品形状の正。** ただし高級CM・写実CMでは、低ポリ/ブロックアウトのBlender画像をSeedanceの`start_image`に直接渡さない。直接渡すと「肉付け」ではなく、生のBlender感を引きずる。
 - Seedanceへ渡す主画像は、Blender絵コンテを元に作った写実キービジュアルにする。Blenderレンダーはその写実化の入力・比較対象・承認用の設計図として残す。
 - 個別promptだけではなく、必ずstoryboard board/contact sheetを作る。上段にhero/mood、下段に6-8 panels、各panelにtime/role/source/Seedance useを表示する。これが人間のレビュー面になる。
@@ -146,7 +147,7 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 
 ### 7-8. Higgsfield Seedance image-to-video
 
-- **生成前に必須: `references/known-failure-patterns.md`の全エントリを読み、今回のプロンプト・参照画像が既知の失敗パターンを踏んでいないか確認する。** 確認したことを案件のcondition md(または`review.json`)に一行残す。これは機械的なゲートではなく運用ルールなので、エージェントが毎回自分で確認する。
+- **生成前に必須: `references/known-failure-patterns.md`の全エントリと`references/cm-creative-craft-knowledge.md`(構成・ライティング・カメラワークの型)を読み、今回のプロンプト・参照画像が既知の失敗パターンを踏んでいないか、良い型に沿っているかを確認する。** 確認したことを案件のcondition md(または`review.json`)に一行残す。これは機械的なゲートではなく運用ルールなので、エージェントが毎回自分で確認する。
 - 承認済みの写実キービジュアルを参照画像として`workspace/scripts/seedance-cost.sh`→`seedance-generate.sh`に渡す。軽量パスと同じスクリプト・同じ承認手順(§6の3〜7と同一)。
 - ショットごとに同じ`.blend`由来の参照画像を使うことで、複数ショット間の一貫性を保つ。
 - **プロンプトは「肉付け」方針で書く**: Blenderの構図・配置・カメラを守り、写実キービジュアルの質感・光・素材感を起点に、映画的な動きを足す。低品質なBlender画像をテキストだけで高級CMへ変換できると期待しない。

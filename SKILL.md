@@ -271,6 +271,8 @@ When passing multiple media references, first verify the Higgsfield MCP media sc
 
 ## Prompt Rules
 
+Before writing any prompt, read `references/cm-creative-craft-knowledge.md` (structure/pacing/shot-grammar/lighting principles and Seedance/GPT-Image-specific prompt vocabulary) and `references/known-failure-patterns.md` (what actually broke before). Writing prompts from general impression alone, without checking these, is what produced inconsistent ("gacha") Seedance output in the past.
+
 - Always include required pronunciation when a name has a non-obvious reading.
 - State `video_use_case`, target viewer, platform/placement, aspect ratio, duration, and output count.
 - For demand-led content, state the chosen hook type and why the viewer keeps watching.
