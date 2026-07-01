@@ -9,7 +9,7 @@ No paid generation, audio generation, subtitle rendering, Palmier edit, upscale,
 - Model: Seedance 2.0, pending live model confirmation
 - Count: 1 video
 - Duration: 15s
-- Aspect ratio: 9:16
+- Aspect ratio: 16:9
 - Resolution: 1080p if supported
 - Bitrate: high if supported
 - Audio generation: true

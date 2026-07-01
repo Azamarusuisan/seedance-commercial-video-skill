@@ -10,6 +10,7 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 - Seedanceへ渡せる主画像は、承認済みの `photoreal_key_visual` / `approved_storyboard_frame` / `rights_confirmed_user_asset` / `approved_product_reference` だけ。
 - BlenderからSeedanceへ進む場合は、Blender previs -> visual handoff -> GPT Image/Higgsfield写実storyboard/key visual -> 人間承認 -> Seedance、の順番を省略しない。
 - このファイル内の旧記述で「Blenderレンダーが主参照」「Higgsfield画像生成は任意」「生成絵コンテは補助参照」と読める箇所は、リップCMの実失敗により撤回済み。現在は安全ゲート側を正とする。
+- 2026-07-01: `references/cm-creative-craft-knowledge.md`(Phase 1〜3、構成/ショット文法/光と色/構図/プロンプト語彙/編集リズム/音響/プラットフォーム文法/用途別差分/プロンプト前チェックリスト)が完成した。**プロンプトを書く前に`known-failure-patterns.md`とセットで必ず参照すること。**
 
 ## 実装ステータス(2026-07-01時点)
 
@@ -27,6 +28,8 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 - 2026-07-01: **対応済み: 失敗パターンを蓄積する`references/known-failure-patterns.md`を新設した(ユーザーの「フィードバックループ」要望への対応)。** Seedance/Blenderは再学習できない第三者モデルなので、ML的な再学習の代わりに「失敗の症状・原因・修正ルールをここに追記し、次の生成前に必ず読む」運用にした。現在FP-001(Blenderブロックアウトの直渡し)、FP-002(商品+人物の1枚合成)、FP-003(`ring`/`particle`等の図形語彙が2Dグラフィックとして描画される — 実際の失敗映像を目視して新規発見)、FP-004(複数画像対応スクリプトの未実装)、FP-005(UI/ドキュメントがBlenderを主素材扱いする文言)の5件を記録。`WORKFLOW.md`§7-8に、Seedance生成前にこのファイルを確認する運用ルールを追加した。今後の失敗はここに追記し続けること。
 - 2026-07-01: **対応済み(P0、機械的強制): `workspace/scripts/validate-seedance-input.py`を新設し、`seedance-cost.sh`/`seedance-generate.sh`から自動で呼ばれるようにした。** FP-001(Blender直渡し)がもう「エージェントが覚えておくべき運用ルール」ではなく、コードレベルで強制ブロックされる。`workspace/schemas/`に3スキーマ(asset-manifest/visual-handoff/job-ledger)、`workspace/scripts/build-visual-handoff.py`・`prepare-storyboard-image-request.sh`、`workspace/prompts/templates/gpt-image-from-blender-previs.txt`を追加。5つのreferences docs全てをBlender=構図専用/写実キービジュアル必須の記述に修正済み(詳細は`CLAUDE.md`末尾のP0実装レポート参照)。dry-run/フィクスチャベースのテストのみ実行、Higgsfield MCP/Seedance/GPT Imageの実行は一切なし。**Codex側で確認が必要: Higgsfield MCPのSeedanceが`start_image`/`end_image`/複数参照に対応しているか(§6タスク12)、Higgsfield画像生成の実モデル名。** P1(学習フォルダの完全版)とUIの文言更新は今回スコープ外(理由と代替案はCLAUDE.md参照)。
 - 2026-07-01: **次のアクション(最優先、§6タスク11): ユーザーがCodexにリップスティックCMのリトライを指示済み。** 失敗の根本原因を修正した4つのキービジュアルプロンプトが`workspace/prompts/lipstick-cm/keyvisuals/`に用意済み。Codexはこれをまず実行し、ユーザー承認を得てから初めて新しいSeedance生成に進むこと。**生のBlenderレンダーをstart_imageに戻さない。**
+- 2026-07-01(Claude Codeが追加確認): `workspace/projects/lipstick-cm-30s/`の状態を棚卸しした。Codex側で`shots/<shot_id>/`(asset-manifest/visual-handoff/storyboard-review/learning-preflight)と`storyboard/`(00〜06の企画・承認ボード・`storyboard-board.html`)の骨組みは既に完成しており、`06-seedance-handoff-after-approval.md`のゲート条件も明確。**ただし4枚の写実キービジュアル画像そのものはまだ1枚も生成されていない**(`workspace/assets/references/lipstick-cm/keyvisuals/`ディレクトリ自体が存在しない。各shotの`storyboard-review.json`は`approval_status: "pending"`のまま、`storyboard-board.json`は`approval_status: "pending_photoreal_storyboard_approval"`のまま)。残っているのは**実行だけ**: `workspace/prompts/lipstick-cm/keyvisuals/final/*.prompt.txt`(最新版)を使って`gpt-image-reference.sh`または`higgsfield-image.sh`で4枚を実際に生成し、Blenderパネルと並べてユーザーに見せ、承認後に各shotの`asset-manifest.json`/`storyboard-review.json`を`approved`に更新してから初めてSeedance側に進むこと。生成前に`references/cm-creative-craft-knowledge.md`(特に§3光と色、§5プロンプト語彙、§10チェックリスト)にも目を通し、既存プロンプトが安定語彙(FP-003)に沿っているか最終確認すること。
+- 2026-07-01(Claude Codeが追加確認・軽微修正): `workspace/projects/macneo-pc-cm-15s/`(新規プロジェクト、Codexが今回のセッション中に追加)を確認した。コミット`96e553d`(16:9+音声ありへの切替)で`seedance-approval.md`の大部分は更新されたが、**`- Aspect ratio: 9:16`の1行だけ更新漏れになっており、同じファイル内の他の記述(プロンプトファイル名`seedance-15s-16x9.txt`、出力パス`-16x9.mp4`、承認文言そのものの「16:9」)と矛盾していた。** Claude Codeがこの1行を`16:9`に修正済み(実行系には触れていない、ドキュメントの整合性修正のみ)。他のフィールドは確認した限り一致している。次にこのプロジェクトを進める前に、`gates`(`cost_model_check`/`human_generation_approval`/`publication_rights`)が全て`blocked`のままであることを再確認し、コスト見積もり前にユーザーへ改めて確認すること。
 
 このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装記録。実際のコード状態と食い違いが出た場合は、このファイルの最新の確定方針(§2以降)を正としてコードを合わせること。全体フローの完成形は`WORKFLOW.md`を参照(このファイルは実装タスクと決定の経緯、`WORKFLOW.md`は完成後の姿)。
 
@@ -205,11 +208,11 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
     - `higgsfield-image.sh`は削除しない(任意で使う補助ツールとして残す)。
     - **注記(2026-07-01時点で判明): この方針(Blenderレンダーを直接start_imageにしてテキストの「肉付け」指示に頼る)は、リップスティックCMで実際に試して失敗した。** タスク11(写実キービジュアル生成)を必ず経由すること。「肉付け」記述はSeedanceへの動き付け指示としては有効だが、写実化そのものはテキストだけでは達成できない。
 
-11. **最優先・未着手: リップスティックCMのリトライ。** ユーザーがこの作業をCodexに依頼済み。手順:
-    1. `references/known-failure-patterns.md`(FP-001〜003)を読む。同じ失敗を絶対に繰り返さないこと。
-    2. `workspace/prompts/lipstick-cm/keyvisuals/`配下の4つのプロンプト(`clip_01_start_key.txt`、`clip_01_end_key.txt`、`clip_02_lips_key.txt`、`clip_02_final_key.txt`)を、各ファイル冒頭に書かれている`GPT_IMAGE_SOURCE_IMAGE`/`GPT_IMAGE_OUT`を使って`workspace/scripts/gpt-image-reference.sh`(edit mode)で実行する。各ファイルの`Status: proposal`マーカーは、実行前にレビューした上で外す。
+11. **最優先・スキャフォールド完了/実行が唯一の残タスク: リップスティックCMのリトライ。** ユーザーがこの作業をCodexに依頼済み。Codex側で`workspace/projects/lipstick-cm-30s/shots/*/`と`storyboard/00〜06`の企画・承認ゲート定義は既に完成している(2026-07-01、Claude Codeが棚卸し確認済み)。**残っているのは4枚の写実キービジュアルを実際に生成することだけ。** 手順:
+    1. `references/known-failure-patterns.md`(FP-001〜006)と`references/cm-creative-craft-knowledge.md`(特に§3・§5・§10、2026-07-01完成)を読む。同じ失敗を絶対に繰り返さないこと。
+    2. `workspace/prompts/lipstick-cm/keyvisuals/final/*.prompt.txt`(4ファイル、最新版)を使って`workspace/scripts/gpt-image-reference.sh`または`workspace/scripts/higgsfield-image.sh`(edit/img2img mode)で実際に4枚を生成し、`workspace/assets/references/lipstick-cm/keyvisuals/`配下に保存する(このディレクトリはまだ存在しない=未実行の証拠)。各プロンプトの`Status: proposal`マーカーは、実行前にレビューした上で外す。
     3. 生成した4枚を、元のBlenderパネル(`workspace/assets/3d/renders/lipstick_cm_panel_0{1,2,3,4}*.png`)と並べてユーザーに見せる。**この承認を得るまで、次のSeedance見積もり・生成は一切行わない。**
-    4. 承認後、承認済みキービジュアルを`start_image`/`end_image`として`seedance-cost.sh`→`seedance-generate.sh`に渡す。生のBlenderレンダーには絶対に戻さない。
+    4. 承認後、各shotの`asset-manifest.json`/`storyboard-review.json`の`approval_status`を`approved`に、`seedance_input_allowed`を`true`に更新する(`storyboard/06-seedance-handoff-after-approval.md`のゲート条件を満たすこと)。その上で承認済みキービジュアルを`start_image`/`end_image`として`seedance-cost.sh`→`seedance-generate.sh`に渡す。生のBlenderレンダーには絶対に戻さない(`validate-seedance-input.py`が機械的にブロックする)。
     5. コスト承認と生成承認は別物として扱う(`CLAUDE.md`のSafety/Cost Gate参照)。
     6. 結果が今回も失敗なら、`references/known-failure-patterns.md`に新しいFPエントリを追記してから次を試す。成功なら、そのこと自体も同ファイルか案件のcondition mdに記録する(何が効いたかも財産になる)。
 
@@ -217,7 +220,12 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
     - **完了:** `workspace/scripts/gpt-image-reference.sh`を拡張し、`GPT_IMAGE_SOURCE_IMAGES`(改行区切り)で複数の`--image`を渡せるようにした(`image_gen.py`のCLIの複数`--image`フラグ対応、`references/cli.md`確認済み)。既存の単数`GPT_IMAGE_SOURCE_IMAGE`は後方互換で残した。
     - **完了:** `workspace/scripts/higgsfield-image.sh`も同様に拡張し、`HIGGSFIELD_IMAGE_SOURCE_IMAGES`(`path:role`形式、改行区切り)で複数画像+役割をMCPリクエストの`image_N`/`image_N_role`フィールドとして渡せるようにした。両方dry-runで動作確認済み(Claude Code、2026-07-01)。
     - **完了:** リップスティックCMのClip 2(唇キービジュアル)を、事前合成ではなく「商品キービジュアル(`clip_01_end_key.png`)+唇クロップの2枚を役割指定して渡す」方式に書き換えた(`workspace/prompts/lipstick-cm/keyvisuals/clip_02_lips_key.txt`)。
-    - **未着手:** Higgsfield MCPのSeedanceが`start_image`/`end_image`や複数参照画像に対応しているか、`higgsfield-status.sh`のmodel_get相当のリクエストで確認する。対応していれば`seedance-cost.sh`/`seedance-generate.sh`に`END_IMAGE_FILE`等の追加パラメータを実装する。これはHiggsfield MCPが接続された環境でないと確認できない。
+    - **未着手・Codex専用(Claude Codeはこの環境にHiggsfield MCPツールがないため実行不可)。具体的な確認手順:**
+      1. Higgsfield MCPの account/model一覧ツール(host提供、`higgsfield-status.sh`が準備するリクエストと同じ要領)を実行し、画像生成モデルの実際の名前(ユーザーが"image2"と呼んでいるもの)と、そのモデルが単一/複数の参照画像入力(img2img)を受け付けるパラメータ名を確認する。
+      2. Seedance側のモデル仕様(model_get相当)を確認し、`start_image`と`end_image`を別々に指定できるか、複数参照画像(3枚以上)を渡せるかを確認する。パラメータ名が`start_image`/`end_image`でない場合は実際の名前を記録する。
+      3. 確認結果を`references/known-failure-patterns.md`か本ファイルに追記する(何がAPIとして存在し、何が存在しないかを記録すること自体が価値。存在しない場合も「未対応と確認済み」と明記する)。
+      4. 対応していれば`seedance-cost.sh`/`seedance-generate.sh`に`END_IMAGE_FILE`等の追加パラメータを実装し、`workspace/scripts/higgsfield-image.sh`の`HIGGSFIELD_IMAGE_SOURCE_IMAGES`(§6タスク12で実装済み)と同じ`path:role`形式を踏襲する。
+      5. この確認は**課金を伴わない参照/一覧系ツール呼び出しのみ**で完結するはずで、実際のSeedance生成やコスト確定を伴わない。もし一覧系ツールが存在せず確認に課金が発生する場合は、先にユーザーに確認してから進めること。
 
 ## 7. 未確定・ユーザー判断が必要な点
 
