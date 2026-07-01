@@ -11,6 +11,7 @@ Before video planning, prompt writing, image-to-video handoff, generation, or de
 - `skills/seedance/references/image-to-video-handoff.md` for generated-image to video handoff
 - `SKILL.md` and `references/seedance-cm-workflow.md` for root-skill compatibility
 - `references/image-to-video-handoff.md` for root-skill compatibility
+- `references/end-to-end-movie-pipeline.md` when the request needs multi-shot character/product consistency or a full Blender-to-Palmier-Pro movie pipeline
 - `workspace/agent-guides/cross-agent-runbook.md`
 
 ## Hard Rules

@@ -1,0 +1,54 @@
+# Liquid Metal Desk VFX — Seedance Image-to-Video Prompt
+
+Status: proposal. Do not run until the user gives final approval and this marker is removed.
+
+Reference image/assets:
+`workspace/assets/reference-liquid-metal-desk-v1.jpg` (user's own desk/monitor setup, user-provided, rights clear)
+
+Create a 15-second 9:16 short video with Higgsfield Seedance.
+
+Video use case:
+social-post
+
+Project/title/name:
+"Liquid Metal Desk"
+
+Target viewer and placement:
+X/TikTok viewers who enjoy "reality-bending" VFX / practical-effects-style short clips
+Feed post (X)
+
+Objective:
+An ordinary, real desk/monitor scene where a chrome/mercury-like liquid metal shape rises and freezes mid-air in an impossible arc, evoking a viral "how did they do this" reaction.
+
+Format:
+9:16 vertical, 15 seconds, no audio, no on-screen text, social feed delivery.
+
+Reference handling:
+Use the provided reference photo as the primary visual anchor. Preserve the exact desk, monitors, keyboard, cables, and room lighting/layout from the reference. Do not invent new furniture, people, logos, or brands. The only added element is the liquid-metal VFX itself.
+
+Opening beat, 0-3 seconds:
+Static, calm shot of the real desk exactly as the reference photo shows it. Ambient dim room lighting, monitors on, nothing unusual yet.
+
+Middle beat, 3-7 seconds:
+A pool of chrome/mercury-like liquid metal begins rising from the desk/keyboard surface, defying gravity, catching reflections from the monitor light.
+
+Middle beat, 7-12 seconds:
+The liquid metal arcs upward and curls into a smooth S-shaped ribbon suspended in mid-air above the desk, fully reflective, chrome/mercury material, dramatic rim lighting from the monitors.
+
+Ending beat, 12-15 seconds:
+Hold on the frozen, impossible liquid-metal arc suspended in the air. Only subtle shimmer/reflection movement, no further motion, letting the surreal stillness land.
+
+Style:
+Photorealistic handheld/webcam-quality desk photography, matching the reference image exactly. The liquid metal element should read as a seamless practical-effect-style composite, not a cartoonish CG render.
+
+Voice-over:
+None.
+
+Audio:
+None. generate_audio=false.
+
+Safety and quality:
+- Preserve the real desk/room from the reference photo faithfully; do not distort or replace it.
+- No third-party logos, brands, people, or unsupported claims.
+- The desk/room is the user's own property; no third-party rights issue.
+- Keep the liquid-metal shape physically coherent (no melting/dripping artifacts breaking the "frozen in air" concept).
