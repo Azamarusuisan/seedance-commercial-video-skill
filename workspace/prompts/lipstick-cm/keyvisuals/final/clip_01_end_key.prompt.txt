@@ -1,7 +1,12 @@
-Use the attached composition guide only for camera angle, product position, and vertical packshot framing.
+Create a photoreal 9:16 luxury cosmetics commercial storyboard frame.
 
-Create a photoreal luxury lipstick hero key visual in vertical 9:16. The black lacquer tube and champagne-gold metal case are fully visible, with a deep rouge bullet catching soft studio highlights. The product should feel expensive, tactile, and real: polished metal reflections, lacquer micro-texture, shallow macro focus, warm rim light, photographic bokeh, and restrained lens bloom.
+Use the attached source image only as a composition and camera-layout guide.
+Preserve the framing, object placement, scale relationship, product silhouette, negative space, and motion intention.
+Do not preserve low-poly geometry, viewport lighting, temporary materials, flat shaders, gray background, cheap CG render look, drawn rings, floating dots, or graphic line overlays.
 
-Preserve the hero reveal composition and scale relationship. Replace every raw 3D preview quality with final commercial beauty advertising polish.
+The output must look like a polished live-action / premium product photography storyboard still, not a 3D render.
+No readable text, no real brand logos, no third-party packaging, no unsupported claims.
 
-No readable brand text, no real logos, no person, no hand, no graphic overlay, no UI look.
+Hero product reveal: a fictional luxury lipstick stands center-frame as a premium product hero. Use glossy black lacquer with micro-reflections, champagne-gold brushed metal, deep rouge wax texture, warm rim light, photographic bokeh, restrained lens bloom, and dark commercial studio depth.
+
+No person, no hand, no readable brand text, no real logo, no graphic overlay, no UI look.

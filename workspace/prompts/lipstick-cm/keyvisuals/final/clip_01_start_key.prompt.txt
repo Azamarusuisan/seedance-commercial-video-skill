@@ -1,7 +1,12 @@
-Use the attached composition guide only for framing, camera distance, and product placement.
+Create a photoreal 9:16 luxury cosmetics commercial storyboard frame.
 
-Create a photoreal luxury cosmetics opening key visual in vertical 9:16. A black lacquer lipstick silhouette stands in a dark premium studio, with champagne-gold metal barely revealed by warm rim light. The shot should feel like a high-brand beauty campaign macro: shallow depth of field, real material reflections, soft glints, subtle volumetric haze, and controlled lens bloom.
+Use the attached source image only as a composition and camera-layout guide.
+Preserve the framing, object placement, scale relationship, product silhouette, negative space, and motion intention.
+Do not preserve low-poly geometry, viewport lighting, temporary materials, flat shaders, gray background, cheap CG render look, drawn rings, floating dots, or graphic line overlays.
 
-Preserve the centered product silhouette and quiet opening mood. Replace every low-poly, viewport, flat material, or placeholder stage quality with final advertising-grade realism.
+The output must look like a polished live-action / premium product photography storyboard still, not a 3D render.
+No readable text, no real brand logos, no third-party packaging, no unsupported claims.
 
-No readable brand text, no real logos, no person, no hand, no graphic overlay, no UI look.
+Dark opening key visual: a black lacquer lipstick silhouette stands in a deep black premium studio, with champagne-gold metal barely revealed by warm rim light. Use shallow depth of field, real material reflections, soft glints, subtle volumetric haze, controlled lens bloom, and a quiet high-brand beauty campaign mood.
+
+No person, no hand, no readable brand text, no real logo, no graphic overlay, no UI look.

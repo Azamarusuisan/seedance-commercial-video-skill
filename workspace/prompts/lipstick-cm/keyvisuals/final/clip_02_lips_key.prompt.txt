@@ -1,7 +1,17 @@
-Use the product hero key visual only as the lighting, color grade, and premium studio-world reference. Use the lips crop only as an anonymous lips shape and skin-tone reference.
+Create a photoreal 9:16 luxury cosmetics commercial storyboard frame.
 
-Create a photoreal luxury beauty macro in vertical 9:16. Show lips only, cropped close enough that the person is not identifiable. The deep rouge color is visible on the lips with refined gloss, real skin texture, soft shadow detail, champagne rim light, shallow depth of field, and the same dark premium atmosphere as the product hero shot.
+Use the attached source image only as a composition and camera-layout guide.
+Preserve the framing, object placement, scale relationship, product silhouette, negative space, and motion intention.
+Do not preserve low-poly geometry, viewport lighting, temporary materials, flat shaders, gray background, cheap CG render look, drawn rings, floating dots, or graphic line overlays.
 
-The result must be one coherent photographed scene, not a pasted combination of references. There must be no full face, no eyes, no hand, no product held near the mouth, no influencer/testimonial framing, and no claim-like text.
+The output must look like a polished live-action / premium product photography storyboard still, not a 3D render.
+No readable text, no real brand logos, no third-party packaging, no unsupported claims.
 
-No readable brand text, no real logos, no graphic overlay, no UI look.
+Use the lips reference only as anonymous lips and skin-tone reference.
+Do not show a full face, eyes, nose-dominant framing, hand-held product, influencer framing, testimonial framing, or identifiable person.
+Do not collage product and lips in one frame.
+The lips shot must feel purpose-built in the same premium lighting world as the product shots.
+
+Show lips only, cropped close enough that the person is not identifiable. The deep rouge finish is visible with refined gloss, real skin texture, soft shadow detail, champagne rim light, shallow depth of field, and dark luxury campaign color grade.
+
+No readable brand text, no real logo, no graphic overlay, no UI look.

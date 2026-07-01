@@ -79,6 +79,7 @@ def check_permission(permission: dict, require_generation: bool) -> None:
 
 
 def check_manifest(image_path: str, manifest: dict, learning_preflight: str) -> None:
+    manifest_image = manifest.get("path") or manifest.get("source_path")
     asset_kind = manifest.get("asset_kind")
     role = manifest.get("role")
     seedance_input_allowed = manifest.get("seedance_input_allowed")
@@ -87,6 +88,8 @@ def check_manifest(image_path: str, manifest: dict, learning_preflight: str) -> 
     known_failure_checked_at = manifest.get("known_failure_checked_at")
     learning_preflight = learning_preflight or manifest.get("learning_preflight") or manifest.get("learning_preflight_path")
 
+    if manifest_image and Path(manifest_image).as_posix() != Path(image_path).as_posix():
+        fail(f"asset manifestの画像パスと --image が一致しません: manifest={manifest_image} image={image_path}")
     if asset_kind in BLOCKED_ASSET_KINDS:
         fail(
             f"asset_kind='{asset_kind}' はSeedanceの主参照として使用禁止です。Blenderは構図参照"
@@ -160,9 +163,10 @@ def main() -> None:
 
     if args.asset_manifest:
         manifest = load_json(args.asset_manifest, "asset manifest")
-        permission = load_json(args.permission_manifest, "permission manifest")
-        check_permission(permission, args.require_paid_generation_permission)
         check_manifest(args.image, manifest, args.learning_preflight)
+        if args.permission_manifest or args.require_paid_generation_permission:
+            permission = load_json(args.permission_manifest, "permission manifest")
+            check_permission(permission, args.require_paid_generation_permission)
     else:
         check_heuristic_only(args.image)
 
