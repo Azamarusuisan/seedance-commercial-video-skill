@@ -1,0 +1,30 @@
+Status: proposal. Do not run until approved and this marker is removed.
+
+Purpose: Clip 1 end key visual (photoreal), per postmortem-20260701-blender-fleshout-mismatch.md.
+
+Source image (structure/composition reference only, do not preserve blockout look):
+workspace/assets/3d/renders/lipstick_cm_panel_03_hero_vfx.png
+
+Target: full premium product hero shot, settled center-frame. This is the closing beat (10-15s) key visual for Clip 1.
+
+Preserve from source:
+- same product silhouette, cap, and bullet shape
+- same orbit light ring / floating particle composition
+- same vertical 9:16 packshot framing and negative space for a title
+- same camera distance and centered product placement
+
+Replace/add (core fix — no blockout look permitted):
+- photoreal black lacquer tube, physically-plausible reflections
+- champagne-gold metal rings, real metal specular response
+- deep red lipstick bullet, glossy and photoreal, not flat-shaded
+- real studio background with commercial-grade lighting, no visible placeholder geometry
+- volumetric light, controlled lens bloom, premium studio reflections on the product surface
+
+Explicitly avoid:
+- any visible low-poly edges, flat/placeholder materials, "3D render" or CG-primitive look
+- real brand logos, real packaging, real fonts, Dior or any real brand reference
+- any visible person, hand, or face
+
+Review criteria before approval (from the postmortem):
+- product must be photoreal luxury cosmetics quality, not a Blender-rendered primitive
+- this is the shot users will judge as "does this look like a real premium ad" — hold it to that bar

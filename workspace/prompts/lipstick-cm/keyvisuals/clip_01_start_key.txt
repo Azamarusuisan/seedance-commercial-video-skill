@@ -1,0 +1,31 @@
+Status: proposal. Do not run until approved and this marker is removed.
+
+Purpose: Clip 1 start key visual (photoreal), per postmortem-20260701-blender-fleshout-mismatch.md.
+
+Source image (structure/composition reference only, do not preserve blockout look):
+workspace/assets/3d/renders/lipstick_cm_panel_01_silhouette.png
+
+Target: extreme macro silhouette shot, dark premium studio. This is the opening beat (0-3s) key visual for Clip 1.
+
+Preserve from source:
+- same product silhouette and cap position
+- same vertical 9:16 packshot framing
+- same dark stage geometry and camera distance
+- same orbit light ring / particle layout intent
+
+Replace/add (this is the core fix — do not leave any blockout/low-poly look):
+- photoreal black lacquer lipstick tube material, real specular highlights
+- champagne-gold metal rim, physically-plausible reflections
+- real studio background (no visible flat planes, no placeholder geometry, no test lighting rig visible)
+- razor-thin champagne rim light sweep, faint suspended gold dust, macro lens depth of field
+- Hollywood-level CG/photo polish, quiet luxury cosmetics aesthetic
+
+Explicitly avoid:
+- any visible low-poly edges, flat shading, placeholder ring/particle objects, or "3D render" look
+- real brand logos, real packaging, real fonts, Dior or any real brand reference
+- any visible person, hand, or face
+
+Review criteria before approval (from the postmortem):
+- Blender's blockout/low-poly look must not remain visible
+- product material must read as photoreal, not CG-primitive
+- background must read as commercial studio art direction, not a placeholder stage

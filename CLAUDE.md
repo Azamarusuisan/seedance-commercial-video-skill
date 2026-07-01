@@ -55,6 +55,17 @@ Next work is to create photoreal key visuals derived from the Blender storyboard
 
 Show the key visuals beside the original Blender panels. The user must approve them before any new Seedance estimate or generation.
 
+### Status (Claude Code, this session)
+
+Drafted the 4 key-visual generation prompts, following the postmortem's corrected rule (Blender = structure/composition source only, never the literal Seedance start frame; Clip 2 lips must be a single integrated shot, not a product+lips composite):
+
+- `workspace/prompts/lipstick-cm/keyvisuals/clip_01_start_key.txt`
+- `workspace/prompts/lipstick-cm/keyvisuals/clip_01_end_key.txt`
+- `workspace/prompts/lipstick-cm/keyvisuals/clip_02_lips_key.txt`
+- `workspace/prompts/lipstick-cm/keyvisuals/clip_02_final_key.txt`
+
+Each still carries a `Status: proposal` pending marker. **Not executed yet** — this session has neither `OPENAI_API_KEY` nor a connected Higgsfield MCP tool, so `gpt-image-reference.sh --image` / `higgsfield-image.sh` cannot actually be run here. Whichever agent/session has one of those available should run the 4 prompts (source images already referenced inside each file), show the results beside the original Blender panels, and get user approval before any new Seedance cost estimate or generation.
+
 ## Safety / Cost Gate
 
 Paid generation is blocked until the user explicitly approves:

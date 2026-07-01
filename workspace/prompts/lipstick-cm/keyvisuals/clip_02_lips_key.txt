@@ -1,0 +1,32 @@
+Status: proposal. Do not run until approved and this marker is removed.
+
+Purpose: Clip 2 lips key visual (photoreal), per postmortem-20260701-blender-fleshout-mismatch.md.
+
+IMPORTANT: use the lips-only reference below, NOT the combined product+lips composite
+(workspace/assets/references/lipstick-cm/clip_02_product_plus_rina_lips_clean.png). The postmortem's
+root cause #3 was combining product and lips into one pasted-together image, which read as a collage.
+This key visual must be a single, integrated beauty-campaign shot, not a composite.
+
+Source image (lips-only reference, skin tone / lip shape anchor):
+workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png
+
+Target: anonymous luxury lips close-up, integrated into the same premium studio world as Clip 1's product shots. This is the mid beat (15-21s to 21-26s) key visual for Clip 2.
+
+Preserve from source:
+- lip shape and general skin tone as an anonymous reference (not an identifiable person)
+
+Build fresh around it (this is a new integrated scene, not a composite):
+- same dark premium studio lighting family as Clip 1 (champagne-gold rim light, controlled bloom, shallow depth of field)
+- single continuous lighting/camera setup — the lips must look lit by the same world as the product, not pasted in from a different photo
+- macro beauty-campaign framing: lips only, no full face, no eyes, no identifiable features
+- deep red lipstick color transfer application implied or in progress on the lips
+
+Explicitly avoid:
+- any visible seam, collage edge, or mismatched lighting between a "product photo" and a "lips photo"
+- full face, selfie framing, hand holding product, visible person identity
+- real brand logos, real packaging, real fonts, Dior or any real brand reference
+- customer-testimonial or influencer-style framing (per rights/safety notes in seedance-conditions.md)
+
+Review criteria before approval (from the postmortem):
+- must read as one integrated luxury cosmetics scene, not two images placed side by side
+- lighting and color grade must visually match Clip 1's product shots
