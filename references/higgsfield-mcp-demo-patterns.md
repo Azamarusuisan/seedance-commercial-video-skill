@@ -6,8 +6,31 @@ Use this reference when the user asks to learn from external Higgsfield/Seedance
 
 - X reference post: `https://x.com/D_studioproject/status/2071457354689004023`
 - Demo repository: `https://github.com/kazujp225/HIGGSFIELDMCP-demo`
+- X reference post (liquid-metal VFX): `https://x.com/ehuanglu/status/2072073069875855422`
 
 Do not copy third-party assets into final public/commercial outputs unless rights are confirmed. Use these sources as production-pattern references unless the user explicitly provides rights-cleared assets.
+
+## X Reference Summary: Liquid-Metal Desk VFX
+
+Direct fetch of the X post was blocked (HTTP 402, unauthenticated access refused). Analyzed from a user-provided local screen-recording file instead, via macOS `mdls` metadata and one representative frame (`qlmanage -t`); no ffmpeg available in this environment, so this is a single-frame + metadata read, not full frame-by-frame analysis.
+
+- Media: portrait screen recording of the X post playing in Safari (status bar visible in frame).
+- Duration: ~13.6s. Codec: H.264 + AAC. Frame ~590x1280 (portrait, phone-capture ratio, not necessarily the source video's native ratio).
+- Content: ordinary bedroom/desk-setup background (PC, RGB peripherals, dim lighting, handheld/webcam framing) with a chrome/mercury-like liquid-metal shape frozen mid-air in an S-curve arc, reached toward by a hand — an "impossible physics" / reality-bending VFX moment composited into an otherwise mundane, authentic-looking clip.
+
+Creative pattern:
+
+- Genre: viral "reality-bending" short-form VFX — the hook is the contrast between a mundane real-life setting and one surreal, physically-impossible liquid/metal moment.
+- The background reads as genuine handheld/webcam footage, not a stylized CG scene; the VFX element is the sole spectacle, not the whole shot.
+- No dialogue, no on-screen text visible in the sampled frame; the moment itself carries the video.
+
+Reusable lesson:
+
+- Treat this post the same as the Mochi-ad reference: style/structure inspiration only. Do not reuse the downloaded clip itself in any output.
+- Two production routes to approximate this look:
+  1. **Seedance-native (lower effort, reuses existing image-to-video route):** supply a reference photo of the real desk/room, write a Seedance prompt describing a chrome/liquid-metal shape suspended mid-air with dramatic rim lighting, keep the human background plausible and stationary. No Blender needed.
+  2. **Blender-assisted (higher control, new capability):** this repo's current Blender previs template (`workspace/blender/action_movie_previs.py`) only does static procedural primitives + materials, not fluid simulation. A true liquid-metal sim would need Blender's Mantaflow fluid domain plus a metallic shader, composited over either a live-action plate (user must supply real desk footage) or a Blender-rendered backdrop. This is new template work, not something the current previs pattern already covers.
+- Route 1 is the ladder's lower rung (reuse the existing image-to-video workflow as-is); recommend starting there and only reaching for route 2 if the result isn't convincing enough.
 
 ## X Reference Summary
 

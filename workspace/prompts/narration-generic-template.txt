@@ -1,0 +1,27 @@
+# Pending ElevenLabs Narration Script (via Higgsfield MCP)
+
+Status: proposal template. Do not run Higgsfield MCP until the narration text, voice, language, and pairing shot list are approved.
+
+Project/title/name:
+"{project_name}"
+
+Language:
+{language, e.g. ja}
+
+Voice:
+{voice_name_or_elevenlabs_voice_id}
+Consent note: {use a default library voice, or confirm real-person voice-clone consent}
+
+Exact narration text (verbatim, this is what gets voiced):
+"{exact_narration_text}"
+
+Pacing/timing target:
+{total_seconds_target}, matched to {shot_list_or_storyboard_reference}
+
+Tone/direction:
+{tone_direction}
+
+Constraints:
+- Voice must not impersonate a real person without explicit consent.
+- Narration text must not include unsupported claims (guaranteed outcomes, medical/legal/financial claims, No.1/official partnership) unless the user provided evidence.
+- Video timing is driven by this narration; downstream Blender/Seedance shots should be trimmed to match audio duration in Palmier Pro (`sync_audio`).
