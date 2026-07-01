@@ -2,6 +2,8 @@
 
 Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
+**セッション引き継ぎ(2026-07-01、Claude Codeのセッション終了間際に作成): まず `workspace/agent-guides/claude-to-codex-handoff-20260701.md` を読むこと。** このセッションで見つけた実バグ(FP-007/FP-008等)、Palmier Pro経由でSeedanceが呼べる可能性がある発見、次にやるべき手順が凝縮されている。
+
 ## Codex側で /goal を実行する場合の投入文(2026-07-01、Claude Codeが用意)
 
 ユーザーがCodex側のセッションで`/goal`を回す際は、以下をそのまま貼り付けること。
