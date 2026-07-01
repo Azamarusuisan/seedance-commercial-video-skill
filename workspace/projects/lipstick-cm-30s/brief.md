@@ -1,5 +1,7 @@
 # Lipstick CM 30s Project Handoff
 
+**SUPERSEDED (2026-07-01, Claude Code): this handoff describes the plan that was actually run and failed (270 credits, see `review-20260701-seedance-failed.md`). The "Current direction" and prompt paths below (`final/clip_0{1,2}_*_seedance_final.txt`, the product+lips combined reference) are marked superseded in `references/known-failure-patterns.md` FP-001/002/003/008 and must not be reused as-is. Current process: `storyboard/06-seedance-handoff-after-approval.md` and `CODEX.md` task 11.**
+
 Source script:
 `workspace/briefs/lipstick-cm-30s-script.md`
 

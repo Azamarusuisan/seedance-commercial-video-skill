@@ -1,3 +1,7 @@
+SUPERSEDED / DO NOT USE (2026-07-01, Claude Code): this prompt implements the "Blender previs as primary visual anchor + text flesh-out" strategy. This is the exact prompt that produced the actual failed 270-credit Seedance run on 2026-07-01 (workspace/projects/lipstick-cm-30s/review-20260701-seedance-failed.md). It also combines FP-001 (Blender previs treated as truth), FP-002 (product+lips collaged into one reference image), and FP-003 ("rings"/"particles" as literal drawn shapes) — see references/known-failure-patterns.md FP-001/002/003/008. Do not run this prompt again in any form. Use the corrected process instead: workspace/projects/lipstick-cm-30s/storyboard/06-seedance-handoff-after-approval.md and CODEX.md task 11 (approved photoreal key visuals as start_image/end_image).
+
+---
+
 Status: proposal v1. Do not run. Not approved.
 
 Create a 15-second 9:16 premium cosmetics commercial with Higgsfield Seedance.

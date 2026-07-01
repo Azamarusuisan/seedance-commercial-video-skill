@@ -71,6 +71,15 @@ Seedance生成(cost見積もりも含む)前に、このファイルの全エン
 - **修正状況**: 対応済み(2026-07-01、Claude Code)。4ショット全ての`visual-handoff.json`の`storyboard_prompt_path`/`output.prompt_path`を`workspace/prompts/lipstick-cm/keyvisuals/final/*.prompt.txt`に更新し、雛形ファイル側にも注記を追加した。`prepare-storyboard-image-request.sh`を実際に(スクラッチ領域への出力先で、コスト発生なしに)2ショット分実行し、正しいプロンプトが読み込まれることを確認済み。同時に`validate-seedance-input.py`が現在の(未承認)状態で正しくブロックすることも再確認した。
 - **出典**: Claude Codeによる実プロジェクトの棚卸し・統合テスト(2026-07-01)。
 
+## FP-008: 実際に失敗した回のプロンプト・条件ファイルが「final」という名前のまま、撤回済みと明記されずに残っていた
+
+- **症状**: `workspace/prompts/lipstick-cm/final/clip_01_0-15s_9x16_seedance_final.txt`と`clip_02_15-30s_9x16_seedance_final.txt`(および対応する`draft`版)は、実際に270 creditsを使って失敗した本番のSeedance動画生成プロンプトそのものだった。中身は「Blenderプリビズをそのまま主参照にし、テキストで肉付けする」旧方針(FP-001で撤回済み)、Clip 2では商品ブロックアウトと唇クロップを1枚に合成した参照画像(FP-002)、さらに"orbit light rings"・"floating particles"のような図形語彙(FP-003)の3つの失敗パターンを同時に含んでいた。しかし`final/`というディレクトリ名と、`workspace/projects/lipstick-cm-30s/seedance-conditions.md`・`brief.md`・`workspace/briefs/lipstick-cm-30s-script.md`がこれらのファイルパスをそのまま「現在の生成条件」として引用し続けていたため、これらのドキュメントだけを読むと、まるでこれが今も使うべき正しいプロンプトであるかのように見えた。
+- **原因**: 失敗の事後分析(`postmortem-*.md`、`review-20260701-seedance-failed.md`)は正しく書かれていたが、失敗した回の実行時アーティファクト自体(プロンプトファイル名、それを引用する条件書・ブリーフ)には「撤回済み」の注記が付かなかった。postmortemを読めば分かるはずという前提が、postmortemを経由せず`brief.md`/`seedance-conditions.md`/`final/`ディレクトリだけを見た場合には成立しない。
+- **再現方法**: `references/cm-creative-craft-knowledge.md`のFP-003語彙(ring/particle/arc/dot等)をリポジトリ全体でgrepし、`workspace/prompts/lipstick-cm/final/`と`draft/`のヒットを`workspace/projects/lipstick-cm-30s/seedance-conditions.md`と突き合わせて発見(2026-07-01、Claude Code)。実行はしていない。
+- **修正ルール**: 失敗した生成回のプロンプト・条件ファイルは、postmortemを書くだけでなく、**そのファイル自身の先頭に「SUPERSEDED / DO NOT USE」と失敗の記録・正しい代替手順へのリンクを明記する**。ディレクトリ名やファイル名の「final」「approved」といった言葉は、実際に承認されたか・成功したかを保証しない。参照画像ファイル(バイナリ)についても、同じディレクトリに警告用の`.md`ファイルを添える。
+- **修正状況**: 対応済み(2026-07-01、Claude Code)。上記4プロンプトファイル、`seedance-conditions.md`、`brief.md`、`workspace/briefs/lipstick-cm-30s-script.md`の冒頭にSUPERSEDEDバナーを追加。実際のFP-002合成参照画像(`workspace/assets/references/lipstick-cm/clip_02_product_plus_rina_lips_clean.png`)にも警告ファイルを追加した。
+- **出典**: Claude Codeによるリポジトリ全体のFP-003語彙横断チェック中に発見(2026-07-01)。
+
 ---
 
 ## 新規エントリのテンプレート

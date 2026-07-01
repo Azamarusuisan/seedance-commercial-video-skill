@@ -1,5 +1,7 @@
 # Lipstick CM Seedance Conditions
 
+**SUPERSEDED (2026-07-01, Claude Code): this entire document describes the failed 270-credit attempt and its "Non-Negotiable Flesh-Out Rule," which `review-20260701-seedance-failed.md` (below) and `references/known-failure-patterns.md` FP-001/002/003/008 identify as the root cause of the failure. Do not use the "Non-Negotiable Flesh-Out Rule" or the `workspace/prompts/lipstick-cm/final/clip_0{1,2}_*_seedance_final.txt` prompts referenced below — both are marked superseded. The current, corrected process is `workspace/projects/lipstick-cm-30s/storyboard/06-seedance-handoff-after-approval.md` and `CODEX.md` task 11: generate and approve photoreal key visuals first, then use those (not the raw Blender previs and not a product+lips collage image) as the Seedance `start_image`/`end_image`.**
+
 Status:
 - Reference image and camera storyboard approved by user.
 - Cost estimate completed on 2026-07-01.

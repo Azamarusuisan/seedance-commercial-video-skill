@@ -1,5 +1,7 @@
 # 新作リップCM 30秒 最終台本 / 生成前見積
 
+**SUPERSEDED(2026-07-01、Claude Code): この台本は実際に実行され270 creditsで失敗した計画そのもの(`workspace/projects/lipstick-cm-30s/review-20260701-seedance-failed.md`参照)。「Blender商品参照とRina口元クロップを1枚にまとめたクリーン参照」「`final/clip_0{1,2}_*_seedance_final.txt`」は`references/known-failure-patterns.md` FP-001/002/003/008で撤回済みと明記されている。そのまま再利用しないこと。現行プロセスは`storyboard/06-seedance-handoff-after-approval.md`と`CODEX.md`タスク11。**
+
 ## Status
 
 - Status: 生成前見積完了。台本・参照画像・カメラ割りは承認済み。最終の有料生成は未承認。

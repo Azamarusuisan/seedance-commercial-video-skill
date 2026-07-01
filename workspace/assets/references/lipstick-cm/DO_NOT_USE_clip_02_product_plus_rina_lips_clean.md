@@ -1,0 +1,5 @@
+`clip_02_product_plus_rina_lips_clean.png` in this directory must never be used as a Seedance primary image (`start_image`/`end_image`).
+
+It is the actual collage reference used in the failed 270-credit Seedance run on 2026-07-01: a Blender product blockout and an anonymous lips crop composited into one flattened image. This is FP-002 (`references/known-failure-patterns.md`) — Seedance treated both subjects literally and the result read as a pasted-together collage, not an integrated scene.
+
+This directory is otherwise the correct location for approved photoreal key visuals (per `references/known-failure-patterns.md` FP-001's fix note). Do not confuse this one file with a valid key visual. Use the corrected process instead: `workspace/projects/lipstick-cm-30s/storyboard/06-seedance-handoff-after-approval.md` and `CODEX.md` task 11, which generate Clip 2's lips shot as its own dedicated key visual (`workspace/prompts/lipstick-cm/keyvisuals/final/clip_02_lips_key.prompt.txt`), never pre-composited with the product.
