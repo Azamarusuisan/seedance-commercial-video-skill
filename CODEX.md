@@ -102,16 +102,20 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
 **結論: 動画1本を作るたびに発生しうるUI操作は「Higgsfieldログイン(セッション切れ時のみ)」だけまで削減できる。認証窓口がHiggsfield1つに統一されたことで、以前の案(Palmier Pro併用)よりむしろ管理対象が減った。**
 
-## 5. UI/UX の見直し(workspace/ui/*)
+## 5. UI/UX の見直し(workspace/ui/*)— ユーザー決定済み
 
-現状の`workspace/ui/live-workflow.html`ほかは「工場/トレーディング端末」風の多パネルダッシュボード(`MarketFeedPanel`、`SystemPerformancePanel`、`TerminalLogTape`等、`workspace/ui/GENERATION_FACTORY_LOGIC.md`参照)。ゴールが「自然言語だけで完結」である以上、このUIの役割は**承認ゲートで人間が見るべき最小限の証拠を見せて承認/却下を受け取ること**に絞るべきで、現状は装飾要素が目的に対して過剰。
+**ユーザーの決定: 「工場/トレーディング端末」風の見た目・世界観(CSS/レイアウト)は維持する。簡素化しない。** 装飾パネル(MarketFeedPanel、SystemPerformancePanel、TerminalLogTape等)を削る提案は不採用。承認専用の地味な画面への置き換えも行わない。
 
-Codexへの提案(優先度順):
+一方で、UIが表示する**中身(パイプライン段階の語彙、ゲートの内容)**は、今回確定した`WORKFLOW.md`のロジックと食い違っていた(古いkeiba-AI TikTok劇場プロジェクト向けの`script`/`voice`/`subtitles`/`palmier`等のID/文言が残っていた)。これは見た目ではなくロジックの話なので修正が必要、という整理でユーザーと合意した。
 
-1. **承認は会話(チャット)で完結できることを明記する。** UIを開かなくても「絵コンテ承認します」で次に進めるようにする。UIは補助であって必須経路にしない。
-2. **`gates.html`を3つの承認ゲート(絵コンテ/素材/最終書き出し)専用のシンプルな画面に絞る。** 各ゲートで「見るべき成果物(絵コンテ画像、ナレーション音声、コスト見積、最終動画プレビュー)」と「承認/却下ボタン相当のコピー可能なテキスト」だけを出す。
-3. **装飾パネル(MarketFeedPanel、SystemPerformancePanel、TerminalLogTape等)は優先度を下げる。** `GENERATION_FACTORY_LOGIC.md`の「レビューしてほしい論点」1番(KPIの実データ化)を先に片付け、mock演出は`MOCK_*_UI_ONLY`のまま最小限に留める。
-4. 上記1〜3は着手前にユーザーに「今のFactory UIの見た目・世界観は残したいか、承認専用の地味な画面に寄せてよいか」を確認すること(製品方針の判断はユーザーマター)。
+**対応済み(Claude Codeが実施、コミット参照): `workspace/ui/factory-futuristic.js`のみを修正。CSS/HTMLレイアウトは一切変更していない。**
+
+- `renderPipeline()`のfallback配列を、WORKFLOW.md §7(重量パス7-1〜7-11)の10段階(routing / blender_previs / storyboard_image / gate_storyboard / narration / blender_final / seedance_video / gate_asset / palmier_finish / gate_final)に更新。
+- `workflowDetail()`に上記10段階のcase節を追加(既存の`script`/`cost`/`seedance`等の古いcase節は、他プロジェクトのローカルstateファイルとの後方互換のため残した)。
+- 「安全ゲート」パネルに、`WORKFLOW.md`§8のG1〜G10のfallback配列を追加(`appState.state.gates`が空のときに表示される)。
+- 既存のCSSクラス(`pipeline-node`、`gate-mini-card`等)をそのまま再利用しているため、見た目は変わらない。
+
+**未着手:** `workspace/ui/state/generation-state.json`(gitignore対象、ローカルのみ)側の実際のプロジェクト運用時に、上記10段階のIDに沿ったworkflow[]・gates[]を書き込むのはエージェント側の運用ルールとして徹底する(`GENERATION_FACTORY_LOGIC.md`の既存方針通り、実データのみ)。
 
 ## 6. Codexへの実装タスクと状態
 
@@ -126,7 +130,7 @@ Codexへの提案(優先度順):
 3. **対応済み:** `references/end-to-end-movie-pipeline.md`のステップ3を「Higgsfield MCP画像生成(`higgsfield-image.sh`)」、ステップ6を「Higgsfield MCP経由の`elevenlabs-narration.sh`」に書き換えた。
 4. **対応済み:** §2b(b): `upscale_media`呼び出し前に「モデル仕様提示 → ユーザー確認」を必須にするルールを`end-to-end-movie-pipeline.md`に追記した。
 5. **対応済み:** §2b(c): 重量パス用に`workspace/projects/<project_id>/shots/<shot_id>/`のフォルダ規約を`end-to-end-movie-pipeline.md`に追記した。軽量パスの既存命名は変更しない。
-6. **未着手:** §5のUI簡素化は、ユーザーに方針確認したうえで着手する(先に実装しない)。
+6. **決定・対応済み(§5参照): UIの見た目は簡素化しない、そのまま維持する。** 代わりに`workspace/ui/factory-futuristic.js`のパイプライン/ゲート表示ロジックをWORKFLOW.mdの語彙に合わせて修正済み(Claude Code実施、CSS/HTML変更なし)。
 7. **未着手:** §7の「軽量パスもHiggsfield画像生成に切り替えるか」は、ユーザーに確認してから着手する(このドキュメントの決定は重量パスのみに適用する)。
 8. **対応済み: 軽量パスにBlender previsを任意オプションとして追加する。** `WORKFLOW.md`§6のステップ1を正とする。実装内容:
    - `references/seedance-cm-workflow.md`(Image-To-Video Route)と`SKILL.md`のImage-To-Video Route、`references/image-to-video-handoff.md`に、参照画像を用意する前段として次の分岐を追加する。

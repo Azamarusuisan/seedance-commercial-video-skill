@@ -237,6 +237,16 @@ function workflowDetail(phase) {
   if (key === "palmier") return appState.state.palmier?.timeline_status || "Palmier Pro編集レーン待機";
   if (key === "conversation") return `${(appState.state.generation_conversation || []).length}件 / 生成判断ログ`;
   if (key === "review") return `${appState.state.gates?.filter(gate => gate.status === "pending").length || 0}ゲート確認待ち`;
+  if (key === "routing") return appState.state.route === "heavy" ? "重量パス(複数ショット/物語)" : appState.state.route === "light" ? "軽量パス(単発)" : "軽量/重量パス未確定";
+  if (key === "blender_previs") return phase.output || "workspace/blender/<project>_previs.py 待機";
+  if (key === "storyboard_image") return phase.output || "higgsfield-image.sh 未実行";
+  if (key === "gate_storyboard") return phase.output || "絵コンテ承認待ち";
+  if (key === "narration") return phase.output || "elevenlabs-narration.sh 未実行";
+  if (key === "blender_final") return phase.output || "音声尺への同期待ち";
+  if (key === "seedance_video") return `${jobs.filter(job => job.status === "estimated").length}/${jobs.length}本 見積済み / 生成待機`;
+  if (key === "gate_asset") return phase.output || "コスト・ログイン確認待ち";
+  if (key === "palmier_finish") return appState.state.palmier?.timeline_status || "import_media -> sync_audio -> 字幕 -> 色 -> [upscale確認] -> export_project";
+  if (key === "gate_final") return phase.output || "最終書き出し前承認待ち";
   return phase.output || phase.note || "";
 }
 
@@ -530,10 +540,19 @@ function renderFactoryVisual() {
 
 function renderPipeline() {
   const workflow = appState.state.workflow || [];
+  // WORKFLOW.md の重量パス(7-1〜7-11)を正とするデフォルト表示。
+  // 軽量パスのみの案件では generation-state.json 側の workflow[] で上書きする。
   const fallback = [
-    { id: "assets", label: "素材", status: "pending", output: "状態読み込み待ち" },
-    { id: "script", label: "台本", status: "pending", output: "script.beats[]待ち" },
-    { id: "seedance", label: "映像生成", status: "pending", output: "jobs[]待ち" },
+    { id: "routing", label: "ルーティング判定", status: "pending" },
+    { id: "blender_previs", label: "Blenderプリビズ", status: "pending" },
+    { id: "storyboard_image", label: "絵コンテ(Higgsfield画像)", status: "pending" },
+    { id: "gate_storyboard", label: "承認ゲート:絵コンテ", status: "pending" },
+    { id: "narration", label: "ナレーション(ElevenLabs)", status: "pending" },
+    { id: "blender_final", label: "Blender本アニメーション", status: "pending" },
+    { id: "seedance_video", label: "Seedance動画生成", status: "pending" },
+    { id: "gate_asset", label: "承認ゲート:素材承認", status: "pending" },
+    { id: "palmier_finish", label: "Palmier Pro仕上げ", status: "pending" },
+    { id: "gate_final", label: "承認ゲート:最終書き出し", status: "pending" },
   ];
   document.getElementById("productionPipeline").innerHTML = (workflow.length ? workflow : fallback).map(phase => `
     <article class="pipeline-node ${escapeHtml(pipelineClass(phase.status))} ${escapeHtml(cls(phase.id || phase.status))}">
@@ -969,7 +988,20 @@ function renderLowerData() {
     `;
   }
 
-  const gates = appState.state.gates || [];
+  // WORKFLOW.md §8 の G1-G10。generation-state.json 側の gates[] があればそちらを優先する。
+  const gateFallback = [
+    { id: "G1", label: "用途・コンセプト承認", status: "pending" },
+    { id: "G2", label: "参照素材承認", status: "pending" },
+    { id: "G3", label: "絵コンテ承認(重量パスのみ)", status: "pending" },
+    { id: "G4", label: "Higgsfieldログイン/クレジット確認", status: "pending" },
+    { id: "G5", label: "プロンプト最終承認", status: "pending" },
+    { id: "G6", label: "コスト承認", status: "pending" },
+    { id: "G7", label: "動画生成実行", status: "pending" },
+    { id: "G8", label: "Palmier Pro upscale_media承認", status: "pending" },
+    { id: "G9", label: "最終書き出し前承認", status: "pending" },
+    { id: "G10", label: "公開判断(常に手動)", status: "locked" },
+  ];
+  const gates = appState.state.gates?.length ? appState.state.gates : gateFallback;
   document.getElementById("gates").innerHTML = `
     <div class="panel-heading"><div><span class="eyebrow">安全ゲート</span><h3>承認ロック</h3></div></div>
     <div class="overview-list">
