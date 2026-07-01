@@ -27,6 +27,8 @@ Seedance image-to-video       承認ゲート:絵コンテ
    ↓                              ↓
 承認ゲート:素材承認(両パス共通、コスト・ログイン・権利確認込み)
    ↓
+[任意・承認後]Palmier Pro BGM/SFX生成(mirelo-sfx video-to-audio / elevenlabs-music等)
+   ↓
 Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale確認] → export_project)
    ↓
 承認ゲート:最終書き出し前
@@ -34,7 +36,7 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 納品(delivery package)
 ```
 
-認証が必要な窓口は実質2つだけ: **Higgsfieldログイン**(画像・音声・動画の生成すべてがここに依存)と**Palmier Proサインイン**(仕上げ工程)。個別サービスのAPIキー(OPENAI_API_KEY等)は重量パスでは使わない。
+認証が必要な窓口は実質2つだけ: **Higgsfieldログイン**(画像・音声・動画の生成すべてがここに依存)と**Palmier Proサインイン**(仕上げ工程 + BGM/SFX生成)。個別サービスのAPIキー(OPENAI_API_KEY等)は重量パスでは使わない。BGM/SFX生成だけは唯一「Higgsfieldに一本化」の例外で、Palmier Pro自身の生成ツールを使う(§2、理由は生成プラットフォームの節を参照)。
 
 ## 2. 登場するシステムと役割
 
@@ -43,13 +45,13 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 | エージェント(Claude Code / Codex / Hermes / OpenCrew) | 全工程のオーケストレーター。ブリーフ解釈、プロンプト作成、スクリプト実行、承認確認 | ローカルシェル + MCP |
 | Blender | 3Dプレビズ・最終アニメーションのローカルレンダー | `blender --background --python <script>`(ローカル、課金なし) |
 | Higgsfield MCP | 画像生成(絵コンテ)・ElevenLabs音声生成・Seedance動画生成 | ホスト側が提供するMCPツール。このリポジトリのシェルスクリプトはMCPリクエストJSONを準備するだけで、実行はホストのMCPツールが行う |
-| Palmier Pro | 動画編集の仕上げ(字幕・色・アップスケール・書き出し) | `mcp__palmier-pro__*` ツール群をエージェントが直接呼ぶ |
+| Palmier Pro | 動画編集の仕上げ(字幕・色・アップスケール・書き出し)+ **BGM/SFX生成**(`generate_audio`、唯一のHiggsfield一本化の例外) | `mcp__palmier-pro__*` ツール群をエージェントが直接呼ぶ |
 | note | ブログ/記事の下書き(このツールの外側の話) | 手動のみ。公開ボタンは絶対に押さない |
 
 ## 3. 認証・課金の窓口
 
 - **Higgsfieldログイン**: `workspace/scripts/open-higgsfield-login.sh` でHermes Chromeを開き、ユーザーが手動でログインする。認証情報の自動入力・保存は一切しない。ログイン状態は`workspace/scripts/higgsfield-status.sh`がMCPリクエストとして準備し、ホストのHiggsfield MCPツールで実際に確認する。
-- **Palmier Proサインイン**: Palmier Proアプリ側でユーザーが事前にサインイン/契約している前提。`mcp__palmier-pro__get_timeline`の`canGenerate`が`false`ならここで止まる。
+- **Palmier Proサインイン**: Palmier Proアプリ側でユーザーが事前にサインイン/契約している前提。`mcp__palmier-pro__get_timeline`の`canGenerate`が`false`ならここで止まる。仕上げ工程に加えて、`upscale_media`と`generate_audio`(BGM/SFX)もここでの課金対象。
 - **APIキー**: 重量パスでは一切使わない。軽量パス(既存の単発CM運用)では`workspace/scripts/gpt-image-reference.sh`が`OPENAI_API_KEY`を使うことがあるが、これは環境変数としてそのセッションのみ設定し、リポジトリやログには絶対に書かない。
 
 ## 4. 入口: ブリーフのロック(共通)
@@ -89,7 +91,7 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 6. Higgsfield MCPでコスト見積もりを実行し、結果を`bash workspace/scripts/record-mcp-json.sh cost <response.json>`で記録する。
 7. ユーザーが予算・プロンプト・参照素材・権利を最終承認する。
 8. `APPROVED=1 bash workspace/scripts/seedance-generate.sh` で生成MCPリクエストを準備し、Higgsfield MCPで実行、`record-mcp-json.sh job <response.json>`で記録する。
-9. 必要ならPalmier Proで仕上げ(§7-10と同じ手順)。
+9. 必要ならBGM/SFX生成(§7-9bと同じ手順)とPalmier Proで仕上げ(§7-10と同じ手順)。
 10. 出力・設定・権利注意事項を`workspace/delivery/`にまとめる。
 
 ## 7. 重量パス: フルフロー
@@ -143,12 +145,21 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 
 - Seedance投入前に、コスト承認・Higgsfieldログイン/クレジット確認・参照画像・プロンプト・出力先を確認する。既存の軽量パスと同じ位置づけのゲート。
 
+### 7-9b. Palmier ProでBGM/SFX生成(任意)
+
+**唯一の例外: BGM/SFXだけはHiggsfield MCPではなくPalmier Pro自身の生成ツールを使う。** Higgsfield MCPが音楽/SFX生成モデルを持っているかは未確認(前例なし)だが、Palmier Proはこのセッションで`list_models(type=audio)`により実在を確認済み。エージェントが`mcp__palmier-pro__*`ツールを直接呼ぶ(シェルスクリプト経由ではない)。
+
+- ユーザーがBGM/SFXを希望する場合のみ実施。希望しない場合はスキップして7-10に進む。
+- **SFX**: `mirelo-sfx-v1.5-video-to-audio`(入力が`video`)に、確定したSeedance出力動画をそのまま渡す。テキストでタイミング指定する必要はなく、モデルが映像を見て適切な効果音のタイミング・種類を判断する。
+- **BGM**: `elevenlabs-music`(`durations: [15,30,60,90,120,180]`など尺指定に対応)や`lyria3-pro`/`minimax-music-v2.6`で、ブリーフの雰囲気(トーン、テンポ感)をテキストで指定し、動画の合計尺に合わせて生成する。
+- **承認: `upscale_media`と同じ運用ルールを適用する。** 呼ぶ前に必ず`list_models`で対象モデルの仕様を提示し、費用発生をユーザーに自然言語で確認してから実行する(Palmier Pro MCPには`APPROVED=1`のような機械的ゲートが存在しないため)。
+
 ### 7-10. Palmier Proで最終仕上げ
 
 エージェントが`mcp__palmier-pro__*`ツールを直接呼ぶ(シェルスクリプト経由ではない)。
 
-1. `import_media`: Seedance出力とナレーション音声をPalmier Proプロジェクトに取り込む。
-2. `sync_audio`: 音声とショットのタイミングを合わせる。
+1. `import_media`: Seedance出力、ナレーション音声、(7-9bで生成した場合)BGM/SFXをPalmier Proプロジェクトに取り込む。
+2. `sync_audio`: ナレーション・BGM・SFXとショットのタイミングを合わせる。
 3. 字幕/テロップの配置(`add_captions`など)。
 4. `apply_color`: 色調整。
 5. `upscale_media`(必要な場合のみ): **課金対象の生成系ツールなので、呼ぶ前に必ず`list_models`でモデル仕様を提示し、対象クリップ・出力品質・費用発生をユーザーに自然言語で確認してから実行する。** Seedanceのような機械的な`APPROVED=1`ゲートはPalmier Pro MCPには存在しないため、これは運用ルールとして徹底する。
@@ -169,7 +180,7 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 | G5 | プロンプト最終承認 | pending/proposalマーカー除去 | 両方(スクリプトの`approval_gate`が機械的にチェック) |
 | G6 | コスト承認 | Seedance/画像/音声のコスト見積 | 両方 |
 | G7 | 動画生成実行 | Seedance image-to-video | 両方 |
-| G8 | Palmier Pro `upscale_media`承認 | モデル仕様+費用の事前提示 | 両方(使う場合のみ) |
+| G8 | Palmier Pro生成系承認(`upscale_media` / `generate_audio`のBGM・SFX) | モデル仕様+費用の事前提示 | 両方(使う場合のみ) |
 | G9 | 最終書き出し前承認 | export_project前 | 両方 |
 | G10 | 公開判断 | noteなどへの公開 | ツール外、常に手動 |
 
@@ -232,7 +243,7 @@ MCPリクエスト自体(実行前のペイロード)は`workspace/mcp-requests/
 
 ## 12. 予算・コストロック
 
-- 有料生成(Higgsfield MCP: 画像/音声/動画、Palmier Pro: upscale_media)の前には必ずコスト見積もり/モデル仕様確認と、ユーザーの明示承認が要る。
+- 有料生成(Higgsfield MCP: 画像/音声/動画、Palmier Pro: upscale_media、generate_audioによるBGM/SFX)の前には必ずコスト見積もり/モデル仕様確認と、ユーザーの明示承認が要る。
 - 予算が不明な場合は最小構成(ドラフト1本、1アスペクト比、音声なし、追加バリアントなし)で進める。
 - 再生成は通常2回まで。3回目以降は予算・参照素材・プロンプトの見直しをユーザーに確認する。
 
@@ -246,6 +257,7 @@ MCPリクエスト自体(実行前のペイロード)は`workspace/mcp-requests/
 ## 14. 既知の制約・未検証事項
 
 - Higgsfield MCPの画像生成モデルの実名(暫定`image2`)と、Blenderレンダーを入力画像として渡すimg2img相当の対応可否は未検証。Higgsfield MCPが接続された環境で最初に確認する。
+- Palmier Proの`mirelo-sfx-v1.5-video-to-audio`(動画からSFX生成)は`list_models`で存在を確認しただけで、実際に動画を渡して満足のいく効果音が返るかは未検証。`elevenlabs-music`等のBGM尺指定(`durations`)も同様に未実行。最初の1回は試し生成で品質を見る前提とする。
 - リップシンクは未解決。カメラ目線の会話カットは演出で回避するか、専用ツールを別途検討する。
 - 音声と映像のタイミング合わせはPalmier Proの`sync_audio`と手動の速度調整に依存し、完全自動同期は保証しない。
 - Blenderの自動生成シーンは手続き型プリミティブが中心。写実的な3Dアセットが必要な場合は別途モデリングが必要。

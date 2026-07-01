@@ -9,10 +9,11 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 - 未検証: Higgsfield MCPの画像生成モデル名とimg2img(参照画像入力)対応可否。接続環境で最初に確認する。
 - §5のUI簡素化は未着手。ユーザーに「Factory UIの世界観を残すか、承認専用UIへ寄せるか」を確認してから行う。
 - 2026-07-01: `WORKFLOW.md`(全体フローの1〜100言語化)を新規作成し、ユーザーとすり合わせ済み。承認ゲート粒度・フォルダ規約・Palmier Pro仕上げ順は確定。軽量パスへBlender previsを任意オプションとして追加する方針も反映済み。
+- 2026-07-01: **BGM/SFX生成が抜けていたことが判明し、Palmier Pro経由で追加する方針が確定(§2b-d、§6タスク9、未着手)。** Higgsfield一本化の唯一の例外。`WORKFLOW.md`§7-9bに詳細。
 
 このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装記録。実際のコード状態と食い違いが出た場合は、このファイルの最新の確定方針(§2以降)を正としてコードを合わせること。全体フローの完成形は`WORKFLOW.md`を参照(このファイルは実装タスクと決定の経緯、`WORKFLOW.md`は完成後の姿)。
 
-**確定方針(ユーザー最終確認済み): 画像生成(絵コンテ)・音声生成(ElevenLabsナレーション)・動画生成(Seedance)は全てHiggsfield MCP経由。APIキー(OPENAI_API_KEYを含む)は一切使わない。** Palmier Proは生成ではなく仕上げ工程(字幕・色・アップスケール・書き出し)専用。軽量パスではBlender previsを任意オプションとして使える(§6タスク8)。
+**確定方針(ユーザー最終確認済み): 画像生成(絵コンテ)・音声生成(ElevenLabsナレーション)・動画生成(Seedance)は全てHiggsfield MCP経由。APIキー(OPENAI_API_KEYを含む)は一切使わない。** Palmier Proは生成ではなく仕上げ工程(字幕・色・アップスケール・書き出し)専用、**ただしBGM/SFX生成(`generate_audio`)だけは唯一の例外としてPalmier Proを使う。** 軽量パスではBlender previsを任意オプションとして使える(§6タスク8)。
 
 ## 0. ゴール
 
@@ -61,6 +62,17 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
 **修正: 重量パス専用に `workspace/projects/<project_id>/shots/<shot_id>/` 配下へ `previs.blend`、`storyboard.png`、`narration.mp3`、`seedance_prompt.txt`、`seedance_output.mp4` を格納する規約を`end-to-end-movie-pipeline.md`に追加する。** 軽量パス(既存の単発CM運用)は現行の"-v1"命名のままでよく、変更不要。
 
+### (d) BGM/SFX生成が実装計画に一切なかった
+
+ユーザーから指摘を受けて判明。CODEX.md §0のゴール文には「ナレーション/BGM/SFX」と書いてあったが、`references/end-to-end-movie-pipeline.md`の実際のステップにはBGM/SFXが一つも存在しなかった(ナレーションだけ実装され、BGM/SFXは検討すらされていなかった)。
+
+**ユーザー決定: BGM/SFXは唯一の例外としてPalmier Pro自身の生成ツールを使う。** 理由:
+- Higgsfield MCPが音楽/SFX生成モデルを持っているかは未確認・前例なし(ElevenLabsとは違い裏付けが一切ない)。
+- Palmier Proの`mirelo-sfx-v1.5-video-to-audio`(入力`video`)、`elevenlabs-music`(`durations`で尺指定可)、`lyria3-pro`、`minimax-music-v2.6`は`list_models(type=audio)`で実在を確認済み。
+- `mirelo-sfx-v1.5-video-to-audio`は動画を直接入力に取るため、「動画のどこが面白いか・間はどこか」を人間やエージェントが指定しなくても、モデルが映像を見て効果音のタイミングを判断できる。これがユーザーの「動画の間や面白いところを把握できるか」という懸念への直接の答えになっている。
+
+**修正: `references/end-to-end-movie-pipeline.md`にステップ7-9bとして、Seedance動画確定後・Palmier Pro仕上げ前にBGM/SFX生成を追加する(`WORKFLOW.md`§7-9bが正)。** `upscale_media`と同じ運用ルール(`list_models`でモデル仕様提示→ユーザー確認→実行、機械的な`APPROVED=1`ゲートはない)を適用する。
+
 ## 3. 改訂後のパイプライン(Codexが`references/end-to-end-movie-pipeline.md`に反映すること)
 
 ```
@@ -80,12 +92,14 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
    ↓
 承認ゲート2: 素材承認(コスト承認・ログイン/クレジット確認を含む)
    ↓
+[任意・承認後: Palmier Pro BGM/SFX生成] mirelo-sfx-v1.5-video-to-audio / elevenlabs-music等(唯一のHiggsfield一本化の例外、§2b-d)
+   ↓
 [Palmier Pro: import_media → sync_audio → add_captions → apply_color → upscale_media → export_project]
    ↓
 承認ゲート3: 最終書き出し前承認
 ```
 
-セリフ確認ステップ(カメラ目線で喋るカットの有無)は既存の位置(絵コンテ承認の直後)のまま変更なし。認証が必要な生成系の窓口はHiggsfieldMCPひとつに統一されている。
+セリフ確認ステップ(カメラ目線で喋るカットの有無)は既存の位置(絵コンテ承認の直後)のまま変更なし。認証が必要な生成系の窓口はHiggsfieldMCPひとつに統一されている(BGM/SFXのみPalmier Pro例外)。
 
 ## 4. 「外部ツールのUIを一切触らない」監査結果
 
@@ -139,12 +153,20 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
    - NOの場合、またはBlender未インストールの場合: 従来通り(ユーザー提供素材優先 → なければ`gpt-image-reference.sh`)。
    - 新しい承認ゲートは作らない。参照画像の承認は既存のRights Gate/参照素材承認にそのまま乗せる。
    - この変更は軽量パスの既存"-v1"命名やスクリプト(`seedance-cost.sh`/`seedance-generate.sh`)には影響しない。参照画像の出所が増えるだけ。
+9. **未着手・ユーザー確定済み: BGM/SFX生成をPalmier Pro経由で追加する。** `WORKFLOW.md`§7-9bを正とする。実装内容:
+   - `references/end-to-end-movie-pipeline.md`に、承認ゲート2(素材承認)の後・Palmier Pro仕上げの前に新ステップとして追加する。
+   - SFXは`mirelo-sfx-v1.5-video-to-audio`にSeedance出力動画を渡す(video-to-audio、テキストでのタイミング指定は不要)。
+   - BGMは`elevenlabs-music`(`durations`で尺指定)/`lyria3-pro`/`minimax-music-v2.6`のいずれかを、ブリーフの雰囲気指定+動画合計尺に合わせて使う。
+   - 実行前に`list_models`でモデル仕様を提示し、費用発生をユーザーに自然言語で確認する(`upscale_media`と同じ運用ルール、§2b-b/§8のG8)。
+   - ユーザーがBGM/SFXを希望しない場合はスキップする(必須ステップではない)。
+   - Palmier Proの`import_media`/`sync_audio`のステップ説明に、BGM/SFXも取り込み対象として追記する。
 
 ## 7. 未確定・ユーザー判断が必要な点
 
 - **Higgsfield MCPの画像生成モデル名・img2img(参照画像入力)対応可否は未検証。** Higgsfield MCPが接続された環境で最初に確認すること。
 - 既存の軽量パス(単発CM、`gpt-image-reference.sh`使用)も同じくHiggsfield MCP画像生成に切り替えるかは未決定。今回の「APIキー不使用」方針は重量パスの議論の中で決まったもので、軽量パスに自動適用はしていない。
 - Factory UI(`workspace/ui/*`)の「工場/トレーディング端末」世界観を残すか、承認専用の地味なUIに寄せるかは製品方針次第。
+- Palmier Proの`mirelo-sfx-v1.5-video-to-audio`と`elevenlabs-music`等は`list_models`で存在確認のみ。実際に動画/テキストを渡して満足のいく結果が返るかは未実行。初回は試し生成で品質を見る。
 
 ## 8. X投稿を参考にした動画作成について
 
