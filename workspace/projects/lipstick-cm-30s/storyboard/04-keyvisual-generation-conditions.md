@@ -2,6 +2,13 @@
 
 Status: image generation preapproval required.
 
+Primary review surface:
+
+- `workspace/projects/lipstick-cm-30s/storyboard/storyboard-board.html`
+- `workspace/projects/lipstick-cm-30s/storyboard/storyboard-board.json`
+
+This board must be reviewed before the four key visual prompts are sent to an image model.
+
 ## Required Outputs
 
 | id | source | purpose | Seedance use | output |
@@ -23,6 +30,7 @@ Status: image generation preapproval required.
 - execute_seedance_generation: false
 - human_approval_status: pending
 - stop condition: missing explicit image generation approval
+- board_approval_status: pending
 
 ## Hard Blocks
 

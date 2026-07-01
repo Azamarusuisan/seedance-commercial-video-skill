@@ -27,10 +27,11 @@ Brief lock
   -> asset/rights/budget lock
   -> Blender previs, if composition is needed
   -> visual-handoff.json
+  -> storyboard board / contact sheet
   -> clean photoreal storyboard prompt
   -> image-generation request preparation
   -> photoreal storyboard/key visual
-  -> human side-by-side approval
+  -> human board + side-by-side approval
   -> asset-manifest.json with role=visual_truth
   -> learning-preflight.md
   -> Seedance cost request
@@ -113,7 +114,24 @@ It learns by updating local production memory:
 Before generation, the system reads known failures and prompt rules.
 After generation, the system records what failed, what worked, and what must change next time.
 
-## 8. Universal Stop Conditions
+## 8. Storyboard Board Requirement
+
+Before any image or video generation request, create a storyboard board/contact sheet.
+
+The board should look like a production review sheet, not a loose file list:
+
+- one hero/mood frame
+- 6-8 storyboard panels
+- each panel has time range, role, source image, and Seedance use
+- mark which panels become primary key visual candidates
+- mark which panels are intermediate/mood/post plates only
+- show `Blender = composition_only`
+- show `photoreal storyboard/key visual = visual_truth`
+- show `Seedance primary image allowed: false` until approval
+
+This board is the human-readable approval surface. Individual prompt files are not enough.
+
+## 9. Universal Stop Conditions
 
 Stop before paid generation when:
 

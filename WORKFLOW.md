@@ -15,6 +15,8 @@
    ↓                              ↓
 構図抽出/visual-handoff      承認ゲート:構図/カメラ/配置レビュー(Blender、無料)
    ↓                              ↓
+storyboard board作成         storyboard board作成
+   ↓                              ↓
 写実キービジュアル生成       Higgsfield MCP画像生成(写実storyboard/key visual)
    ↓                              ↓
 承認ゲート:写実絵コンテ      承認ゲート:写実絵コンテ承認
@@ -88,7 +90,7 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
    - **YES**: 重量パス§7-2と同じ手法(エージェントがブリーフからbpyスクリプトを新規に書き、`blender --background --python`で無人実行、`workspace/blender/action_movie_previs.py`を土台にする)でBlenderプリビズを1枚レンダーする。この画像は構図参照専用で、Seedanceの`IMAGE_FILE`には使わない。
    - **NO(デフォルト)/Blender未インストール**: 従来通り、ユーザー提供素材を優先し、なければ`workspace/scripts/gpt-image-reference.sh`で生成する。
    - どちらの場合も、参照画像の承認は既存のG2(参照素材承認)ゲートで扱う。専用の新規ゲートは作らない。
-2. 参照画像を`workspace/assets/`または`workspace/projects/<project_id>/shots/<shot_id>/`に保存する。Blenderを使った場合は`build-visual-handoff.py`で構図情報を抽出し、写実のキービジュアルを作って承認してからSeedanceに渡す。
+2. 参照画像を`workspace/assets/`または`workspace/projects/<project_id>/shots/<shot_id>/`に保存する。Blenderを使った場合は`build-visual-handoff.py`で構図情報を抽出し、`build-storyboard-board.py`でスクショ型のstoryboard board/contact sheetを作る。写実のキービジュアルを作って承認してからSeedanceに渡す。
 3. アスペクト比ごとにSeedanceプロンプトを1本ずつ書く(`workspace/prompts/`)。16:9のプロンプトを9:16にそのまま流用しない。
 4. `bash workspace/scripts/higgsfield-status.sh` でアカウント/モデル状態のMCPリクエストを準備し、ホストのHiggsfield MCPツールで実行して結果を確認する。
 5. `PERMISSION_MANIFEST=<permission.json> ASSET_MANIFEST=<approved-keyvisual.json> APPROVED={{SET_TO_1_ONLY_AFTER_GATE_CHECK}} bash workspace/scripts/seedance-cost.sh` でコスト見積もりMCPリクエストを準備する。`APPROVED=1`単独では通らない。
@@ -117,6 +119,7 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 
 - **7-2のBlenderレンダーは絵コンテであり、構図・カメラ・商品形状の正。** ただし高級CM・写実CMでは、低ポリ/ブロックアウトのBlender画像をSeedanceの`start_image`に直接渡さない。直接渡すと「肉付け」ではなく、生のBlender感を引きずる。
 - Seedanceへ渡す主画像は、Blender絵コンテを元に作った写実キービジュアルにする。Blenderレンダーはその写実化の入力・比較対象・承認用の設計図として残す。
+- 個別promptだけではなく、必ずstoryboard board/contact sheetを作る。上段にhero/mood、下段に6-8 panels、各panelにtime/role/source/Seedance useを表示する。これが人間のレビュー面になる。
 - `workspace/scripts/higgsfield-image.sh`(Higgsfield MCP画像生成)は、この写実キービジュアル生成に使ってよい。使う場合も、生成絵コンテだけを根拠に次に進まず、Blender設計図と並べて「構図は守れているか」を確認する。
 - 写実キービジュアル生成をスキップしてよいのは、Seedanceへ進まない構図レビュー段階だけ。Seedanceへ進む場合は、承認済み`storyboard.png`/key visualが必須。
 

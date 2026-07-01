@@ -1,0 +1,89 @@
+{
+  "schema_version": "storyboard_board.v1",
+  "project_id": "lipstick-cm-30s",
+  "title": "ROUGE NOIR / Photoreal Storyboard Board",
+  "summary": "Blender panels are composition-only. This board defines the full 30s visual flow before photoreal key visual generation and Seedance motion.",
+  "approval_status": "pending_photoreal_storyboard_approval",
+  "gate_note": "Do not run image generation or Seedance until this board and the key visual generation conditions are approved.",
+  "primary_note": "Only panels 01, 03, 04, and 06 become primary key visual candidates for Seedance after photoreal generation and human approval.",
+  "support_note": "Panels 02, 05, 07, and 08 are continuity, material, mood, or post-production plates. They are not Seedance primary inputs by themselves.",
+  "hero": {
+    "title": "Premium lipstick world / black, champagne gold, deep rouge",
+    "image_path": "workspace/assets/3d/renders/lipstick_cm_panel_03_hero_vfx.png",
+    "note": "Use only as composition and product-memory guide. Convert graphic light marks into photographic bokeh, soft glints, rim light, and lens bloom."
+  },
+  "panels": [
+    {
+      "panel_id": "01",
+      "time": "0-2s",
+      "title": "Dark Silhouette Hook",
+      "source_path": "workspace/assets/3d/renders/lipstick_cm_panel_01_silhouette.png",
+      "content": "Black space, lipstick silhouette, deep luxury restraint, warm rim light.",
+      "seedance_use": "Clip 01 start key visual candidate",
+      "primary_keyvisual_candidate": true
+    },
+    {
+      "panel_id": "02",
+      "time": "2-6s",
+      "title": "Cap Macro / Material Reveal",
+      "source_path": "workspace/assets/3d/renders/lipstick_cm_panel_02_cap_macro.png",
+      "content": "Black lacquer, champagne-gold metal, macro reflections, tactile product material.",
+      "seedance_use": "support panel for material continuity",
+      "primary_keyvisual_candidate": false
+    },
+    {
+      "panel_id": "03",
+      "time": "6-15s",
+      "title": "Hero Product Reveal",
+      "source_path": "workspace/assets/3d/renders/lipstick_cm_panel_03_hero_vfx.png",
+      "content": "Centered hero packshot, premium reflections, product memory, no raw Blender look.",
+      "seedance_use": "Clip 01 end key visual candidate",
+      "primary_keyvisual_candidate": true
+    },
+    {
+      "panel_id": "04",
+      "time": "15-21s",
+      "title": "Anonymous Lips Macro",
+      "source_path": "workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png",
+      "content": "Lips-only crop, same dark premium lighting world, no full face, no hand, no testimonial.",
+      "seedance_use": "Clip 02 start key visual candidate",
+      "primary_keyvisual_candidate": true
+    },
+    {
+      "panel_id": "05",
+      "time": "21-24s",
+      "title": "Rouge Texture / Shine",
+      "source_path": "derived_from_clip_02_lips_key",
+      "content": "After-application deep rouge gloss, refined beauty texture, realistic skin detail.",
+      "seedance_use": "support panel for Clip 02 middle beat",
+      "primary_keyvisual_candidate": false
+    },
+    {
+      "panel_id": "06",
+      "time": "24-28s",
+      "title": "Product Returns / Final Packshot",
+      "source_path": "workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png",
+      "content": "Return to product, final packshot, safe negative space for post text.",
+      "seedance_use": "Clip 02 end key visual candidate",
+      "primary_keyvisual_candidate": true
+    },
+    {
+      "panel_id": "07",
+      "time": "28-29s",
+      "title": "Brand Mood Bridge",
+      "source_path": "derived_from_approved_product_keyvisuals",
+      "content": "Black, gold, deep red, soft photographic light, no person, no logo.",
+      "seedance_use": "support transition / mood continuity",
+      "primary_keyvisual_candidate": false
+    },
+    {
+      "panel_id": "08",
+      "time": "29-30s",
+      "title": "Title-Safe Endcard Plate",
+      "source_path": "derived_from_clip_02_final_key",
+      "content": "Clean post-production plate with no baked ROUGE NOIR text.",
+      "seedance_use": "post-production title plate only",
+      "primary_keyvisual_candidate": false
+    }
+  ]
+}

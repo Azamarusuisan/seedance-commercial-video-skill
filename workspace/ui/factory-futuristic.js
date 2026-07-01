@@ -790,7 +790,7 @@ function renderBlenderReview() {
     </div>
     <div class="support-reference-note">
       <strong>補助参照</strong>
-      <span>${escapeHtml(visual.index_path || review.support_only?.generated_storyboard || "")}</span>
+      <span>${escapeHtml(visual.storyboard_board || visual.index_path || review.support_only?.generated_storyboard || "")}</span>
       <em>${escapeHtml(review.support_only?.note || "Blenderは構図補助。主軸は承認済みphotoreal storyboard/key visual。Blender直渡しはブロック中。")}</em>
     </div>
   `;

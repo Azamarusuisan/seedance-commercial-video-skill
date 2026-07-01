@@ -2,6 +2,12 @@
 
 Status: waiting for photoreal key visual generation approval.
 
+First review:
+
+- `workspace/projects/lipstick-cm-30s/storyboard/storyboard-board.html`
+
+The board should look like a production storyboard sheet: hero/mood frame, 8 panels, primary key visual candidates, support panels, and Seedance eligibility.
+
 The review board must show each source and generated image side by side:
 
 | key visual | source | generated | approval |

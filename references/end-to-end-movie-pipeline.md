@@ -37,6 +37,8 @@ workspace/projects/<project_id>/
       previs.blend                 # 構図の正(composition_only)。Seedance入力不可
       previs.png                   # 同上、Blenderレンダー
       visual-handoff.json          # workspace/schemas/visual-handoff.schema.json
+      storyboard-board.json        # board/contact sheet input
+      storyboard-board.html        # human review surface
       storyboard-prompt.txt        # gpt-image-from-blender-previs.txtから生成
       storyboard.png               # 画作りの正(visual_truth)。承認後にSeedance入力可
       storyboard-review.json       # 人間承認の記録(asset_kind/approval_status等)
@@ -65,7 +67,7 @@ workspace/projects/<project_id>/
    - この `.blend`/レンダーをプロジェクトの構図の正(`role=composition_only`)とする。以降の全ショットは同じシーンファイルから書き出し、キャラクター/商品/カメラの一貫性を担保する。**ただし、この段階のレンダーはSeedanceにそのまま渡さない(FP-001)。**
    - `python3 workspace/scripts/build-visual-handoff.py --project-id <id> --shot-id <shot_id> --render-path <previs.png> ...` で `visual-handoff.json` とプロンプト雛形を作る。`seedance_primary_image_allowed` は常に`false`で初期化される。
 3. **写実絵コンテ化(画作りの正)**: `bash workspace/scripts/prepare-storyboard-image-request.sh workspace/projects/<id>/shots/<shot_id>/visual-handoff.json` で、`workspace/scripts/higgsfield-image.sh`(Higgsfield MCP画像生成)経由のリクエストを準備する。ホストのHiggsfield MCPツールで実行し、結果を`storyboard.png`として保存、`storyboard-review.json`に承認記録を残す(`asset_kind=photoreal_key_visual`、`approval_status=approved`)。入力画像が使えない場合はBlender構図をプロンプトに明記する。
-4. **承認ゲート1: 絵コンテ承認**。`storyboard.png`を元のBlenderレンダーと並べてユーザーに見せ、明示的な承認を得るまでここより先に進めない。承認後、`storyboard-review.json`の`approval_status`を`approved`にする。
+4. **承認ゲート1: 絵コンテ承認**。まず`storyboard-board.html`のような一枚のboard/contact sheetで、hero/mood、全panel、Seedance候補、補助panelを見せる。次に`storyboard.png`を元のBlenderレンダーと並べてユーザーに見せ、明示的な承認を得るまでここより先に進めない。承認後、`storyboard-review.json`の`approval_status`を`approved`にする。
 5. **セリフ確認**: 「カメラ目線で喋るカットはありますか?」を一度確認する。
    - YES: リップシンクは未解決であることを明示し、(a) 顔アップを避ける演出にする、(b) 専用リップシンクツールを別途検討する、のどちらかをユーザーに選ばせる。
    - NO(デフォルト): ナレーション主体で進める。
