@@ -24,14 +24,14 @@
 
 | Time | Visual | Text in Post | Audio |
 | --- | --- | --- | --- |
-| 0-2s | Macro push across a colorful closed laptop edge. Blue-white electric energy runs along the edge. | 軽さ、走る。 | electric spark, soft whoosh |
-| 2-6s | Pink, blue, yellow, and silver laptops open in sequence on a bright white desk. | 色で選べる、新しいPC。 | clean power-up tones |
-| 6-11s | Camera orbits the lineup. Electric trails connect the devices to imply speed and power. | 毎日を、もっと速く。 | polished electronic rise |
+| 0-2s | Macro push across a colorful closed laptop edge. A cool blue-white rim light glints and travels along the edge as the camera moves, like light catching brushed metal. | 軽さ、走る。 | electric spark, soft whoosh |
+| 2-6s | Pink, blue, yellow, and silver laptops open in sequence on a bright white desk, soft reflections sweeping across each lid. | 色で選べる、新しいPC。 | clean power-up tones |
+| 6-11s | Camera orbits the lineup. Quick bright light glints and photographic lens flares pass rapidly between the devices to imply speed and power through motion and light, not literal sparks or bolts. | 毎日を、もっと速く。 | polished electronic rise |
 | 11-15s | Final clean product lineup with right-side negative space. | macneo apple | music resolves |
 
 ## Seedance Prompt Intent
 
-Make the video look like premium product photography, not a raw product collage. Preserve the colorful laptop lineup, slim profile, white studio, clean reflections, and bright product feel. Add controlled blue-white electric VFX without unsafe sparks or unsupported performance claims.
+Make the video look like premium product photography, not a raw product collage. Preserve the colorful laptop lineup, slim profile, white studio, clean reflections, and bright product feel. Describe all light/energy in photographic terms only (rim light, glints, lens flare, reflections) — no drawn lines, bolts, or graphic overlays (references/known-failure-patterns.md FP-003). Matches the corrected wording in workspace/prompts/macneo-pc-cm/seedance-15s-16x9.txt (2026-07-01).
 
 ## Explicitly Not Included
 
