@@ -42,6 +42,12 @@ If generated reference image creation is required:
 bash workspace/scripts/gpt-image-reference.sh
 ```
 
+For the end-to-end movie pipeline, use Higgsfield MCP for storyboard/reference image generation instead of direct API-key image generation:
+
+```bash
+APPROVED=1 bash workspace/scripts/higgsfield-image.sh
+```
+
 For generic image-to-video, prefer:
 
 ```bash

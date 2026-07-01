@@ -31,6 +31,8 @@ Run from the repository root:
 bash workspace/scripts/preflight.sh
 bash workspace/scripts/open-higgsfield-login.sh
 bash workspace/scripts/higgsfield-status.sh
+bash workspace/scripts/higgsfield-image.sh
+bash workspace/scripts/elevenlabs-narration.sh
 bash workspace/scripts/gpt-image-reference.sh
 bash workspace/scripts/seedance-cost.sh
 bash workspace/scripts/seedance-generate.sh

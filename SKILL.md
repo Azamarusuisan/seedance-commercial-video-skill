@@ -23,7 +23,7 @@ When the user asks Hermes to run autonomously, keep iterating, run many variants
 
 When the user asks to use Blender, GLB/OBJ/3D assets, local 3D previews, 3D factory floors, camera paths, lighting/material checks, or Blender-rendered plates before Seedance/Higgsfield generation, read `references/blender-3d-preview-workflow.md`. Blender work is local-only and must not trigger paid generation or external publishing.
 
-When the user asks for a natural-language-only movie/short-film/multi-shot commercial pipeline (Blender previs → GPT Image storyboard → Palmier Pro audio → Seedance → Palmier Pro finishing), or when a project needs the same character/product/scene to stay consistent across multiple shots with real narrative progression, read `references/end-to-end-movie-pipeline.md` before planning. Route single-shot or asset-swap-only requests through the existing Image-To-Video Route instead; do not apply the heavier pipeline where it is not needed.
+When the user asks for a natural-language-only movie/short-film/multi-shot commercial pipeline (Blender previs → Higgsfield MCP image storyboard → Higgsfield MCP ElevenLabs narration → Seedance → Palmier Pro finishing), or when a project needs the same character/product/scene to stay consistent across multiple shots with real narrative progression, read `references/end-to-end-movie-pipeline.md` before planning. Route single-shot or asset-swap-only requests through the existing Image-To-Video Route instead; do not apply the heavier pipeline where it is not needed.
 
 ## Supported Use Cases
 
@@ -158,7 +158,7 @@ For public-facing, commercial, client, brand, or monetized uses, confirm materia
 - User-supplied source images of public figures, performers, actors, fictional characters, or recognizable IP must be treated as rights-sensitive source assets. They can be cataloged for internal drafting, but public/commercial output requires the user's rights confirmation.
 - When trademark, copyright, likeness, or publicity-right risk exists, use alternate materials, abstract visuals, generic models, fictional brands, or non-commercial drafts.
 - Final publication rights checks must be performed by the user/client or responsible human reviewer.
-- For the end-to-end pipeline (Blender + Palmier Pro audio), read the extended rights checks in `references/end-to-end-movie-pipeline.md`, including voice-clone consent for real-person narration.
+- For the end-to-end pipeline (Blender + Higgsfield MCP ElevenLabs narration), read the extended rights checks in `references/end-to-end-movie-pipeline.md`, including voice-clone consent for real-person narration.
 
 ## Budget Lock
 
@@ -239,6 +239,7 @@ For cross-agent handoff, prepare request JSON with:
 
 ```bash
 bash workspace/scripts/higgsfield-status.sh
+APPROVED=1 bash workspace/scripts/higgsfield-image.sh
 APPROVED=1 bash workspace/scripts/seedance-cost.sh
 APPROVED=1 bash workspace/scripts/seedance-generate.sh
 ```
@@ -258,6 +259,8 @@ bash workspace/scripts/record-mcp-json.sh account <mcp-account-response.json>
 bash workspace/scripts/record-mcp-json.sh model <mcp-model-response.json>
 bash workspace/scripts/record-mcp-json.sh cost <mcp-cost-response.json>
 bash workspace/scripts/record-mcp-json.sh job <mcp-job-response.json>
+bash workspace/scripts/record-mcp-json.sh image <mcp-image-response.json>
+bash workspace/scripts/record-mcp-json.sh narration <mcp-narration-response.json>
 ```
 
 When passing multiple media references, first verify the Higgsfield MCP media schema with a low-cost test or current model documentation. If a multi-reference path fails, fall back to one strong visual reference plus explicit description in the prompt.
@@ -327,7 +330,7 @@ Read `references/tiktok-ad-ops-workflow.md` when making Seedance/Higgsfield crea
 
 Read `references/hermes-autonomous-loop.md` when Hermes or another agent should run iterative research, prompt generation, paid media generation, ad account operations, budget/bid changes, Spark usage, external posting, or destructive actions under explicit permission.
 
-Read `references/end-to-end-movie-pipeline.md` for the Blender previs → GPT Image storyboard → Palmier Pro audio → Seedance → Palmier Pro finishing pipeline, including light-path vs. heavy-path routing, consistency rules across shots, the dialogue/lip-sync check, and extra approval gates.
+Read `references/end-to-end-movie-pipeline.md` for the Blender previs → Higgsfield MCP image storyboard → Higgsfield MCP ElevenLabs narration → Seedance → Palmier Pro finishing pipeline, including light-path vs. heavy-path routing, consistency rules across shots, the dialogue/lip-sync check, and extra approval gates.
 
 ## Final Checklist
 
