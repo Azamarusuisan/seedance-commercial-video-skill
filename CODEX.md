@@ -16,6 +16,7 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 - 2026-07-01: **対応済み: 「生成物は都度assetsに保存してpushする」を標準運用ポリシーとして明文化した(`WORKFLOW.md`§9「保存・pushポリシー」)。** Blenderレンダー・`.blend`・参照画像・絵コンテ・ドラフトプロンプトは生成のたびにコミット・push対象。**唯一の例外は`workspace/assets/brand/`配下の実体ファイル**(マニフェスト/READMEはpush対象だがローカルのみの方針は変更なし)。
 - 2026-07-01: **実運用での重要な学び: リップスティックCMで実際にSeedance生成(270 credits)を実行したところ失敗した。** 原因は、Blenderの低ポリレンダーをそのまま`start_image`に渡し、プロンプトの「flesh out」という指示だけで写実化を期待したこと(`workspace/projects/lipstick-cm-30s/postmortem-20260701-blender-fleshout-mismatch.md`)。**これにより「Blenderレンダー→テキストプロンプトだけでSeedanceに肉付けさせる」は不十分であることが実証された。正しくは、Blenderレンダーを土台にGPT Image(`gpt-image-reference.sh`のedit mode)等で写実的な「キービジュアル」を別途生成し、それを承認してからSeedanceの`start_image`にする、という中間ステップが必須。** §7-3/§7-8の「肉付け」記述はこの実運用知見を反映して更新済み。
 - 2026-07-01: **対応済み: 失敗パターンを蓄積する`references/known-failure-patterns.md`を新設した(ユーザーの「フィードバックループ」要望への対応)。** Seedance/Blenderは再学習できない第三者モデルなので、ML的な再学習の代わりに「失敗の症状・原因・修正ルールをここに追記し、次の生成前に必ず読む」運用にした。現在FP-001(Blenderブロックアウトの直渡し)、FP-002(商品+人物の1枚合成)、FP-003(`ring`/`particle`等の図形語彙が2Dグラフィックとして描画される — 実際の失敗映像を目視して新規発見)の3件を記録。`WORKFLOW.md`§7-8に、Seedance生成前にこのファイルを確認する運用ルールを追加した。今後の失敗はここに追記し続けること。
+- 2026-07-01: **次のアクション(最優先、§6タスク11): ユーザーがCodexにリップスティックCMのリトライを指示済み。** 失敗の根本原因を修正した4つのキービジュアルプロンプトが`workspace/prompts/lipstick-cm/keyvisuals/`に用意済み。Codexはこれをまず実行し、ユーザー承認を得てから初めて新しいSeedance生成に進むこと。**生のBlenderレンダーをstart_imageに戻さない。**
 
 このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装記録。実際のコード状態と食い違いが出た場合は、このファイルの最新の確定方針(§2以降)を正としてコードを合わせること。全体フローの完成形は`WORKFLOW.md`を参照(このファイルは実装タスクと決定の経緯、`WORKFLOW.md`は完成後の姿)。
 
@@ -191,6 +192,15 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
     - ステップ8(Seedance生成)のプロンプト方針に「肉付け」の考え方(構図・配置はBlenderレンダーのまま保持し、写実的な質感・光はテキスト指示で引き出す)を追記する。
     - `workspace/briefs/ascension-line-workflow-runbook.md`の原則(主素材/補助参照の区別、禁止事項)を参照元として明記する。
     - `higgsfield-image.sh`は削除しない(任意で使う補助ツールとして残す)。
+    - **注記(2026-07-01時点で判明): この方針(Blenderレンダーを直接start_imageにしてテキストの「肉付け」指示に頼る)は、リップスティックCMで実際に試して失敗した。** タスク11(写実キービジュアル生成)を必ず経由すること。「肉付け」記述はSeedanceへの動き付け指示としては有効だが、写実化そのものはテキストだけでは達成できない。
+
+11. **最優先・未着手: リップスティックCMのリトライ。** ユーザーがこの作業をCodexに依頼済み。手順:
+    1. `references/known-failure-patterns.md`(FP-001〜003)を読む。同じ失敗を絶対に繰り返さないこと。
+    2. `workspace/prompts/lipstick-cm/keyvisuals/`配下の4つのプロンプト(`clip_01_start_key.txt`、`clip_01_end_key.txt`、`clip_02_lips_key.txt`、`clip_02_final_key.txt`)を、各ファイル冒頭に書かれている`GPT_IMAGE_SOURCE_IMAGE`/`GPT_IMAGE_OUT`を使って`workspace/scripts/gpt-image-reference.sh`(edit mode)で実行する。各ファイルの`Status: proposal`マーカーは、実行前にレビューした上で外す。
+    3. 生成した4枚を、元のBlenderパネル(`workspace/assets/3d/renders/lipstick_cm_panel_0{1,2,3,4}*.png`)と並べてユーザーに見せる。**この承認を得るまで、次のSeedance見積もり・生成は一切行わない。**
+    4. 承認後、承認済みキービジュアルを`start_image`/`end_image`として`seedance-cost.sh`→`seedance-generate.sh`に渡す。生のBlenderレンダーには絶対に戻さない。
+    5. コスト承認と生成承認は別物として扱う(`CLAUDE.md`のSafety/Cost Gate参照)。
+    6. 結果が今回も失敗なら、`references/known-failure-patterns.md`に新しいFPエントリを追記してから次を試す。成功なら、そのこと自体も同ファイルか案件のcondition mdに記録する(何が効いたかも財産になる)。
 
 ## 7. 未確定・ユーザー判断が必要な点
 
