@@ -4,54 +4,47 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
 このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装計画。**このファイル自体はまだ実装していない設計書。** Codexがこの内容に沿って実装する。
 
+**確定方針(ユーザー最終確認済み): 画像生成(絵コンテ)・音声生成(ElevenLabsナレーション)・動画生成(Seedance)は全てHiggsfield MCP経由。APIキー(OPENAI_API_KEYを含む)は一切使わない。** Palmier Proは生成ではなく仕上げ工程(字幕・色・アップスケール・書き出し)専用。
+
 ## 0. ゴール
 
-ユーザーがCLI(または最小限のチャットUI)に自然言語で指示するだけで、Blenderプリビズ → 絵コンテ → ナレーション/BGM/SFX → Seedance動画 → 字幕/仕上げ、まで一気通貫で回る。**ユーザーが外部ツール(Blender GUI、Higgsfield Web UI、ElevenLabs Web UI、Palmier Proの手動編集画面など)を直接操作する場面を最小化する。** 操作はすべてエージェント(Codex/Claude)がCLI/MCP経由で行い、ユーザーは自然言語での承認・判断のみ行う。
+ユーザーがCLI(または最小限のチャットUI)に自然言語で指示するだけで、Blenderプリビズ → 絵コンテ → ナレーション/BGM/SFX → Seedance動画 → 字幕/仕上げ、まで一気通貫で回る。**ユーザーが外部ツール(Blender GUI、Higgsfield Web UI、Palmier Proの手動編集画面など)を直接操作する場面を最小化する。** 操作はすべてエージェント(Codex/Claude)がCLI/MCP経由で行い、ユーザーは自然言語での承認・判断のみ行う。生成系のログイン/認証はHiggsfield一本化で、個別のAPIキー管理はしない。
 
 ## 1. 現状(このセッションまでに実装済みのもの)
 
-- `references/end-to-end-movie-pipeline.md`: 重量パス(11ステップ)の定義。**このファイルは今回の監査で古くなった箇所があるので、本設計書の内容で更新が必要(§3参照)。**
+- `references/end-to-end-movie-pipeline.md`: 重量パス(11ステップ)の定義。**§3の内容で更新が必要(画像生成をHiggsfield MCP経由に書き換え)。**
 - `workspace/blender/action_movie_previs.py`: Blenderプリビズの雛形。プロジェクトごとにこれを土台に新規bpyスクリプトを書き、`blender --background --python` で無人実行する運用は既に確立済み。**変更不要。**
-- `workspace/scripts/gpt-image-reference.sh`: GPT Image (`gpt-image-2`) で絵コンテ/参照画像を生成。**変更不要。**
+- `workspace/scripts/gpt-image-reference.sh`: `OPENAI_API_KEY`を使うGPT Image直接呼び出し。**重量パスでは使わない方針が確定(§2)。既存の軽量パス(単発CM)で使うかは§7の未決事項。削除はしない。**
 - `workspace/scripts/seedance-cost.sh` / `seedance-generate.sh`: Higgsfield MCP経由のSeedance動画生成リクエスト準備。**変更不要。**
-- `workspace/scripts/elevenlabs-narration.sh`: 前ターンで「HiggsfieldMCP経由のElevenLabs」として作成。**§2の理由により設計ミス。作り直しが必要。**
-- `workspace/scripts/record-mcp-json.sh`: `narration`種別を追加済み。**§2の理由により`narration`種別は不要になる可能性が高い(下記参照)。**
-- `workspace/ui/*`: 「工場/トレーディング端末」風の多パネルダッシュボード(Factory UI)。**§4でUI/UXの見直しを提案。**
+- `workspace/scripts/elevenlabs-narration.sh`: Higgsfield MCP経由でElevenLabsナレーションのMCPリクエストを準備するスクリプト。**この方針で確定。変更不要。**
+- `workspace/scripts/record-mcp-json.sh`: `account|model|cost|job|narration`の5種別に対応済み。**変更不要。**
+- `workspace/ui/*`: 「工場/トレーディング端末」風の多パネルダッシュボード(Factory UI)。**§5でUI/UXの見直しを提案。**
 
-## 2. 今回の監査で見つかった、最も重要な訂正
+## 2. 生成プラットフォームの最終確定
 
-Palmier Pro MCP(`mcp__palmier-pro__*`)を実際に呼んで確認した事実:
+セッション中に2つの案を検討し、ユーザーが明示的に選んだ結論を記録する。
 
-- `get_timeline` → `canGenerate: true`(このPalmier Proアカウントは既にサインイン/契約済み)
-- `list_models(type=audio)` → 以下がPalmier Pro自身の`generate_audio`ツールから直接使える:
-  - `elevenlabs-tts-v3`(ElevenLabs v3 TTS、21ボイス、`voicesSample: ["Rachel","Aria","Roger"]`、デフォルト`Rachel`)
-  - `gemini-3.1-flash-tts`(30ボイス)
-  - `elevenlabs-music` / `lyria3-pro` / `minimax-music-v2.6`(BGM)
-  - `mirelo-sfx-v1.5-video-to-audio`(動画からSFX生成)
+**検討した案:** Palmier Pro MCP(`mcp__palmier-pro__*`)を実際に呼んだところ、`get_timeline`で`canGenerate: true`(サインイン/契約済み)、`list_models(type=audio)`で`elevenlabs-tts-v3`(ElevenLabs v3 TTS、21ボイス)など複数の音声/BGM/SFXモデルが、Palmier Pro自身の`generate_audio`から直接使えることを確認した。これを使えばHiggsfieldへのログインなしでナレーションが作れる、という案だった。
 
-**結論: ナレーション(ElevenLabs)もBGMもSFXも、Higgsfield MCPを経由せず、Palmier Proの`generate_audio`ツールをエージェントが直接呼ぶだけで完結する。** Higgsfieldへの手動ログイン(Hermes Chrome)が必要になるのは、パイプライン全体で**Seedance動画生成の1箇所だけ**になる。
+**ユーザーの決定: この案は採用しない。** 画像生成・音声生成(ElevenLabs)・動画生成(Seedance)は全てHiggsfield MCP経由に統一し、APIキー管理(OPENAI_API_KEYも含む)を一切行わない、という方針が明示された。理由は認証/課金の窓口をHiggsfield一本に絞りたいため。Palmier Pro側の`generate_audio`等の生成系ツールは、この設計では**使わない**(仕上げ系ツール `sync_audio` / `add_captions` / `apply_color` / `upscale_media` / `export_project` のみ使う)。
 
-これにより:
-- `workspace/scripts/elevenlabs-narration.sh`(MCPリクエストJSONを準備してHiggsfield MCPで実行、という間接層)は不要。Palmier Proのツールは他のCLIツールのようにシェル経由でrequest jsonを作る必要がなく、エージェントが直接`mcp__palmier-pro__generate_audio`を呼べばよい。
-- `record-mcp-json.sh`の`narration`種別も、Higgsfield MCP経由でなくなるなら本来不要(Palmier Pro側の結果は`get_media`/`get_timeline`で直接確認できるため、別途サニタイズ記録の仕組みを重複させる必要がない)。
+この結果、認証が必要な窓口は実質**Higgsfieldログイン1つ**(+ Palmier Proの仕上げ用サインイン)に絞られる。§4で詳細。
 
-## 2b. 2回目の監査パスで見つかった穴(リファクタリング対象)
+## 2b. 監査で見つかった穴(リファクタリング対象)
 
-ユーザーから「リファクタリング含めて穴のないようにしたい」と指摘を受け、実際にコマンドとMCPを叩いて再監査した結果、3つ具体的な穴が見つかった。
+### (a) Higgsfield MCP経由の画像生成スクリプトが存在しない
 
-### (a) GPT Image: `generate`しか使っておらず、Blenderレンダーを画像として渡せていない
+`workspace/scripts/gpt-image-reference.sh`は`OPENAI_API_KEY`前提であり、§2の決定(APIキー不使用)と矛盾する。一方、Higgsfield MCP経由の画像生成リクエストを準備するスクリプトはまだ存在しない。
 
-`python3 image_gen.py --help` を確認したところ、`generate`(テキストのみ)とは別に **`edit --image IMAGE [--mask MASK] [--input-fidelity ...]`** という真のimg2img/編集モードが存在する。しかし現行の `workspace/scripts/gpt-image-reference.sh` は `generate` サブコマンドしか呼んでいない。
+**修正: `workspace/scripts/higgsfield-image.sh`を新規作成する。** `seedance-cost.sh`と同じパターン(`write_mcp_request_with_prompt`でMCPリクエストJSONを`workspace/mcp-requests/`に準備し、ホスト側のHiggsfield MCPツールで実行、`record-mcp-json.sh`に`image`種別を追加して結果を記録)を踏襲する。
 
-`end-to-end-movie-pipeline.md` のステップ3「Blenderプリビズの構図を言語化したプロンプトを渡す」は、テキストで構図を説明するだけで、実際のBlenderレンダー画像を入力していない。これでは絵コンテがショットごとに構図・色調がブレる可能性があり、「Blenderの`.blend`をプロジェクトの正にして一貫性を保つ」という設計の前提が絵コンテの段階で崩れる。
+**未検証・要確認: Higgsfield MCP側の実際の画像生成モデル名(ユーザーは"image2"と呼んでいる)、および入力画像(Blenderレンダー)を渡せるimg2img相当の機能があるか。** 今回のセッションではHiggsfield MCPツール自体が接続されていないため確認できなかった。Higgsfield MCPが接続された環境(別PC側)で、`higgsfield-status.sh`と同じ要領で対象モデルのmodel_get相当のリクエストを準備し、実行結果を見てから`higgsfield-image.sh`のモデル名・パラメータを確定すること。
 
-**修正: 新しいスクリプト `workspace/scripts/gpt-image-storyboard.sh`(または`gpt-image-reference.sh`に`--image`対応を追加)を作り、`image_gen.py edit --image <Blenderレンダーpng> --prompt <スタイル指定>` を呼ぶようにする。** Blenderレンダーを実際の入力画像として渡すことで、絵コンテがBlenderの構図を継承する。
+### (b) Palmier Proの仕上げ生成系(アップスケール等)に、Seedanceと同等の承認/予算ゲートがない
 
-### (b) Palmier Proの有料生成に、Seedanceと同等の承認/予算ゲートがない
+生成そのものはHiggsfield MCPに統一したが、Palmier Proの`upscale_media`は依然として課金対象の生成系ツールであり、`generate_audio`等は使わないとしても`upscale_media`は仕上げ工程で使う想定(§3ステップ10)。現行の設計は Higgsfield/Seedance側の`APPROVED=1`+コスト見積フローしか定義しておらず、**Palmier Pro側の`upscale_media`呼び出しには承認なしで課金が発生しうる抜け穴が残る。**
 
-`generate_audio` / `generate_video` / `generate_image` / `upscale_media` はいずれも課金対象のはずだが、現行の設計(および`SKILL.md`のBudget Lock節)は Higgsfield/Seedance側の`APPROVED=1`+コスト見積フローしか定義していない。§2の訂正でナレーション/BGM/SFX生成をPalmier Pro側に寄せた結果、**Palmier Pro側の生成呼び出しには承認なしで課金が発生しうる抜け穴ができた。**
-
-**修正: Palmier Proの`generate_*`/`upscale_media`を呼ぶ前に、(1)`list_models`で対象モデルの仕様を提示、(2)生成する内容(テキスト/秒数/ボイス)を一度ユーザーに自然言語で確認、を必須ステップとして`end-to-end-movie-pipeline.md`に明記する。** Higgsfieldのような機械的な`APPROVED=1`ゲートはPalmier Pro MCPには存在しないため、エージェント運用ルールとして「生成前に必ず一度確認を挟む」ことをドキュメント上のハードルールにする。
+**修正: `upscale_media`を呼ぶ前に、(1)`list_models`で対象モデルの仕様を提示、(2)実行する内容を一度ユーザーに自然言語で確認、を必須ステップとして`end-to-end-movie-pipeline.md`に明記する。**
 
 ### (c) 複数ショット/複数プロジェクトを想定したフォルダ規約がない
 
@@ -64,18 +57,17 @@ Palmier Pro MCP(`mcp__palmier-pro__*`)を実際に呼んで確認した事実:
 ```
 [自然言語ブリーフ]
    ↓
-[Blender previs] ローカル、完全自動、Higgsfield/API不要
+[Blender previs] ローカル、完全自動、外部API不要
    ↓
-[GPT Image 絵コンテ] gpt-image-2、OPENAI_API_KEYのみ必要
+[Higgsfield MCP: 画像生成(絵コンテ)] モデル名・img2img対応は要確認(§2b-a)
    ↓
 承認ゲート1: 絵コンテ承認
    ↓
-[Palmier Pro generate_audio] ナレーション(elevenlabs-tts-v3) / BGM / SFX
-   ※ Higgsfieldログイン不要。既にcanGenerate:trueなら即実行可能
+[Higgsfield MCP: ElevenLabsナレーション] workspace/scripts/elevenlabs-narration.sh(既存のまま)
    ↓
 [Blender 本アニメーション最終化] 音声尺に合わせてカメラ/フレーム範囲確定
    ↓
-[Higgsfield MCP: Seedance image-to-video] ← パイプライン中で唯一Higgsfieldログインが必要な箇所
+[Higgsfield MCP: Seedance image-to-video]
    ↓
 承認ゲート2: 素材承認(コスト承認・ログイン/クレジット確認を含む)
    ↓
@@ -84,23 +76,22 @@ Palmier Pro MCP(`mcp__palmier-pro__*`)を実際に呼んで確認した事実:
 承認ゲート3: 最終書き出し前承認
 ```
 
-セリフ確認ステップ(カメラ目線で喋るカットの有無)は既存の位置(絵コンテ承認の直後)のまま変更なし。
+セリフ確認ステップ(カメラ目線で喋るカットの有無)は既存の位置(絵コンテ承認の直後)のまま変更なし。認証が必要な生成系の窓口はHiggsfieldMCPひとつに統一されている。
 
 ## 4. 「外部ツールのUIを一切触らない」監査結果
 
 | 項目 | 状態 | 理由 |
 |---|---|---|
 | Blender操作 | ✅ ゼロタッチ | `--background`実行、GUI不要 |
-| GPT Image絵コンテ | ✅ ゼロタッチ | CLI+APIキー(env var)のみ |
-| ナレーション/BGM/SFX | ✅ ゼロタッチ(今回の訂正で実現) | Palmier Pro `generate_audio` を直接呼ぶ |
-| 字幕(caption) | ✅ ゼロタッチ | Palmier Pro `add_captions` を直接呼ぶ。中身の精度チェックは人間の「判断」であってUI操作ではない |
-| 色/アップスケール/書き出し | ✅ ゼロタッチ | Palmier Pro MCPを直接呼ぶ |
-| Seedance動画生成 | ⚠️ 手動ログインが前提 | Higgsfieldへの認証情報自動入力を方針として禁止しているため(`AGENTS.md`/`HERMES.md`)。動画ごとではなくセッション/Cookie失効ごとに発生。**意図的な穴であり、セキュリティ上ゼロにすべきではない。** |
-| Palmier Proのサインイン/契約状態 | ⚠️ 前提条件 | `canGenerate:false`の場合は全生成ツールが失敗する。現在のセッションでは`true`を確認済みだが、セッション切れ時は再度ユーザーがPalmier Proアプリでサインインする必要がある |
-| GPT Image APIキー発行 | ⚠️ 一回限りの環境セットアップ | OpenAIダッシュボードでの発行自体はUI操作だが、動画ごとの操作ではない |
+| 画像生成(絵コンテ) | ✅ ゼロタッチ(Higgsfield MCP経由) | APIキー不要。認証はHiggsfieldログインに統合 |
+| ナレーション(ElevenLabs) | ✅ ゼロタッチ(Higgsfield MCP経由) | 同上 |
+| Seedance動画生成 | ✅ ゼロタッチ(Higgsfield MCP経由) | 同上 |
+| 字幕(caption) / 色 / アップスケール / 書き出し | ✅ ゼロタッチ | Palmier Pro MCPを直接呼ぶ。中身の精度チェックは人間の「判断」であってUI操作ではない |
+| Higgsfieldログイン | ⚠️ 手動ログインが前提 | 認証情報を自動入力しない方針のため(`AGENTS.md`/`HERMES.md`)。画像・音声・動画すべてがこの1つのログインに依存する。動画ごとではなくセッション/Cookie失効ごとに発生。**意図的な穴であり、セキュリティ上ゼロにすべきではない。** |
+| Palmier Proのサインイン/契約状態 | ⚠️ 前提条件 | `canGenerate:false`の場合は仕上げ系ツールが失敗する。現在のセッションでは`true`を確認済みだが、セッション切れ時は再度ユーザーがPalmier Proアプリでサインインする必要がある |
 | 最終公開判断・権利確認・実在音声の同意確認 | 🔒 意図的に人間判断のまま | ハードルールで自動化禁止。UIを「操作」するのではなく「判断」するステップなので穴として扱わない |
 
-**結論: 動画1本を作るたびに発生しうるUI操作は「Higgsfieldログイン(セッション切れ時のみ)」だけまで削減できる。** それ以外は今回の設計変更(§2)で解消済み。
+**結論: 動画1本を作るたびに発生しうるUI操作は「Higgsfieldログイン(セッション切れ時のみ)」だけまで削減できる。認証窓口がHiggsfield1つに統一されたことで、以前の案(Palmier Pro併用)よりむしろ管理対象が減った。**
 
 ## 5. UI/UX の見直し(workspace/ui/*)
 
@@ -115,24 +106,27 @@ Codexへの提案(優先度順):
 
 ## 6. Codexへの実装タスク(優先順)
 
-1. `workspace/scripts/elevenlabs-narration.sh` を削除し、`references/end-to-end-movie-pipeline.md` のステップ6を「Palmier Pro `generate_audio`(`elevenlabs-tts-v3`など)をエージェントが直接呼ぶ」という記述に書き換える。BGM/SFXもこのステップで扱えることを追記する。
-2. `workspace/scripts/record-mcp-json.sh` の`narration`種別を削除する(Palmier Pro結果は`get_media`/`get_timeline`で確認できるため重複した記録経路は不要)。
-3. `references/end-to-end-movie-pipeline.md` の「前提」セクションから「ElevenLabsはHiggsfield MCP経由」の記述を削除し、「Higgsfieldが必要なのはSeedance生成のみ」と明記する。「Known limitations」の課金箇所の記述も合わせて更新する。
-4. `SKILL.md` / `AGENTS.md` の該当参照文言に大きな変更は不要だが、`end-to-end-movie-pipeline.md`のリンク先説明文がHiggsfield ElevenLabsに言及していないか確認し、あれば整合させる。
-5. §2b(a): `workspace/scripts/gpt-image-reference.sh`に`edit --image`対応を追加(または新規`gpt-image-storyboard.sh`を作成)し、Blenderレンダーを実際に入力画像として渡すよう`end-to-end-movie-pipeline.md`ステップ3を書き換える。
-6. §2b(b): Palmier Pro `generate_*`/`upscale_media`呼び出し前に「モデル仕様提示 → ユーザー確認」を必須にするルールを`end-to-end-movie-pipeline.md`に追記する。
-7. §2b(c): 重量パス用に`workspace/projects/<project_id>/shots/<shot_id>/`のフォルダ規約を`end-to-end-movie-pipeline.md`に追記する。軽量パスの既存命名は変更しない。
-8. §5のUI簡素化は、ユーザーに方針確認したうえで着手する(先に実装しない)。
+1. **`workspace/scripts/higgsfield-image.sh`を新規作成する**(§2b-a)。`seedance-cost.sh`と同じ`write_mcp_request_with_prompt`パターンでHiggsfield MCP画像生成リクエストを準備する。モデル名・img2img対応可否は接続後に確認してから確定する。
+2. `workspace/scripts/record-mcp-json.sh`に`image`種別を追加する(account/model/cost/job/narrationと同じパターン)。
+3. `references/end-to-end-movie-pipeline.md`のステップ3(絵コンテ生成)を「GPT Image」から「Higgsfield MCP画像生成(`higgsfield-image.sh`)」に書き換える。前提セクションの「絵コンテ生成はGPT Imageを使う」という記述も削除・更新する。
+4. §2b(b): `upscale_media`呼び出し前に「モデル仕様提示 → ユーザー確認」を必須にするルールを`end-to-end-movie-pipeline.md`に追記する。
+5. §2b(c): 重量パス用に`workspace/projects/<project_id>/shots/<shot_id>/`のフォルダ規約を`end-to-end-movie-pipeline.md`に追記する。軽量パスの既存命名は変更しない。
+6. §5のUI簡素化は、ユーザーに方針確認したうえで着手する(先に実装しない)。
+7. §7の「軽量パスもHiggsfield画像生成に切り替えるか」は、ユーザーに確認してから着手する(このドキュメントの決定は重量パスのみに適用する)。
 
 ## 7. 未確定・ユーザー判断が必要な点
 
-- Palmier Proの`elevenlabs-tts-v3`は、Higgsfield経由で想定していたElevenLabsと品質・ボイスラインナップが同一か未検証。実際にナレーションを1本生成して聴き比べる必要があるかもしれない。
+- **Higgsfield MCPの画像生成モデル名・img2img(参照画像入力)対応可否は未検証。** Higgsfield MCPが接続された環境で最初に確認すること。
+- 既存の軽量パス(単発CM、`gpt-image-reference.sh`使用)も同じくHiggsfield MCP画像生成に切り替えるかは未決定。今回の「APIキー不使用」方針は重量パスの議論の中で決まったもので、軽量パスに自動適用はしていない。
 - Factory UI(`workspace/ui/*`)の「工場/トレーディング端末」世界観を残すか、承認専用の地味なUIに寄せるかは製品方針次第。
-- `image_gen.py edit`の`--input-fidelity`がBlenderの手続き型プリミティブレンダー(写実的でない、単純な形状)に対してどこまで構図を保持できるかは未検証。実際に1枚試して品質を見る必要がある。
 
 ## 8. X投稿を参考にした動画作成について
 
-ユーザーから特定のX投稿(`https://x.com/ehuanglu/status/2072073069875855422`)のような動画を作りたいという要望があった。`references/higgsfield-mcp-demo-patterns.md`に既に「X投稿はスタイル/構造の参照として扱い、素材自体は権利確認なしに最終物へ使わない」という手順が確立済みなので、新しいルールは不要。ただし以下は未完了:
+ユーザーから特定のX投稿(`https://x.com/ehuanglu/status/2072073069875855422`)のような動画を作りたいという要望があった。`references/higgsfield-mcp-demo-patterns.md`に「X Reference Summary: Liquid-Metal Desk VFX」として分析済み(スタイル参照のみ、素材自体は再利用しない)。
 
-- WebFetchは402 Payment Requiredで失敗(X側が未認証アクセスをブロック)。Safari操作用のツールはなく、Chrome自動化ツールを使うとこのリポジトリの`Browser Contract`(`workspace/agent-guides/cross-agent-runbook.md`)が禁止する「サインイン済み個人ブラウザ」に触れることになるため使用を見送った。
-- ユーザーから投稿内容(スクリーンショット、動画ファイル、または尺・演出の説明)を直接受け取り次第、`higgsfield-mcp-demo-patterns.md`の書式(post text / output style / creative pattern / reusable lesson)で追記する。
+この案件用に以下を既に用意済み:
+
+- `workspace/assets/reference-liquid-metal-desk-v1.jpg`(ユーザー自身のデスク実写、権利クリア)
+- `workspace/prompts/liquid-metal-desk-v1.txt`(Seedance image-to-videoプロンプト、`Status: proposal`のまま未承認)
+
+この案件はSeedance image-to-videoの既存ルート(軽量パス寄り)を使う想定で、画像生成(絵コンテ)ステップは使っていない。§2の画像生成プラットフォーム決定とは独立している。承認・予算確定後に`higgsfield-status.sh` → `seedance-cost.sh`と進める。
