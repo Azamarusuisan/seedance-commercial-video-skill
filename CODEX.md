@@ -2,6 +2,40 @@
 
 Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
+## Codex側で /goal を実行する場合の投入文(2026-07-01、Claude Codeが用意)
+
+ユーザーがCodex側のセッションで`/goal`を回す際は、以下をそのまま貼り付けること。
+
+```
+/goal
+
+CODEX.md タスク11を実行してください(lipstick-cm-30s のリトライ)。
+
+git pull してから CODEX.md を読んでください。Claude Code が今回のセッションで
+FP-007(visual-handoff.json が空のプロンプト雛形を指していたバグ)と FP-008
+(270credits失敗した回のプロンプト・条件ファイルが final/ という名前で撤回明記なし
+に残っていたバグ)を見つけて修正済みです。permission manifest
+(workspace/run/lipstick-cm-30s.permission.json)も作成済みです。
+
+手順(CODEX.md タスク11に詳細あり):
+1. references/known-failure-patterns.md(FP-001〜008)と
+   references/cm-creative-craft-knowledge.md を読む
+2. workspace/prompts/lipstick-cm/keyvisuals/final/*.prompt.txt の4プロンプトを
+   Higgsfield MCP経由で実行し、workspace/assets/references/lipstick-cm/keyvisuals/
+   に保存
+3. 生成した4枚をBlenderパネルと並べて私に見せて、承認を待つ(この承認を得るまで
+   次のSeedance見積もり・生成は一切行わない)
+4. 承認後、asset-manifest.json / storyboard-review.json / visual-handoff.json の
+   approval_status を approved に、seedance_input_allowed を true に更新。
+   併せて workspace/run/lipstick-cm-30s.permission.json の
+   prepare_seedance_cost_request / prepare_seedance_generation_request も true に
+   更新すること(両方揃わないとseedance-cost.shがブロックされる)
+5. 承認済みキービジュアルで Seedance コスト見積もり→生成
+6. 結果を known-failure-patterns.md に記録(成功でも失敗でも)
+
+limitが近づいたら都度pushして、CODEX.mdに進捗を追記しながら進めてください。
+```
+
 ## Current Canonical Override (2026-07-01)
 
 このリポジトリの現在の正は、`CLAUDE.md`の **Blender-To-Storyboard Safety Rewrite** と、`references/known-failure-patterns.md` FP-001/FP-005、`workspace/scripts/validate-seedance-input.py` の機械的ゲートである。
