@@ -3,12 +3,12 @@ Create a 15-second 16:9 premium product CM for a new colorful PC line.
 Use the provided laptop images as product and color references. Preserve the bright white desk, colorful laptop lineup, slim profile, clean screens, and premium showroom feel.
 
 Timing:
-0-2s: Fast macro push across a closed colorful laptop; blue-white electric energy runs along the edge.
-2-6s: Wide camera glide past pink, blue, yellow, and silver laptops opening in sequence; screens glow softly.
-6-11s: Hero orbit around the lineup; electric arcs travel between devices, suggesting speed and power without unsafe sparks.
+0-2s: Fast macro push across a closed colorful laptop; a cool blue-white rim light glints and travels along the edge as the camera moves, like light catching brushed metal.
+2-6s: Wide camera glide past pink, blue, yellow, and silver laptops opening in sequence; screens glow softly, soft reflections sweeping across each lid.
+6-11s: Hero orbit around the lineup; quick bright light glints and photographic lens flares pass rapidly between the devices as the camera moves, suggesting speed and power through motion and light, not literal sparks or bolts.
 11-15s: Final clean product lineup in a bright studio, with safe right-side negative space for Japanese subtitles and final title in post.
 
-Motion style: cinematic product photography, smooth dolly, controlled orbit, premium reflections, crisp highlights, soft bloom, subtle electric VFX.
+Motion style: cinematic product photography, smooth dolly, controlled orbit, premium reflections, crisp highlights, soft bloom, warm and cool rim light, photographic lens flare. Describe all light and energy purely in photographic terms (bokeh, glints, rim light, lens flare, reflections) — no drawn lines, bolts, rings, particles, or graphic overlays anywhere in the frame (references/known-failure-patterns.md FP-003).
 
 Audio: polished electronic product-launch music, clean electric whooshes, soft power-up tones, no spoken dialogue.
 

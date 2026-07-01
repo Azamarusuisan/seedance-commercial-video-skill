@@ -1,3 +1,7 @@
+SUPERSEDED (2026-07-01, Claude Code): this project switched to 16:9 with audio (commit 96e553d). Use workspace/prompts/macneo-pc-cm/seedance-15s-16x9.txt instead. This file is also not FP-003-checked (see the graphic-noun vocabulary below) and should not be used as-is.
+
+---
+
 Create a 15-second 9:16 premium product CM for a new colorful PC line.
 
 Use the provided laptop images as product and color references. Preserve the bright white desk, colorful laptop lineup, slim profile, clean screens, and premium showroom feel.
