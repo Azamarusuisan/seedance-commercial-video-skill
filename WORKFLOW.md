@@ -221,6 +221,12 @@ workspace/projects/<project_id>/
 
 `<project_id>`は英数字・ハイフン・アンダースコアのみ。`<shot_id>`は`shot_01`のように固定幅。
 
+### 保存・pushポリシー(標準運用)
+
+**プロジェクトの過程で生成された素材(Blenderレンダー、`.blend`、参照画像、絵コンテ、ドラフトプロンプト等)は、都度その都度、該当するフォルダ(上記の軽量パス/重量パスの規約、または`workspace/assets/cast/`)に保存し、コミット・pushする。** ローカルに置きっぱなしにして失われる状態を作らない。実例: `workspace/assets/3d/renders/`と`workspace/blender/*.py`、`workspace/prompts/<project>/`は生成のたびに追加・push対象。
+
+**例外: `workspace/assets/brand/`配下の画像/動画ファイル(自社ブランド素材)だけは、ユーザーの明示的なセキュリティ判断によりローカルのみで、pushしない。** マニフェスト(`.json`)とREADMEはpush対象だが、実体ファイルは`.gitignore`で除外したまま変更しない。
+
 ## 10. ロギング・記録の仕組み
 
 すべてのMCP実行結果は`workspace/scripts/record-mcp-json.sh <kind> <response.json>`でサニタイズ(APIキー/トークン/Cookie等を`[REDACTED]`化)した上で記録する。
