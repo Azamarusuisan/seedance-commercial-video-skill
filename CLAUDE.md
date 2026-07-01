@@ -2,6 +2,319 @@
 
 Follow `AGENTS.md`, `WORKFLOW.md`, and `workspace/agent-guides/cross-agent-runbook.md`.
 
+## Active Assignment: Blender-To-Storyboard Safety Rewrite
+
+You are the workflow designer and implementer for this AI video production repo.
+
+Do not run paid generation or external publishing. Do not execute Higgsfield MCP, Seedance, ElevenLabs, upscale, ad publishing, external posting, or any paid job. Do not use the local `higgsfield` CLI or unrelated PyPI packages for generation. Higgsfield generation must be represented as host-provided MCP request preparation only.
+
+The goal is to change the production system so Blender previs can never be passed directly to Seedance as a primary image. Blender is composition truth only. GPT Image / image generation creates the photoreal storyboard or key visual. Only an approved photoreal storyboard/key visual can become Seedance primary image.
+
+### Non-Negotiable Policy
+
+- Blender role: `composition_only`.
+- Blender preserves: camera angle, lens/framing, object placement, scale relationships, shot continuity, rough motion intent.
+- Blender must not preserve: viewport lighting, low-poly look, temporary material, gray/flat background, plastic shader, blockout geometry, cheap CG render look.
+- GPT Image / image generation role: `visual_truth`.
+- Seedance role: `motion_truth`.
+- Exact text, narration, subtitles, claims, CTA, and titles should be post-production by default.
+- If a spec is unclear, block on the safe side.
+
+Seedance primary image / `IMAGE_FILE` / `start_image` / `end_image` may only be one of:
+
+- `approved_storyboard_frame`
+- `photoreal_key_visual`
+- `rights_confirmed_user_asset`
+- `approved_product_reference`
+
+Never allow these as Seedance primary input:
+
+- `blender_previs`
+- `viewport_screenshot`
+- `blender_render` with `role=composition_only`
+- any asset with `seedance_input_allowed=false`
+- any asset with `approval_status != approved`
+- any asset with unknown or insufficient rights for the intended use
+
+### Files To Inspect First
+
+Read these before editing. If a path moved, find it with `rg --files`.
+
+- `OPENCREW.md`
+- `references/seedance-cm-workflow.md`
+- `references/image-to-video-handoff.md`
+- `references/end-to-end-movie-pipeline.md`
+- `references/blender-3d-preview-workflow.md`
+- `references/known-failure-patterns.md`
+- `references/public-demand-short-video-patterns.md`
+- `references/hermes-autonomous-loop.md`
+- `references/tiktok-ad-ops-workflow.md`
+- `references/tiktok-story-cast-workflow.md`
+- `references/higgsfield-mcp-demo-patterns.md`
+- `workspace/ui/factory-futuristic.js`
+- `workspace/ui/live-workflow.html`
+- `workspace/ui/server.py`
+- `workspace/ui/state/generation-state.json` if present
+- `workspace/ui/state/asset-library.json` if present
+- `workspace/scripts/`
+
+### Required Canonical Flow
+
+```text
+Blender previs
+  -> composition extraction / visual handoff manifest
+  -> GPT Image reference prompt
+  -> photoreal storyboard frame / photoreal key visual
+  -> human approval gate
+  -> Seedance cost request
+  -> Seedance generation request
+  -> review / contact sheet / learning log
+  -> next prompt improvement
+```
+
+### P0 Implementation
+
+Do the smallest vertical slice that guarantees Blender images cannot go straight into Seedance.
+
+1. Fix docs:
+   - `references/image-to-video-handoff.md`: prohibit Blender render direct-to-Seedance. Blender is `composition_only`. GPT Image / photoreal key visual step is mandatory. Replace casual `APPROVED=1` samples with `APPROVED={{SET_TO_1_ONLY_AFTER_GATE_CHECK}}`. Document allowed `IMAGE_FILE` asset kinds and block `blender_previs`.
+   - `references/seedance-cm-workflow.md`: align Image-To-Video Handoff. If Blender is used, GPT Image storyboard/key-visual generation is mandatory even on the light path. Blender is composition source, not reference image.
+   - `references/end-to-end-movie-pipeline.md`: make `.blend = composition truth` and `storyboard.png = visual truth`. Add per-shot artifacts: `visual-handoff.json`, `storyboard-prompt.txt`, `storyboard.png`, `storyboard-review.json`.
+   - `references/blender-3d-preview-workflow.md`: Blender render is composition plate/layout proof, not Seedance primary input. Add `role=composition_only` and `seedance_input_allowed=false`.
+   - `references/known-failure-patterns.md`: strengthen FP-001 as an execution block. Add/adjust FP for UI/docs implying Blender is primary material: symptom is `IMAGE_FILE=previs.png`; root cause is missing asset kind / approval kind / source role; fix is asset manifest + preflight block.
+
+2. Add schemas:
+   - `workspace/schemas/visual-handoff.schema.json`
+   - `workspace/schemas/asset-manifest.schema.json`
+   - `workspace/schemas/job-ledger.schema.json`
+
+3. Add GPT Image bridge template:
+   - `workspace/prompts/templates/gpt-image-from-blender-previs.txt`
+   - It must say: use Blender only for composition/camera; preserve placement/framing/scale/motion intent; do not preserve low-poly, viewport lighting, temporary material, gray background, plastic shader, CG preview look; output can be Seedance primary reference only after human approval.
+
+4. Add scripts:
+   - `workspace/scripts/build-visual-handoff.py`
+     - creates `workspace/projects/<project_id>/shots/<shot_id>/visual-handoff.json`
+     - creates `workspace/projects/<project_id>/shots/<shot_id>/gpt-image-storyboard-prompt.txt`
+     - records Blender as `composition_only`
+     - always sets `seedance_input_allowed=false`
+     - does not run paid generation
+   - `workspace/scripts/prepare-storyboard-image-request.sh`
+     - reads `visual-handoff.json`
+     - prepares prompt/request only
+     - no paid generation
+     - if no run-permission manifest, stop as `prepared_only`
+   - `workspace/scripts/validate-seedance-input.py`
+     - blocks Blender previs, viewport screenshot, composition-only Blender render, `seedance_input_allowed=false`, non-approved assets, unknown rights, missing known-failure preflight
+     - allows only approved `photoreal_key_visual`, `approved_storyboard_frame`, `rights_confirmed_user_asset`, or `approved_product_reference`
+     - failure messages should be clear Japanese
+
+5. Patch existing scripts if present:
+   - `workspace/scripts/seedance-cost.sh`
+   - `workspace/scripts/seedance-generate.sh`
+
+They must call `validate-seedance-input.py` before creating request JSON. `APPROVED=1` alone must not pass. `DRY_RUN=1` should validate and print planned output without preparing paid execution. If Blender is in `IMAGE_FILE`, block immediately.
+
+### P1 Implementation
+
+Add the learning layer. It is not model fine-tuning. It is prompt/workflow/gate/schema/review memory.
+
+Create:
+
+```text
+workspace/learning/
+  README.md
+  pattern-memory.jsonl
+  prompt-rules.md
+  failure-candidates.md
+  review-rubric.md
+  demand-signals.jsonl
+  iteration-log.csv
+```
+
+Required learning files/scripts:
+
+- `workspace/learning/review-rubric.md`
+  - first 2 seconds silent hook
+  - product/category visible by target second
+  - composition preserved from Blender
+  - Blender cheap-CG look not preserved
+  - photoreal material quality
+  - lighting realism
+  - face/product distortion
+  - text/subtitle should be post-production
+  - CTA clarity
+  - LP/promise consistency if ad
+  - rights/compliance risk
+  - final product/character memory
+  - whether this creates a new failure pattern
+- `workspace/learning/prompt-rules.md`
+  - standard wording for Blender previs as composition guide
+  - always include do-not-preserve low-poly / viewport lighting / plastic shader
+  - avoid graphic words `rings`, `particles`, `lines`, `dots`; prefer `bokeh`, `soft glints`, `volumetric haze`, `rim light`, `lens flare`
+  - do not collage product/person references
+  - exact Japanese subtitles / CTA / claims belong in post
+  - public references teach structure only, never copy assets
+  - prefer `4 hooks x 1 mode` over `1 hook x 4 modes`
+  - create storyboard panels or a 15s beat sheet before generation
+- `workspace/scripts/pre-generation-learning-check.py`
+  - reads known failures, prompt rules, pattern memory, demand patterns, project brief, visual handoff, and Seedance prompt
+  - writes `workspace/projects/<project_id>/shots/<shot_id>/learning-preflight.md`
+  - report includes applicable failures, blocked risks, required prompt changes, demand pattern to reuse, preserve/avoid list, approval checklist, and `can_prepare_seedance_request: true/false`
+- `workspace/scripts/post-generation-learning-update.py`
+  - reads review JSON/contact sheet notes/job metadata
+  - appends or proposes updates to pattern memory, iteration log, failure candidates
+  - only modifies `known-failure-patterns.md` with explicit `--apply`
+
+Loop limits:
+
+- every autonomous loop must have `max_iterations`
+- paid generation only within run-permission caps
+- stop after 3 failures on same concept
+- stop after 2 identical review rejections
+- stop if `workspace/run/HERMES_STOP` exists
+
+### UI Update
+
+Update `workspace/ui/factory-futuristic.js` and state display so the UI cannot imply Blender is primary Seedance material.
+
+Required wording:
+
+- `Blender previs: 構図ソース / Seedance入力不可`
+- `GPT Image storyboard: 画作りの正 / Seedance入力候補`
+- `Approval gate: storyboard approved required`
+- `Seedance primary image: approved photoreal key visual only`
+- If primary image is Blender: show `BLOCKED`
+
+Replace misleading wording:
+
+- NG: `主素材: Blender Previs`
+- OK: `構図参照: Blender Previs / Seedance入力不可`
+- OK: `主素材: Approved Photoreal Storyboard`
+- OK: `GPT Imageで肉付け済み`
+- OK: `Blender直渡しブロック中`
+
+In `renderBlenderReview()`, make Blender source cards support/composition only. Support note must say: Blender is composition support; the primary axis is the approved photoreal storyboard.
+
+Add state fields if useful:
+
+- `state.visual_handoff.status`
+- `state.visual_handoff.blender_role`
+- `state.visual_handoff.storyboard_status`
+- `state.visual_handoff.seedance_primary_image_allowed`
+- `state.visual_handoff.block_reason`
+- `state.learning.last_preflight_check`
+- `state.learning.last_failure_pattern_check`
+- `state.learning.next_prompt_rule`
+
+### Permission Manifest
+
+Add or update:
+
+- `workspace/prompts/hermes-run-permission.md`, or
+- `workspace/run/<run_id>/permission.json` schema/example
+
+Minimum policy:
+
+- casual "run it" is not unlimited permission
+- allowed actions must be explicit
+- budget caps, max jobs, max retries, output paths, and stop conditions must be explicit
+- default paid execution is false
+- `allow_blender_as_seedance_input=false`
+- `require_approved_storyboard_frame=true`
+
+Allowed action keys:
+
+- `analyze_references`
+- `create_blender_previs`
+- `prepare_gpt_image_storyboard_prompt`
+- `prepare_image_generation_request`
+- `execute_image_generation`
+- `prepare_seedance_cost_request`
+- `prepare_seedance_generation_request`
+- `execute_paid_generation`
+- `publish_ad`
+
+Stop conditions include:
+
+- `missing_approved_storyboard`
+- `blender_previs_used_as_seedance_input`
+- `unknown_rights`
+- `budget_cap_reached`
+- `HERMES_STOP_exists`
+
+### Tests / Checks
+
+Add minimal fixtures and runnable checks. No test framework is required if simple scripts/asserts are enough.
+
+Required checks:
+
+```bash
+python workspace/scripts/validate-seedance-input.py --image workspace/projects/demo/shots/shot_01/previs.png --asset-manifest tests/fixtures/blender-previs-asset.json
+# expected: fail / Blender previs cannot be Seedance primary input
+
+python workspace/scripts/validate-seedance-input.py --image workspace/projects/demo/shots/shot_01/storyboard.png --asset-manifest tests/fixtures/approved-storyboard-asset.json
+# expected: pass
+
+python workspace/scripts/pre-generation-learning-check.py --project-id demo --shot-id shot_01 --dry-run
+# expected: learning-preflight.md is created
+
+python workspace/scripts/post-generation-learning-update.py --review tests/fixtures/review-blender-leak.json --dry-run
+# expected: failure candidate proposal is produced
+```
+
+### Acceptance Criteria
+
+- Docs explicitly ban Blender render direct-to-Seedance.
+- Blender use requires GPT Image storyboard/key visual before Seedance.
+- `.blend = composition truth`; `storyboard.png = visual truth`.
+- `validate-seedance-input.py` blocks `asset_kind=blender_previs`.
+- `validate-seedance-input.py` blocks `seedance_input_allowed=false`.
+- `validate-seedance-input.py` blocks `approval_status != approved`.
+- Seedance request scripts cannot create request JSON without validation.
+- `DRY_RUN=1` is safe.
+- No paid generation is executed.
+- Learning preflight reads known failures / prompt rules / demand patterns.
+- Post-generation learning update writes candidates before touching known failures.
+- UI displays Blender as composition-only and blocked as Seedance primary input.
+
+### Final Report Required
+
+Report in Japanese:
+
+1. Changed files
+2. Added files
+3. Where Blender direct-to-Seedance is blocked
+4. Where GPT Image storyboard/key visual is mandatory
+5. What the learning loop reads and writes
+6. Still unimplemented / unverified parts
+7. Confirmation that no paid generation, publishing, or external account action was executed
+8. Next items needing human approval
+
+### Priority
+
+P0:
+
+- Blender direct-to-Seedance ban
+- GPT Image storyboard/key visual required
+- `validate-seedance-input.py`
+- docs contradiction fixes
+- safe `APPROVED=1` examples
+
+P1:
+
+- learning folder
+- pre/post learning scripts
+- job-ledger / asset-manifest schemas
+- UI display fixes
+
+P2:
+
+- test fixtures
+- deeper review rubric
+- TikTok/ad preflight integration
+- pattern-memory visualization
+
 ## Current Critical Context
 
 The active project is:
