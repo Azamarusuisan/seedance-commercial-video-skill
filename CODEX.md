@@ -11,6 +11,8 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 - 2026-07-01: `WORKFLOW.md`(全体フローの1〜100言語化)を新規作成し、ユーザーとすり合わせ済み。承認ゲート粒度・フォルダ規約・Palmier Pro仕上げ順は確定。軽量パスへBlender previsを任意オプションとして追加する方針も反映済み。
 - 2026-07-01: **BGM/SFX生成が抜けていたことが判明し、Palmier Pro経由で追加する方針が確定(§2b-d、§6タスク9、未着手)。** Higgsfield一本化の唯一の例外。`WORKFLOW.md`§7-9bに詳細。
 - 2026-07-01: **Higgsfield画像生成(image2)を必須から任意に格下げする方針が確定(§2c、§6タスク10、未着手)。** Blenderレンダーが絵コンテ・主参照を兼ねる。同リポジトリの`ascension-line-workflow-runbook.md`で既に検証済みの「Blender主素材・生成絵コンテは補助参照」原則を踏襲。上記7行目「画像生成…をHiggsfield MCP経由にする」は必須ステップとしては**古い**。画像生成は任意になった。
+- 2026-07-01: **未確定・検討中: BGM/SFXをPalmier ProからHiggsfield(Seed Audio 1.0)経由に戻すか。** Higgsfield MCPの音声生成はSeed Audio 1.0とElevenLabs v3の両方を裏に持ち、Seed Audio 1.0は会話・SFX・BGMを1回でまとめて生成できることが判明(Web検索で確認、Higgsfield MCP自体では未検証)。実現すれば§2b-dのPalmier Pro例外を撤回し「生成は完全にHiggsfieldのみ」に戻せる。**ユーザーの最終GOはまだ得ていない。方針変更前に確認すること。**
+- 2026-07-01: **対応済み: 自社ブランド素材ライブラリを新設した。** `workspace/assets/brand/`(logos/products/campaigns/guidelines + `brand-manifest.json`)。`workspace/assets/cast/`と同じマニフェスト方式。ローカルのみ、外部クラウドDB(Supabase等)には接続しない方針(ユーザーのセキュリティ判断)。画像/動画ファイルは`.gitignore`でデフォルト除外。`rights_status: "company_owned"`を新設し、Rights Gateで最優先の参照元として扱う(`WORKFLOW.md`§4/§11に反映済み)。
 
 このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装記録。実際のコード状態と食い違いが出た場合は、このファイルの最新の確定方針(§2以降)を正としてコードを合わせること。全体フローの完成形は`WORKFLOW.md`を参照(このファイルは実装タスクと決定の経緯、`WORKFLOW.md`は完成後の姿)。
 

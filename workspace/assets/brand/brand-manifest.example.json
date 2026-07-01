@@ -1,0 +1,39 @@
+{
+  "name": "company_brand_library",
+  "updated_at": "YYYY-MM-DD",
+  "notes": "自社所有の素材レジストリ。ローカルのみ、外部クラウドDBには接続しない。",
+  "assets": [
+    {
+      "id": "logo_primary",
+      "type": "logo",
+      "asset_path": "workspace/assets/brand/logos/logo_primary.png",
+      "rights_status": "company_owned",
+      "use_scope": "all commercial/public output",
+      "notes": "メインロゴ。透過PNG推奨。"
+    },
+    {
+      "id": "product_photo_01",
+      "type": "product_photo",
+      "asset_path": "workspace/assets/brand/products/product_photo_01.jpg",
+      "rights_status": "company_owned",
+      "use_scope": "all commercial/public output",
+      "notes": "商品の実写。Seedance参照画像として優先使用する。"
+    },
+    {
+      "id": "campaign_2025_summer",
+      "type": "campaign_asset",
+      "asset_path": "workspace/assets/brand/campaigns/campaign_2025_summer.mp4",
+      "rights_status": "company_owned",
+      "use_scope": "style/tone reference only",
+      "notes": "過去キャンペーンの承認済み映像。トーン・色調の参照用。"
+    },
+    {
+      "id": "brand_guideline_v1",
+      "type": "guideline",
+      "asset_path": "workspace/assets/brand/guidelines/brand_guideline_v1.md",
+      "rights_status": "company_owned",
+      "use_scope": "internal reference",
+      "notes": "ブランドカラー、フォント、トーン&マナーの指針。"
+    }
+  ]
+}

@@ -66,7 +66,7 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 - アスペクト比、尺、本数
 - 音声ポリシー(ナレーションあり/なし、BGM)、テキストポリシー
 - 予算上限、最大ジョブ数、最大リトライ回数
-- 参照素材(画像/動画/ロゴ/ブランド資料)の有無と権利状況
+- 参照素材(画像/動画/ロゴ/ブランド資料)の有無と権利状況。まず`workspace/assets/brand/brand-manifest.json`(自社素材ライブラリ)を確認し、あれば最優先で使う
 - 複数ショット/物語進行があるか(§5のルーティング判定に使う)
 
 ## 5. ルーティング判定: 軽量パス vs 重量パス
@@ -238,7 +238,8 @@ MCPリクエスト自体(実行前のペイロード)は`workspace/mcp-requests/
 
 ## 11. 権利ゲート
 
-- ユーザー提供素材を優先。権利不明の場合は内部ドラフト扱いにし、最終公開物と区別する。
+- **自社所有素材(`workspace/assets/brand/`、`rights_status: company_owned`)を最優先で使う。** 第三者権利の懸念が一切ない。ローカルのみで管理し、外部クラウドDBには接続しない(セキュリティ方針)。
+- 自社素材がない場合はユーザー提供素材を優先。権利不明の場合は内部ドラフト扱いにし、最終公開物と区別する。
 - 実在の人物・ブランド・キャラクターの模倣は権利確認なしに行わない。
 - Blenderの手続き生成物(プリミティブ+マテリアル)は権利リスクが低い。外部GLB/OBJ/HDRIを使う場合のみ通常のRights Gateを適用する。
 - ElevenLabsで実在人物の声を複製する場合は本人同意が必須。同意が取れない/不明な場合は既定ライブラリボイスを使う。
@@ -275,6 +276,7 @@ MCPリクエスト自体(実行前のペイロード)は`workspace/mcp-requests/
 | 軽量パスの詳細仕様 | `references/seedance-cm-workflow.md`, `references/image-to-video-handoff.md` |
 | Blenderプレビュー規約 | `references/blender-3d-preview-workflow.md` |
 | 「Blender主素材・生成絵コンテは補助参照」原則の初出 | `workspace/briefs/ascension-line-workflow-runbook.md` |
+| 自社素材ライブラリ(ローカルのみ、Supabase等クラウドDB非接続) | `workspace/assets/brand/README.md` |
 | 実装タスクと決定の経緯 | `CODEX.md` |
 | 共通の運用ルール・ハードルール | `AGENTS.md`, `workspace/agent-guides/cross-agent-runbook.md` |
 | スキル定義本体 | `SKILL.md` |

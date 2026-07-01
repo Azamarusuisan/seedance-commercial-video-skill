@@ -13,3 +13,5 @@ No external or third-party commercial assets are used in this draft.
 For client-specific commercial generation, place only user-provided or commercially licensed materials here, then record rights notes in `workspace/briefs/cm-brief.md` and `workspace/delivery/final-report.md`.
 
 For TikTok/story or theater-cast projects, use `workspace/assets/cast/` plus a project-specific cast manifest. Keep raw person/source images local or private unless the repo intentionally includes licensed sample assets.
+
+For the company's own reusable brand materials (logos, product photography, past campaign assets, brand guidelines), use `workspace/assets/brand/` plus `brand-manifest.json`. This is local-only by design — no external cloud database (e.g. Supabase) is connected, per the user's security preference. Prefer these company-owned assets over generated references whenever they exist, since they carry no third-party rights risk.
