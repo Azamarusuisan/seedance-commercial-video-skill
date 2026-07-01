@@ -1,0 +1,38 @@
+{
+  "schema_version": "macneo_keyvisual_generation.v1",
+  "project_id": "macneo-pc-cm-15s",
+  "generated_at": "2026-07-01T14:38:20.922Z",
+  "provider": "higgsfield",
+  "model": "gpt_image_2",
+  "aspect_ratio": "16:9",
+  "quality": "high",
+  "resolution": "2k",
+  "total_cost_credits": 14,
+  "keyvisuals": [
+    {
+      "id": "keyvisual_01",
+      "title": "Opening lineup / low dolly",
+      "job_id": "38ed8659-a5dc-4b5b-ba4d-a8dcdb07ae0d",
+      "local_path": "workspace/assets/generated/macneo-pc-cm-15s/higgsfield-keyvisual-01-opening-lineup.png",
+      "prompt_path": "workspace/prompts/macneo-pc-cm/keyvisual-01-opening-lineup.txt",
+      "cost_credits": 7,
+      "width": 2688,
+      "height": 1520,
+      "approval_status": "pending_human_review",
+      "seedance_input_allowed": false
+    },
+    {
+      "id": "keyvisual_02",
+      "title": "Electric hero / orbit",
+      "job_id": "bf5d1f5e-4fea-4420-9965-4ff4648fb5ea",
+      "local_path": "workspace/assets/generated/macneo-pc-cm-15s/higgsfield-keyvisual-02-electric-hero.png",
+      "prompt_path": "workspace/prompts/macneo-pc-cm/keyvisual-02-electric-hero.txt",
+      "cost_credits": 7,
+      "width": 2688,
+      "height": 1520,
+      "approval_status": "pending_human_review",
+      "seedance_input_allowed": false
+    }
+  ],
+  "raw_remote_urls_omitted": true
+}

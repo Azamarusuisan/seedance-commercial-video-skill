@@ -2,36 +2,36 @@
   "meta": {
     "project": "MacNeo PC CM 15s",
     "project_id": "macneo-pc-cm-15s",
-    "updated_at": "2026-07-01T14:12:14.598Z",
+    "updated_at": "2026-07-01T14:38:20.922Z",
     "active_stage": "seedance_generation_preapproval",
     "codex_status": "blocked_before_paid_generation",
     "operator_message": "新作PCの15秒CM。PC向け16:9、音声あり。参照画像3枚を使用し、電気が走るVFXで製品の凄さを表現する。"
   },
   "route": "light",
-  "current_stage": "storyboard_approved_keyvisual_pending",
+  "current_stage": "keyvisual_review_ready",
   "generation_blocked": true,
-  "block_reason": "storyboard_approved_keyvisual_generation_not_yet_approved",
+  "block_reason": "keyvisual_generated_review_required_before_seedance",
   "image_generation_allowed": false,
   "storyboard_generation_allowed": false,
   "seedance_generation_allowed": false,
   "audio_generation_allowed": false,
   "post_edit_allowed": false,
   "current_work": {
-    "title": "絵コンテ承認済み / 写真キー待ち",
-    "summary": "絵コンテは承認済み。次はHiggsfield image2でSeedance用写真キーを生成する条件確認と許可が必要。",
+    "title": "写真キー生成済み / レビュー待ち",
+    "summary": "Higgsfield image2で写真キー2枚を生成済み。preflight.html と assets.html で確認し、OKならSeedance見積へ進む。",
     "owner": "Human + Higgsfield MCP + Seedance",
     "input": "workspace/projects/macneo-pc-cm-15s/brief.md",
     "output": "workspace/outputs/macneo-pc-cm-15s-16x9.mp4",
-    "status_text": "storyboard approved / key visual generation not approved yet"
+    "status_text": "key visuals generated / awaiting human review before Seedance estimate"
   },
   "visual_handoff": {
-    "status": "storyboard_approved_keyvisual_pending",
+    "status": "keyvisual_review_ready",
     "canonical_provider": "higgsfield_mcp",
     "canonical_image_model": "image2",
     "blender_role": "not_used",
     "storyboard_status": "approved",
     "seedance_primary_image_allowed": false,
-    "block_reason": "絵コンテは承認済み。次は承認済みphotoreal key visualが必要。Seedanceはまだ停止中。",
+    "block_reason": "写真キー2枚は生成済み。人間レビューと承認後にSeedance見積へ進む。Seedance本生成はまだ停止中。",
     "approval_board": "workspace/projects/macneo-pc-cm-15s/seedance-approval.md"
   },
   "audio_post": {
@@ -159,10 +159,9 @@
     "quality": "high",
     "resolution": "2k",
     "review_notes": [
-      "現時点のブラウザ画像は写真キーの非正規プレビューで、絵コンテではない。",
-      "Higgsfield image2でImage #2型のコンテシートを生成してから構成承認する。",
-      "Seedanceへ渡す画像は、別途Higgsfield image2で作るphotoreal key visualを承認してから使う。",
-      "日本語字幕と macneo apple はSeedance内生成ではなく後編集で正確に入れる。"
+      "写真キー2枚はHiggsfield image2で生成済み。人間レビュー後にSeedance主参照として承認する。",
+      "日本語字幕と macneo apple はSeedance内生成ではなく後編集で正確に入れる。",
+      "Seedance見積と本生成はまだ未実行。"
     ],
     "generated_contact_sheet_local_path": "workspace/assets/generated/macneo-pc-cm-15s/higgsfield-storyboard-conte-sheet.png",
     "noncanonical_preview_local_path": "workspace/assets/generated/macneo-pc-cm-15s/keyvisual-02-electric-hero.jpg",
@@ -171,23 +170,35 @@
       {
         "id": "keyvisual_01",
         "title": "Opening lineup / low dolly",
-        "status": "pending_higgsfield_mcp_execution",
+        "status": "review_ready",
         "media_ref": "",
-        "local_path": "",
+        "local_path": "workspace/assets/generated/macneo-pc-cm-15s/higgsfield-keyvisual-01-opening-lineup.png",
         "prompt_path": "workspace/prompts/macneo-pc-cm/keyvisual-01-opening-lineup.txt",
         "role": "seedance_start_candidate",
         "previous_noncanonical_media_ref": "8441D4B6",
-        "previous_noncanonical_failure_reason": "Palmier downstream service error"
+        "previous_noncanonical_failure_reason": "Palmier downstream service error",
+        "job_id": "38ed8659-a5dc-4b5b-ba4d-a8dcdb07ae0d",
+        "cost_credits": 7,
+        "approval_status": "pending_human_review",
+        "width": 2688,
+        "height": 1520,
+        "completed_at": "2026-07-01T14:38:20.922Z"
       },
       {
         "id": "keyvisual_02",
         "title": "Electric hero / orbit",
-        "status": "pending_higgsfield_mcp_execution",
+        "status": "review_ready",
         "media_ref": "",
-        "local_path": "",
+        "local_path": "workspace/assets/generated/macneo-pc-cm-15s/higgsfield-keyvisual-02-electric-hero.png",
         "prompt_path": "workspace/prompts/macneo-pc-cm/keyvisual-02-electric-hero.txt",
         "role": "seedance_primary_candidate",
-        "noncanonical_preview_path": "workspace/assets/generated/macneo-pc-cm-15s/keyvisual-02-electric-hero.jpg"
+        "noncanonical_preview_path": "workspace/assets/generated/macneo-pc-cm-15s/keyvisual-02-electric-hero.jpg",
+        "job_id": "bf5d1f5e-4fea-4420-9965-4ff4648fb5ea",
+        "cost_credits": 7,
+        "approval_status": "pending_human_review",
+        "width": 2688,
+        "height": 1520,
+        "completed_at": "2026-07-01T14:38:20.922Z"
       }
     ],
     "started_at": "2026-07-01T14:05:28.763Z",
@@ -404,7 +415,7 @@
   "learning": {
     "last_failure_pattern_check": "FP-CANDIDATE-007: checklist too thin; generated storyboard missing; scope alignment now blocks generation",
     "next_prompt_rule": "Never treat product reference board as generated storyboard. Require generated storyboard/key visual and full scope checklist before cost/generation.",
-    "last_preflight_check": "Generated storyboard ready; Seedance remains blocked until human approval."
+    "last_preflight_check": "Key visuals generated. Human review required before Seedance estimate/generation."
   },
   "production_assets": [
     {
@@ -493,9 +504,9 @@
       "kind": "mcp_request",
       "role": "higgsfield_image2_pending",
       "path": "workspace/mcp-requests/macneo-keyvisual-01-image2.request.json",
-      "approval_status": "not_approved_to_execute",
+      "approval_status": "executed",
       "seedance_input_allowed": false,
-      "notes": "実行には別途許可が必要。"
+      "notes": "Higgsfield image2実行済み。生成画像はkeyvisual_01/keyvisual_02を参照。"
     },
     {
       "id": "keyvisual_02_request",
@@ -503,9 +514,33 @@
       "kind": "mcp_request",
       "role": "higgsfield_image2_pending",
       "path": "workspace/mcp-requests/macneo-keyvisual-02-image2.request.json",
-      "approval_status": "not_approved_to_execute",
+      "approval_status": "executed",
       "seedance_input_allowed": false,
-      "notes": "実行には別途許可が必要。"
+      "notes": "Higgsfield image2実行済み。生成画像はkeyvisual_01/keyvisual_02を参照。"
+    },
+    {
+      "id": "keyvisual_01",
+      "title": "Opening lineup / low dolly",
+      "kind": "photoreal_key_visual",
+      "role": "seedance_start_candidate",
+      "path": "workspace/assets/generated/macneo-pc-cm-15s/higgsfield-keyvisual-01-opening-lineup.png",
+      "prompt_path": "workspace/prompts/macneo-pc-cm/keyvisual-01-opening-lineup.txt",
+      "approval_status": "pending_human_review",
+      "rights_status": "generated_internal_draft",
+      "seedance_input_allowed": false,
+      "notes": "Higgsfield image2生成済み。人間承認後だけSeedance入力候補にする。"
+    },
+    {
+      "id": "keyvisual_02",
+      "title": "Electric hero / orbit",
+      "kind": "photoreal_key_visual",
+      "role": "seedance_primary_candidate",
+      "path": "workspace/assets/generated/macneo-pc-cm-15s/higgsfield-keyvisual-02-electric-hero.png",
+      "prompt_path": "workspace/prompts/macneo-pc-cm/keyvisual-02-electric-hero.txt",
+      "approval_status": "pending_human_review",
+      "rights_status": "generated_internal_draft",
+      "seedance_input_allowed": false,
+      "notes": "Higgsfield image2生成済み。人間承認後だけSeedance入力候補にする。"
     }
   ]
 }
