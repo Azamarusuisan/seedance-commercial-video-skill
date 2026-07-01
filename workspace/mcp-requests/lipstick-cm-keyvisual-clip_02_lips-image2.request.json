@@ -1,0 +1,16 @@
+{
+  "created_at": "2026-07-01T13:56:54.914947+00:00",
+  "request_type": "higgsfield_mcp.image_generate",
+  "tool_hint": "Higgsfield MCP: generate storyboard/reference image",
+  "arguments": {
+    "prompt_file": "workspace/prompts/lipstick-cm/keyvisuals/final/clip_02_lips_key.prompt.txt",
+    "prompt": "Create a photoreal 9:16 luxury cosmetics commercial storyboard frame.\n\nUse the attached source image only as a composition and camera-layout guide.\nPreserve the framing, object placement, scale relationship, product silhouette, negative space, and motion intention.\nDo not preserve low-poly geometry, viewport lighting, temporary materials, flat shaders, gray background, cheap CG render look, drawn rings, floating dots, or graphic line overlays.\n\nThe output must look like a polished live-action / premium product photography storyboard still, not a 3D render.\nNo readable text, no real brand logos, no third-party packaging, no unsupported claims.\n\nUse the lips reference only as anonymous lips and skin-tone reference.\nDo not show a full face, eyes, nose-dominant framing, hand-held product, influencer framing, testimonial framing, or identifiable person.\nDo not collage product and lips in one frame.\nThe lips shot must feel purpose-built in the same premium lighting world as the product shots.\n\nShow lips only, cropped close enough that the person is not identifiable. The deep rouge finish is visible with refined gloss, real skin texture, soft shadow detail, champagne rim light, shallow depth of field, and dark luxury campaign color grade.\n\nNo readable brand text, no real logo, no graphic overlay, no UI look.\n",
+    "model": "image2",
+    "aspect_ratio": "9:16",
+    "output_file": "workspace/assets/references/lipstick-cm/keyvisuals/clip_02_lips_key.png",
+    "image": "workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png"
+  },
+  "output_log": "workspace/logs/lipstick-cm-keyvisual-clip_02_lips-image-result.json",
+  "execution": "Run this with the Higgsfield MCP tool exposed by the host agent. Save the sanitized MCP response to output_log.",
+  "security_note": "Do not save API keys, cookies, sessions, tokens, payment data, or raw browser storage."
+}

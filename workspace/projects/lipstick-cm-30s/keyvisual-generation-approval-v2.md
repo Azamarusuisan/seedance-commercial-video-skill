@@ -69,6 +69,15 @@ The storyboard board is the review surface for the full flow before any paid gen
 - execute_seedance_generation: false
 - user approval: pending
 
+Prepared request JSONs:
+
+- `workspace/mcp-requests/lipstick-cm-keyvisual-clip_01_start-image2.request.json`
+- `workspace/mcp-requests/lipstick-cm-keyvisual-clip_01_end-image2.request.json`
+- `workspace/mcp-requests/lipstick-cm-keyvisual-clip_02_final-image2.request.json`
+- `workspace/mcp-requests/lipstick-cm-keyvisual-clip_02_lips-image2.request.json`
+
+Note: `clip_02_lips` should use the multi-image route after `clip_01_end_key.png` exists: product-world key visual + lips-only support reference. Do not fall back to the old product+lips collage.
+
 ## Approval Question To Human
 
 Approve only after seeing the generated key visuals side by side with their composition sources:

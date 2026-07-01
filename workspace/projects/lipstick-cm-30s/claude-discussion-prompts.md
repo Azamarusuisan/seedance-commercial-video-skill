@@ -10,6 +10,10 @@
 
 `workspace/projects/lipstick-cm-30s/`
 
+最新版のClaude再投入タスク:
+
+`workspace/projects/lipstick-cm-30s/codex-to-claude-handoff-20260701.md`
+
 ## 0. 最初に渡す総合プロンプト
 
 ```text

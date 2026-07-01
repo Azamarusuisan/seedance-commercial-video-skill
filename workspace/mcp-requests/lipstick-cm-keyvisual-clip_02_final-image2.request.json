@@ -1,0 +1,16 @@
+{
+  "created_at": "2026-07-01T13:56:54.783605+00:00",
+  "request_type": "higgsfield_mcp.image_generate",
+  "tool_hint": "Higgsfield MCP: generate storyboard/reference image",
+  "arguments": {
+    "prompt_file": "workspace/prompts/lipstick-cm/keyvisuals/final/clip_02_final_key.prompt.txt",
+    "prompt": "Create a photoreal 9:16 luxury cosmetics commercial storyboard frame.\n\nUse the attached source image only as a composition and camera-layout guide.\nPreserve the framing, object placement, scale relationship, product silhouette, negative space, and motion intention.\nDo not preserve low-poly geometry, viewport lighting, temporary materials, flat shaders, gray background, cheap CG render look, drawn rings, floating dots, or graphic line overlays.\n\nThe output must look like a polished live-action / premium product photography storyboard still, not a 3D render.\nNo readable text, no real brand logos, no third-party packaging, no unsupported claims.\n\nFinal packshot key visual: the fictional luxury lipstick returns as a refined product plate in a dark premium studio. Use glossy black lacquer, champagne-gold metal, deep rouge wax, warm rim light, soft photographic bokeh, subtle volumetric haze, controlled lens bloom, and clean negative space for post-production title placement.\n\nNo person, no hand, no readable brand text, no real logo, no graphic overlay, no UI look.\n",
+    "model": "image2",
+    "aspect_ratio": "9:16",
+    "output_file": "workspace/assets/references/lipstick-cm/keyvisuals/clip_02_final_key.png",
+    "image": "workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png"
+  },
+  "output_log": "workspace/logs/lipstick-cm-keyvisual-clip_02_final-image-result.json",
+  "execution": "Run this with the Higgsfield MCP tool exposed by the host agent. Save the sanitized MCP response to output_log.",
+  "security_note": "Do not save API keys, cookies, sessions, tokens, payment data, or raw browser storage."
+}
