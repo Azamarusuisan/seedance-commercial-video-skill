@@ -204,7 +204,123 @@ Source notes:
 - YouTube Shortsは公式仕様ではなく業界解説記事ベース(opus.pro等、2026-07-01確認、数値は変わりうる)。
 - LP動画のUX/CRO解説(unbounce.com等、2026-07-01確認)。
 
-## 9. 参照素材がある場合の分析手順(スクレイピング代替)
+## 9. 用途別の差分(Use-Case Deltas)
+
+`SKILL.md`の Use-Case Prompt Guidance(構成/安全/テキスト量)を前提とする。ここでは重複させず、**AI動画生成の実務での差分(何を優先し、何を避けるか、よくある失敗、後編集での扱い)だけ**を用途ごとに書く。横断技術(§1-8)は各用途で毎回説明しない。
+
+### social-post
+
+Primary viewer action: スクロールを止める、保存する、コメントする、プロフィールを見に行く。
+
+Craft emphasis: 完璧な仕上がりよりも「今っぽさ」「文脈の速さ」。最初の1-2秒の違和感・共感・驚きが構成より重要。
+
+Prompt implications: フックの1カットに全力を注ぐ。残りのビートは短く単純でよい。ハンドヘルド/実写感のある演出語彙を使う(§2のカメラワーク表を参照)。
+
+Common failure: 「CMっぽく整いすぎた」ことで逆に浮く。fake UI、fake testimonial、権利不明のロゴ・音源を混ぜてしまう。
+
+Post-production notes: 日本語テロップは短く、後編集で入れる(Seedance内で文字を生成させない、既存方針通り)。
+
+### product-demo
+
+Primary viewer action: 商品の形状・機能・使い方を理解する。
+
+Craft emphasis: 見栄えより理解を優先する場面がある。手順は1カット1動作に分解する。
+
+Prompt implications: マクロ/ディテールショット(§2)を使い、質感の説得力を作る。スペック・性能・対応機種など未確認の情報は言わない(SKILL.mdの安全ルールと一致)。
+
+Common failure: 1カットに複数の機能・手順を詰め込みすぎて、AI生成では動作の因果が破綻しやすい(§6の編集リズム参照、複数ショットに分ける)。
+
+Post-production notes: 手順の順番が分かるよう、必要ならテロップで補助する。
+
+### app-walkthrough
+
+Primary viewer action: 画面遷移・操作の因果関係を理解する。
+
+Craft emphasis: UIの可読性が最優先。細かい文字をAIに正確に生成させることは期待しない。
+
+Prompt implications: 実際のUIスクリーンショット/モックを参照画像として使う場合は権利・機密確認が必須(既存Rights Gateと同じ)。ズームやハイライトで注目箇所を示す演出は後編集に回す。
+
+Common failure: AIが生成したUIの文字が読めない/意味不明になる。実在アプリのUIを無断で模倣してしまう。
+
+Post-production notes: 正確なUI文字列・数値はテロップや静止画差し替えで後から補う。
+
+### explainer
+
+Primary viewer action: 抽象的な概念を理解する。
+
+Craft emphasis: 1カット1概念。視覚的メタファーで説明し、詳細な事実説明はナレーション/字幕に任せる。
+
+Prompt implications: 図やダイアグラムを生成する場合、「説明用の図解である」ことが分かる見た目にする(実写と混同されない)。
+
+Common failure: 医療・金融・法律など専門領域で、AIが自信満々に不正確な図解/断定表現を作ってしまう。
+
+Post-production notes: 専門領域の正確性は必ず人間がレビューする(SKILL.mdの安全ルールを厳格に適用)。
+
+### event-teaser
+
+Primary viewer action: 期待感を持つ、日付・場所・タイトルを覚える。
+
+Craft emphasis: 本編の説明よりも「来る理由」を作る雰囲気優先の演出。
+
+Prompt implications: §3の高級感/エネルギー系ライティングを、イベントのトーンに合わせて選ぶ。
+
+Common failure: 未承認の登壇者・会場・スポンサーロゴを実在のものとして生成してしまう。正確な日付/CTAをAI映像内のテキストに直接任せてしまう。
+
+Post-production notes: 日付・CTA・正式名称は後編集のテロップで確定情報として入れる。
+
+### portfolio
+
+Primary viewer action: 制作力・実績への信頼を得る。
+
+Craft emphasis: 派手さより信頼性と再現性。プロセス→完成物→クレジットの流れ。
+
+Prompt implications: 最終フレームがサムネイルとして使われる前提で、静止画としても成立する構図にする(§4の構図原則)。
+
+Common failure: 未公開のクライアント案件・秘密情報・許可のないロゴ/画面を映してしまう。
+
+Post-production notes: プロジェクト名・クレジットは正確な表記か必ず確認する。
+
+### background-loop
+
+Primary viewer action: 注視されず、背景として溶け込む。
+
+Craft emphasis: ループしても破綻しないこと。強いストーリーやCTAは不要。
+
+Prompt implications: slow motion、subtle parallax、ambient motionが向く。開始/終了フレームの差(段差・点滅)が出ないよう、ループ前提でプロンプトに明記する。
+
+Common failure: ループの継ぎ目で動きが不自然に途切れる、顔や文字が一瞬破綻して目立ってしまう。
+
+Post-production notes: 基本的にテキストは入れない。入れる場合も背景を邪魔しない透明度・配置にする。
+
+### story-scene
+
+Primary viewer action: キャラクター・状況に感情移入する。
+
+Craft emphasis: 目的・場所・次の行動が明確な1シーン単位で作る。因果関係を1シーン内で完結させる。
+
+Prompt implications: 複数キャラクター/継続する物語の場合、cast manifestとstoryboard panelsを先に作る(既存の`tiktok-story-cast-workflow.md`と同じ原則)。セリフ・字幕は後編集。
+
+Common failure: 実在キャラクター・著名人の外見を無断で模倣してしまう。複数ショットでキャラクターの一貫性が崩れる(Blenderの`.blend`をプロジェクトの正にする既存ルールで対応)。
+
+Post-production notes: セリフが必要な場合はリップシンク未解決の制約(`references/end-to-end-movie-pipeline.md`既知の制約)を再確認する。
+
+## 10. プロンプト前チェックリスト(Before Writing A Generation Prompt)
+
+プロンプトを書く前に、このリストを上から確認する。
+
+- viewer actionは何か(この用途で視聴者に何をしてほしいか)
+- platformはどこか(§8のプラットフォーム別文法を確認したか)
+- 尺とカット密度は適切か(§1の実測値ベースラインと比較したか)
+- 音なしでも冒頭が通じるか(TikTok/LP埋め込み等サウンドオフ前提の場合)
+- BGM/SFX/ナレーション/字幕はSeedance内で生成するか、後編集で足すか決めたか(§7参照)
+- 正確なテキスト・数値・CTAをAI動画内の生成に任せていないか(後編集に回すべきものはないか)
+- 1カットに複数の動作・情報・トランジションを詰め込みすぎていないか(§6参照)
+- transitionは視線・動き・色・音でつながっているか(唐突な切り替えになっていないか)
+- この用途固有のよくある失敗(§9のCommon failure)を踏んでいないか
+- `references/known-failure-patterns.md`の既存FPを踏んでいないか
+- 権利・主張・公開範囲は確認済みか(SKILL.mdのRights Gate)
+
+## 11. 参照素材がある場合の分析手順(スクレイピング代替)
 
 ユーザーから「このCMのような感じにしたい」という具体的な参照がある場合:
 
@@ -250,3 +366,7 @@ Source notes:
 | CRAFT-PLATFORM-004 | unbounce.com | industry technical article | LP埋め込み動画のUX/CRO | ミュート前提設計、自動再生の離脱データ、CTAとの競合回避 | 2026-07-01 |
 
 公式ソースが確認できたもの: TikTok(CRAFT-PLATFORM-001)、Instagram Reels(CRAFT-PLATFORM-002)。YouTube ShortsとLP埋め込み動画は公式一次情報が見つからず、業界解説記事ベース(要再確認の対象として明記)。
+
+## Source Log Additions(2026-07-01、Phase 2: 用途別差分・プロンプト前チェックリスト)
+
+**正直な注記: Phase 2は新規のWeb調査を行っていない。** 既存の`SKILL.md` Use-Case Prompt Guidance(構成/安全/テキスト量の既存定義)と、Phase 1で調査済みの横断技術原則(§1-8)を参照・統合して書いた、内部的な統合作業。新しいSource IDは追加していない。9用途それぞれの実例(実際のCMのapp-walkthrough事例等)を個別に調査すればより具体的にできるが、今回はスコープ外とした(必要なら次のフェーズで追加調査する)。
