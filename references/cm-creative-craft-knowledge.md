@@ -208,6 +208,18 @@ Source notes:
 
 `SKILL.md`の Use-Case Prompt Guidance(構成/安全/テキスト量)を前提とする。ここでは重複させず、**AI動画生成の実務での差分(何を優先し、何を避けるか、よくある失敗、後編集での扱い)だけ**を用途ごとに書く。横断技術(§1-8)は各用途で毎回説明しない。
 
+### commercial
+
+Primary viewer action: ブランド/商品を好きになる、購入検討に入る、CTA(サイト訪問・購入・来店・資料請求)を実行する。
+
+Craft emphasis: §1のフック→価値提示→利用・証拠→CTAという型を崩さない完成度。派手さよりも「言いたいことが過不足なく伝わる」構成。
+
+Prompt implications: §1の尺別ビート配分表をそのまま適用する。TikTok広告として出稿する場合の運用面(Spark/Non-Spark、KPI、LP連携、入稿仕様)は`references/tiktok-ad-ops-workflow.md`に委ね、ここではクリエイティブ文法のみを扱う。
+
+Common failure: 未確認の売上実績・No.1・公式提携・医療/金融/法律的主張を字幕やナレーションに含めてしまう(SKILL.mdの安全ルール違反)。最初の3秒のフックが弱く、CM然としすぎて離脱される。
+
+Post-production notes: タグライン・ブランド名・CTAの正確な表記は後編集で確定させる(Seedance内の生成テキストに正確な文言を任せない)。
+
 ### social-post
 
 Primary viewer action: スクロールを止める、保存する、コメントする、プロフィールを見に行く。
