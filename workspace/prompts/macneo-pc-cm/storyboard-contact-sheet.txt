@@ -1,0 +1,23 @@
+Create a 4-panel photoreal commercial storyboard contact sheet for a 15-second 16:9 PC product CM.
+
+Use the provided PC images only as product/color/material references:
+1. blush-product.jpg: macro color/material reference
+2. color-gallery.jpeg: color lineup and opening reference
+3. hero.webp: white desk hero lineup reference
+
+Do not copy the exact images as-is. Build polished storyboard frames that look like premium product photography.
+
+Panel 1 / 0-2s:
+Macro push across a colorful closed laptop edge. Blue-white electric energy glints along the edge and port line. Premium white studio reflections.
+
+Panel 2 / 2-6s:
+Wide low dolly past pink, blue, yellow, and silver laptops opening in sequence on a bright white desk.
+
+Panel 3 / 6-11s:
+Hero orbit around the colorful lineup. Blue-white electric trails connect devices, suggesting speed and power without unsafe sparks.
+
+Panel 4 / 11-15s:
+Final clean product lineup in a white studio, right-side negative space reserved for Japanese subtitles and final title.
+
+Style:
+premium product commercial, photoreal, clean reflections, soft bloom, bright white studio, controlled electric VFX, no actor, no dialogue, no fake specs, no generated readable Japanese text, no unsupported performance claims.

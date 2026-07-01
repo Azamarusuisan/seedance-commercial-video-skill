@@ -11,11 +11,11 @@ Create a 15-second CM introducing a new colorful PC line. The video should commu
 ## Format
 
 - Duration: 15s
-- Aspect ratio: 9:16 recommended for short social CM
-- Output: `workspace/outputs/macneo-pc-cm-15s.mp4`
+- Aspect ratio: 16:9 for PC / desktop review
+- Output: `workspace/outputs/macneo-pc-cm-15s-16x9.mp4`
 - Product name / final title: `macneo apple`
 - Japanese subtitles: post-production overlay, not generated inside Seedance
-- Audio: post-production BGM/SFX after visual approval
+- Audio: Seedance-generated electronic music/SFX allowed for draft. Replace in post if weak.
 
 ## Reference Assets
 
@@ -28,7 +28,9 @@ Create a 15-second CM introducing a new colorful PC line. The video should commu
 - Premium white studio, bright desk, colorful laptops.
 - Electric blue-white energy arcs running across the laptop edges and ports.
 - Fast camera glide, product orbit, screen glow, color lineup reveal.
-- Optional human presence: hands only or silhouette only. No identifiable testimonial actor.
+- Cast: no actor for this draft. Product-only CM. If needed later, limit human presence to hands or silhouette.
+- Dialogue: no spoken dialogue or testimonial.
+- Subtitles: Japanese telop and final `macneo apple` are post-production overlays.
 
 ## Safety
 

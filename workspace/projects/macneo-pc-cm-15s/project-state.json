@@ -2,41 +2,41 @@
   "meta": {
     "project": "MacNeo PC CM 15s",
     "project_id": "macneo-pc-cm-15s",
-    "updated_at": "2026-07-01T21:05:00+09:00",
+    "updated_at": "2026-07-01T12:35:21.479Z",
     "active_stage": "seedance_generation_preapproval",
     "codex_status": "blocked_before_paid_generation",
     "operator_message": "新作PCの15秒CM。PC向け16:9、音声あり。参照画像3枚を使用し、電気が走るVFXで製品の凄さを表現する。"
   },
   "route": "light",
-  "current_stage": "seedance_generation_preapproval",
+  "current_stage": "preproduction_scope_alignment",
   "generation_blocked": true,
-  "block_reason": "cost_model_final_approval_missing",
+  "block_reason": "generated_storyboard_and_full_preproduction_scope_missing",
   "image_generation_allowed": false,
   "seedance_generation_allowed": false,
   "audio_generation_allowed": false,
   "post_edit_allowed": false,
   "current_work": {
-    "title": "MacNeo PC CM 生成前承認",
-    "summary": "15秒のPC商品CM。16:9、音声あり。Seedance生成前にモデル・費用・参照素材・出力先の確認が必要。",
+    "title": "生成前スコープ再確認",
+    "summary": "参照素材だけでは薄い動画になるため、生成絵コンテ・素材設計・台本・配役・音声・字幕を先に固定する。",
     "owner": "Human + Codex + Seedance",
     "input": "workspace/projects/macneo-pc-cm-15s/brief.md",
     "output": "workspace/outputs/macneo-pc-cm-15s-16x9.mp4",
-    "status_text": "Palmier Editor unavailable。PC画角/音声ありで生成条件提示まで。"
+    "status_text": "Seedance生成は停止中。生成絵コンテ未作成、費用見積/最終承認も未完了。"
   },
   "visual_handoff": {
-    "status": "user_product_refs_ready",
+    "status": "blocked_until_generated_storyboard",
     "blender_role": "not_used",
-    "storyboard_status": "not_required_for_user_product_refs",
+    "storyboard_status": "missing_generated_storyboard",
     "seedance_primary_image_allowed": false,
-    "block_reason": "費用見積と最終生成承認が未完了です",
+    "block_reason": "ユーザー素材3枚は参照素材。Seedance投入前に生成絵コンテ/キービジュアルの確認が必要。",
     "approval_board": "workspace/projects/macneo-pc-cm-15s/seedance-approval.md"
   },
   "audio_post": {
-    "status": "seedance_audio_allowed_visual_review_required",
-    "narration": "not_started",
-    "bgm": "not_started",
-    "sfx": "not_started",
-    "subtitles": "not_started",
+    "status": "seedance_audio_allowed_post_subtitles_required",
+    "narration": "no_spoken_dialogue",
+    "bgm": "seedance_generated_electronic_music_allowed",
+    "sfx": "seedance_generated_electric_whooshes_allowed",
+    "subtitles": "post_production_japanese_telop_required",
     "palmier": "not_started",
     "note": "Seedance内音声は許可。納得できなければ後で音声を抜いて、BGM/SFX/字幕を後付けする。"
   },
@@ -46,55 +46,96 @@
       {
         "time": "0-2s",
         "clip": "Clip 1",
-        "visual": "横長画角でカラーPCのエッジをマクロでなめる。青白い電流が走る。",
+        "visual": "横長画角。閉じたピンク/淡色PCのエッジへマクロで寄り、青白い電流が端子と縁を走る。",
+        "narration": "音楽と電気SFXのみ。セリフなし。",
+        "telop": "軽さ、走る。",
         "caption": "軽さ、走る。"
       },
       {
         "time": "2-6s",
         "clip": "Clip 1",
-        "visual": "ピンク、ブルー、イエロー、シルバーが順番に開く。",
+        "visual": "白いデスク上でピンク、ブルー、イエロー、シルバーのPCが順番に開く。カメラは低く横移動。",
+        "narration": "スムーズな起動音、短いwhoosh。",
+        "telop": "色で選べる、新しいPC。",
         "caption": "色で選べる、新しいPC。"
       },
       {
         "time": "6-11s",
         "clip": "Clip 1",
-        "visual": "ラインナップをカメラが回り込み、電気の軌跡がデバイス間をつなぐ。",
+        "visual": "ラインナップをカメラが回り込み、電気の軌跡が各PCをつなぐ。安全な光表現で速さとパワーを示す。",
+        "narration": "電子音楽を少し強める。",
+        "telop": "毎日を、もっと速く。",
         "caption": "毎日を、もっと速く。"
       },
       {
         "time": "11-15s",
         "clip": "Clip 1",
-        "visual": "白いスタジオで全色ラインナップ。右側余白に後編集タイトル。",
+        "visual": "明るい白スタジオで全色ラインナップを美しく固定。右側に後編集タイトル用の余白を残す。",
+        "narration": "音楽を締め、余韻を残す。",
+        "telop": "macneo apple",
         "caption": "macneo apple"
       }
+    ],
+    "status": "draft_ready",
+    "logline": "白いスタジオでカラーPCが開き、電気の軌跡が性能感を演出する15秒CM。",
+    "voice": "Seedance audio: music/SFX only, no spoken dialogue",
+    "subtitles": "日本語テロップは後編集。最後は macneo apple。",
+    "dialogue_policy": "セリフなし。人物会話なし。商品名と短い日本語テロップのみ後編集。",
+    "voice_script": [
+      "セリフ・ナレーションなし。",
+      "音は電子音楽、電気が走るSFX、柔らかい起動音だけ。"
+    ],
+    "telop_plan": [
+      "軽さ、走る。",
+      "色で選べる、新しいPC。",
+      "毎日を、もっと速く。",
+      "macneo apple"
     ]
   },
   "storyboard": {
-    "status": "user_assets_ready",
+    "status": "blocked_missing_generated_storyboard",
+    "required": true,
+    "structure_diagram": "workspace/projects/macneo-pc-cm-15s/storyboard-structure.md",
+    "generation_prompt": "workspace/prompts/macneo-pc-cm/storyboard-contact-sheet.txt",
+    "generated_contact_sheet": "",
+    "approval_status": "not_requested",
+    "note": "現在あるのはユーザー提供PC素材の参照ボード。生成絵コンテはまだ作っていないため、Seedance生成は禁止。",
     "panels": [
       {
         "id": "panel_01",
         "time": "0-2s",
         "title": "Electric Edge Hook",
-        "generated_image": "workspace/assets/brand/products/macneo/blush-product.jpg",
         "reference_image": "workspace/assets/brand/products/macneo/blush-product.jpg",
-        "seedance_use": "product macro start"
+        "generated_storyboard_image": "",
+        "status": "missing_generated_storyboard",
+        "seedance_use": "blocked_until_storyboard"
       },
       {
         "id": "panel_02",
         "time": "2-6s",
         "title": "Color Lineup Open",
-        "generated_image": "workspace/assets/brand/products/macneo/color-gallery.jpeg",
         "reference_image": "workspace/assets/brand/products/macneo/color-gallery.jpeg",
-        "seedance_use": "color lineup support"
+        "generated_storyboard_image": "",
+        "status": "missing_generated_storyboard",
+        "seedance_use": "blocked_until_storyboard"
       },
       {
         "id": "panel_03",
-        "time": "6-15s",
-        "title": "Hero Desk Finish",
-        "generated_image": "workspace/assets/brand/products/macneo/hero.webp",
+        "time": "6-11s",
+        "title": "Electric Hero Orbit",
         "reference_image": "workspace/assets/brand/products/macneo/hero.webp",
-        "seedance_use": "primary visual anchor"
+        "generated_storyboard_image": "",
+        "status": "missing_generated_storyboard",
+        "seedance_use": "blocked_until_storyboard"
+      },
+      {
+        "id": "panel_04",
+        "time": "11-15s",
+        "title": "Final Product Title Space",
+        "reference_image": "workspace/assets/brand/products/macneo/hero.webp",
+        "generated_storyboard_image": "",
+        "status": "missing_generated_storyboard",
+        "seedance_use": "blocked_until_storyboard"
       }
     ]
   },
@@ -102,7 +143,7 @@
     {
       "id": "macneo_clip_01",
       "title": "MacNeo PC CM / 15s",
-      "status": "pending_cost",
+      "status": "blocked_missing_generated_storyboard",
       "duration_seconds": 15,
       "aspect_ratio": "16:9",
       "resolution": "1080p",
@@ -114,10 +155,29 @@
       "asset_manifest": "workspace/assets/brand/products/macneo/asset-manifest.json",
       "permission_manifest": "workspace/run/macneo-pc-cm-15s.permission.json",
       "output_path": "workspace/outputs/macneo-pc-cm-15s-16x9.mp4",
-      "cost_credits": "pending"
+      "cost_credits": "blocked",
+      "primary_reference": "Palmier media B7B16D97 / hero.webp",
+      "reference_media_refs": [
+        "B7B16D97",
+        "A35A9A50",
+        "D8183E09"
+      ],
+      "model": "seedance-2",
+      "prompt_summary": "カラーPCラインナップを白スタジオで見せ、青白い電気VFXで速さとパワーを演出。音楽/SFXあり、セリフなし。",
+      "note": "Seedance生成前に生成絵コンテと制作スコープ承認が必要"
     }
   ],
   "gates": [
+    {
+      "id": "generated_storyboard_required",
+      "label": "生成絵コンテ必須",
+      "status": "blocked"
+    },
+    {
+      "id": "scope_alignment_required",
+      "label": "台本/配役/音声/字幕確認",
+      "status": "blocked"
+    },
     {
       "id": "cost_model_check",
       "label": "モデル/費用確認",
@@ -148,27 +208,139 @@
     },
     {
       "id": "reference_assets",
-      "label": "素材登録",
+      "label": "PC素材登録",
       "status": "done",
-      "output": "workspace/assets/brand/products/macneo/asset-manifest.json"
+      "output": "Palmier media: B7B16D97 / A35A9A50 / D8183E09"
+    },
+    {
+      "id": "preproduction_scope",
+      "label": "制作スコープ確認",
+      "status": "active",
+      "output": "台本/素材/配役/音声/字幕/権利/生成絵コンテ"
+    },
+    {
+      "id": "storyboard_image",
+      "label": "生成絵コンテ",
+      "status": "blocked",
+      "output": "workspace/prompts/macneo-pc-cm/storyboard-contact-sheet.txt"
+    },
+    {
+      "id": "gate_storyboard",
+      "label": "承認ゲート:絵コンテ",
+      "status": "blocked",
+      "output": "生成絵コンテ承認待ち"
     },
     {
       "id": "seedance_conditions",
       "label": "生成条件確認",
-      "status": "active",
-      "output": "workspace/projects/macneo-pc-cm-15s/seedance-approval.md"
+      "status": "locked",
+      "output": "Seedance 2 / 15s / 16:9 / 1080p / audio true"
     },
     {
       "id": "seedance_generation",
       "label": "Seedance生成",
       "status": "blocked",
-      "output": "最終承認待ち"
+      "output": "絵コンテ/費用/最終承認待ち"
     },
     {
       "id": "post_edit",
-      "label": "日本語字幕/BGM/SFX",
+      "label": "日本語字幕/最終タイトル",
       "status": "locked",
-      "output": "映像レビュー後"
+      "output": "映像レビュー後に macneo apple を後編集"
     }
-  ]
+  ],
+  "cast_policy": {
+    "status": "locked_no_actor",
+    "decision": "今回は演者を起用しない。PC本体とカラー展開だけを主役にする。必要なら手元/シルエット程度に限定。",
+    "selected_cast": [],
+    "prohibited": [
+      "testimonial actor",
+      "identifiable celebrity",
+      "mouth/dialogue closeup"
+    ]
+  },
+  "pre_generation_checklist": [
+    {
+      "id": "brief_goal",
+      "label": "目的/訴求",
+      "status": "done",
+      "note": "新作カラーPCの速さ・色・プレミアム感"
+    },
+    {
+      "id": "reference_assets",
+      "label": "参照素材",
+      "status": "done",
+      "note": "PC画像3枚をPalmierへ読み込み済み。ただし参照素材であって生成絵コンテではない"
+    },
+    {
+      "id": "generated_storyboard",
+      "label": "生成絵コンテ",
+      "status": "blocked",
+      "note": "未生成。4パネルcontact sheet/key visualを先に作る"
+    },
+    {
+      "id": "material_plan",
+      "label": "素材の役割分解",
+      "status": "blocked",
+      "note": "主参照/補助参照/後編集素材/公開不可素材をUIで分ける"
+    },
+    {
+      "id": "script_beats",
+      "label": "台本/秒割り",
+      "status": "done",
+      "note": "4ビート登録済み。絵コンテ後に再確認"
+    },
+    {
+      "id": "shot_list",
+      "label": "カメラ割り",
+      "status": "blocked",
+      "note": "生成絵コンテに合わせてmacro/wide/orbit/finalを固定"
+    },
+    {
+      "id": "dialogue_policy",
+      "label": "セリフ有無",
+      "status": "done",
+      "note": "セリフなし・ナレーションなし"
+    },
+    {
+      "id": "cast_policy",
+      "label": "起用人物",
+      "status": "done",
+      "note": "演者なし。PC本体を主役にする"
+    },
+    {
+      "id": "audio_policy",
+      "label": "音声/BGM/SFX",
+      "status": "done",
+      "note": "Seedance内で電子音楽と電気SFX。弱ければ後編集で差し替え"
+    },
+    {
+      "id": "subtitle_plan",
+      "label": "日本語字幕/最終タイトル",
+      "status": "done",
+      "note": "後編集で4本。最後は macneo apple"
+    },
+    {
+      "id": "rights_publication",
+      "label": "権利/公開",
+      "status": "blocked",
+      "note": "Apple表記とロゴ/公開利用は公開前レビュー必須"
+    },
+    {
+      "id": "cost_estimate",
+      "label": "費用見積",
+      "status": "blocked",
+      "note": "生成絵コンテ承認後に確認"
+    },
+    {
+      "id": "final_generation_approval",
+      "label": "最終生成許可",
+      "status": "blocked",
+      "note": "費用/モデル/出力先を見せてから承認"
+    }
+  ],
+  "learning": {
+    "last_failure_pattern_check": "FP-CANDIDATE-007: checklist too thin; generated storyboard missing; scope alignment now blocks generation",
+    "next_prompt_rule": "Never treat product reference board as generated storyboard. Require generated storyboard/key visual and full scope checklist before cost/generation."
+  }
 }

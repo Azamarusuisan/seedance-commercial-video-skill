@@ -2,6 +2,9 @@
 
 - First 2 seconds have a silent visual hook.
 - Product/category is visible by the target second.
+- A generated storyboard/contact sheet exists; product references alone do not count.
+- Each reference asset has a role: primary visual, support reference, storyboard input, post-production, or blocked.
+- Script, shot list, cast/no-cast, dialogue/no-dialogue, audio, subtitle, and final title are locked before cost/generation.
 - Composition is preserved from Blender.
 - Blender cheap-CG look is not preserved.
 - Material quality is photoreal enough for the project.

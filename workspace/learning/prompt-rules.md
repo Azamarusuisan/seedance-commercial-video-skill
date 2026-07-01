@@ -43,3 +43,19 @@ Add these in post-production.
 
 Create storyboard panels or a 15s beat sheet before generation.
 Prefer `4 hooks x 1 mode` over `1 hook x 4 modes` when exploring short video demand.
+
+## Pre-Generation Alignment Gate
+
+Before any cost request or paid video generation, lock these in writing:
+
+- generated storyboard/contact sheet, unless the user explicitly waives it after seeing the risk
+- role of every reference asset
+- script beat sheet
+- shot list / camera move per beat
+- dialogue/no-dialogue policy
+- cast/no-cast decision
+- narration, BGM, and SFX policy
+- Japanese subtitle/telop plan
+- final title/CTA handling
+
+If any item is unclear, stop before cost/generation and ask the user.

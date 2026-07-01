@@ -45,10 +45,12 @@ def main() -> None:
     manifest_path = Path(args.asset_manifest) if args.asset_manifest else shot_dir / "asset-manifest.json"
     prompt_path = Path(args.prompt_file) if args.prompt_file else shot_dir / "seedance_prompt.txt"
     project_brief_path = ROOT / "workspace/projects" / args.project_id / "brief.md"
+    project_state_path = ROOT / "workspace/projects" / args.project_id / "project-state.json"
     fallback_brief_path = ROOT / "workspace/briefs" / f"{args.project_id}-script.md"
 
     handoff = json.loads(read(handoff_path) or "{}")
     manifest = json.loads(read(manifest_path) or "{}")
+    project_state = json.loads(read(project_state_path) or "{}")
     prompt = read(prompt_path)
 
     known = read(ROOT / "references/known-failure-patterns.md")
@@ -80,6 +82,30 @@ def main() -> None:
         reasons.append("visual handoff still points only to Blender composition source")
     if any(word in prompt.lower() for word in [" ring", " rings", "particle", "particles", "line overlay", "dots"]):
         reasons.append("prompt may contain graphic light nouns; use photographic language")
+    script = project_state.get("script", {}) if isinstance(project_state, dict) else {}
+    beats = script.get("beats", []) if isinstance(script, dict) else []
+    cast_policy = project_state.get("cast_policy", {}) if isinstance(project_state, dict) else {}
+    audio_post = project_state.get("audio_post", {}) if isinstance(project_state, dict) else {}
+    if project_state:
+        storyboard = project_state.get("storyboard", {}) if isinstance(project_state.get("storyboard"), dict) else {}
+        requires_storyboard = storyboard.get("required") is not False
+        has_generated_storyboard = bool(storyboard.get("generated_contact_sheet") or storyboard.get("approved_storyboard_frame"))
+        if requires_storyboard and not has_generated_storyboard:
+            reasons.append("generated storyboard/contact sheet is missing")
+        if storyboard.get("status") in {"blocked_missing_generated_storyboard", "reference_board_only"}:
+            reasons.append("storyboard status blocks Seedance preparation")
+        if not beats:
+            reasons.append("script beat sheet / storyboard timing is missing")
+        if beats and any(not beat.get("visual") for beat in beats if isinstance(beat, dict)):
+            reasons.append("one or more script beats are missing visual direction")
+        if not script.get("dialogue_policy"):
+            reasons.append("dialogue/no-dialogue policy is missing")
+        if not script.get("telop_plan") and not any((beat.get("telop") or beat.get("caption")) for beat in beats if isinstance(beat, dict)):
+            reasons.append("Japanese subtitle/telop plan is missing")
+        if not cast_policy.get("decision") and not cast_policy.get("selected_cast"):
+            reasons.append("cast/no-cast decision is missing")
+        if not audio_post.get("status"):
+            reasons.append("audio/BGM/SFX policy is missing")
 
     can_prepare = not reasons
     report = [
@@ -114,6 +140,7 @@ def main() -> None:
         f"- pattern_memory: {bool(memory)}",
         f"- demand_patterns: {bool(demand)}",
         f"- project_brief: {bool(brief)}",
+        f"- project_state: {rel(project_state_path) if project_state_path.exists() else 'missing'}",
         f"- seedance_prompt: {rel(prompt_path) if prompt_path.exists() else 'missing'}",
         f"- visual_handoff: {rel(handoff_path) if handoff_path.exists() else 'missing'}",
         f"- asset_manifest: {rel(manifest_path) if manifest_path.exists() else 'missing'}",
