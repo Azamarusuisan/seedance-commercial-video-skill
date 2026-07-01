@@ -69,7 +69,7 @@ TikTok風の物語動画や劇団型のキャスト運用では、`workspace/ass
 
 60秒の物語動画は、生成前に `workspace/prompts/tiktok-storyboard-60s-template.md` を使って8〜12コマの台本を作り、映像・セリフ・字幕・素材・次の展開理由を固定してから4本前後のSeedanceプロンプトへ分解します。外部のX投稿やHIGGSFIELDMCP-demoは `references/higgsfield-mcp-demo-patterns.md` に制作パターンとして記録し、素材そのものは権利確認なしに最終物へ使いません。
 
-生成前の人間確認には `workspace/ui/generation-checkpoint.html` を開きます。現在のキャスト素材、source captures、60秒台本、Seedance visual-only、Higgsfield ElevenLabs音声、後付け字幕、権利確認をワークフローUIでチェックし、確認サマリーをコピーしてから費用見積もりと生成へ進みます。生成後は同じUIにresult URL、使用クレジット、OK/NG、再生成理由、編集対応メモを残します。
+生成前の人間確認には `workspace/ui/generation-checkpoint.html` を開きます。現在のキャスト素材、source captures、60秒台本、Seedance visual-only、Palmier Pro音声、後付け字幕、権利確認をワークフローUIでチェックし、確認サマリーをコピーしてから費用見積もりと生成へ進みます。生成後は同じUIにresult URL、使用クレジット、OK/NG、再生成理由、編集対応メモを残します。
 
 ターミナル指示に応じてCodexが裏で状態を更新し、それをUIに反映するライブ運用では `workspace/ui/live-workflow.html` を使います。`bash workspace/scripts/serve-ui.sh` でPC上に `127.0.0.1` 限定のローカルサーバーを起動し、Codexは `workspace/ui/state/generation-state.json` と `workspace/ui/state/asset-library.json` を更新します。ブラウザは `/api/factory-data` から、状態JSON、素材ライブラリ、Codex inbox、素材フォルダ、source captures、生成結果フォルダ、Blender有無、Higgsfield MCP request/logの実データを読みます。UIの「この内容をCodexに送信」ボタンはローカルの `/api/send-to-codex` に送信し、ターミナルログと `workspace/ui/state/codex-inbox.jsonl` に指示を残します。工場風の表示では、AIの作業場を人間が覗くように、素材、台本、生成キュー、音声、字幕、レビューを1本の生成ラインとして確認できます。台本は `generation-state.json` の `script.beats[]` と `workspace/ui/script.html` に連動します。
 

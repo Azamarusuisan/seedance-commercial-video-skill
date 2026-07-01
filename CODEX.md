@@ -2,7 +2,12 @@
 
 Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
-このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装計画。**このファイル自体はまだ実装していない設計書。** Codexがこの内容に沿って実装する。
+## 実装ステータス
+
+- 2026-07-01: §6の1〜7を反映済み。Palmier Pro音声生成への切替、`record-mcp-json.sh`の`narration`削除、`gpt-image-reference.sh`の`edit --image`対応、重量パスのフォルダ規約/課金ゲートを実装。
+- §5のUI簡素化は未着手。これはユーザーに「Factory UIの世界観を残すか、承認専用UIへ寄せるか」を確認してから行う。
+
+このファイルは、Claude Codeとのディスカッションで固まった「自然言語の指示だけでCM・短編映画を作れるツール」の改訂設計書 兼 Codexへの実装記録。未実装項目は「実装ステータス」に残す。
 
 ## 0. ゴール
 
