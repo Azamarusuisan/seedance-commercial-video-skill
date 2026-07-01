@@ -103,7 +103,108 @@ Seedance/GPT Image/Blenderへの指示が「なんとなく」になり、出力
 3. 避けるもの(図形語彙、CGっぽさ、実在ブランドの模倣等)
 4. 承認基準(何が写っていれば合格か)
 
-## 6. 参照素材がある場合の分析手順(スクレイピング代替)
+## 6. 編集リズム・トランジション(Editing Rhythm & Transitions)
+
+Why it matters:
+- リズムは単なるカット尺の話ではなく、視聴者の注意・理解・感情をコントロールする編集の中核機能(著名編集者Walter Murchの「編集における感情の優先順位」の原則)。
+- 「平均カット尺」という基準速度からの意図的な逸脱そのものが演出になる。
+
+Principles:
+- ベースとなるカット速度(尺別の平均カット尺は§1参照)からどれだけ逸脱するかでリズムを作る。速い/遅いは絶対値ではなく基準との差分で感じられる。
+- **ジャンプカット**: 同一ショット内で時間を飛ばす編集。時間の圧縮、緊張感、コメディ効果、心理状態の強調に使う。継続編集の原則をあえて破る「見える編集」。
+- **マッチカット**: 形状・動き・色・構図の類似性で2ショットをつなぐ。グラフィックマッチ(視覚的類似)、オーディオマッチ(音の継続)、J/Lカット(音が前後のショットにはみ出す)の3種類がある。連続性・時間経過・テーマ的つながりを作る。
+- **モンタージュ**(Eisensteinの並置理論): 機能説明、使用手順、感情変化、Before/Afterの圧縮表現に向く。
+- 継続編集(編集を隠す)とジャンプカット/スマッシュカット(編集を見せる)は目的が逆。どちらを選ぶかは演出意図で決める。
+
+Prompt implications:
+- Seedance内で複雑な編集(マルチカット、精密なタイミング)を1回の生成に詰め込まない。ショット単位で生成し、編集はPalmier Proの後工程に任せる。
+- 正確なカット割りが必要な場合は、シーンを複数の短尺クリップに分けて生成し、後で繋ぐ。
+- AI生成特有の「カット間の不連続感」を隠すため、Blender構図/プロンプトの段階でマッチカット的な連続性(形状・動き・色の一致)を意識して設計する。
+
+Avoid:
+- 1クリップに複数の複雑なトランジションを詰め込む指示。
+- 「派手な編集で」のような抽象的すぎる指示(具体的な技法名を指定する)。
+
+Source notes:
+- Walter Murchの「感情優先」原則、Eisensteinのモンタージュ理論の言及(StudioBinder, Avid resource center)。
+- マッチカット/ジャンプカットの定義・使い分け(Adobe, StudioBinder, MasterClass, Backstage)。技法名・原則のみ、具体的な映画/CM名の映像は参照していない。
+
+## 7. 音響・音楽・SFXの基礎(Sound, Music & SFX Fundamentals)
+
+Why it matters:
+- 音は映像の後付け装飾ではなく、注意・感情・記憶・タイミングを作る設計要素。ブランドの「音の識別性」(sonic branding)は視覚と同じくらい記憶に残る。
+
+Principles:
+- **CMにおける音の役割**: フック、ムード形成、トランジションの接着、製品の質感(タクタイル感)、ブランド記憶、CTAの後押し。
+- **BGMの構成は尺で変わる**: 15秒は立ち上がりが早く展開が短い。30秒はhook→development→payoff→end tagの4部構成。60秒はセクションごとに変化をつけ、呼吸(静けさ)を作る。
+- **SFXの目的別分類**: whoosh(高速移動・トランジションの推進力)、riser(緊張の高まり、ピークをカット/タイトルに合わせる)、impact(着地点を作る、金属音やパーカッシブな音)。
+- **SFXのタイミング**: whooshの長さはトランジションの長さに合わせる(カットが0.5秒ならwhooshも400-500ms程度が目安)。riserのピークは視覚的な重要瞬間(カット、タイトル出現)に正確に合わせる。
+- **高級感の音作り**: 音数を減らす、静けさ・余白を使う、低域を安定させる、乾いたクリック音/金属的な質感。過剰な効果音は安っぽく聞こえやすい。
+- 音楽が感情に与える要素: テンポ、楽器編成、リズム密度、無音(silence)、緊張と解放(tension/release)。
+
+Prompt implications:
+- Seedanceにナレーションや正確なCTA音声を生成させない。BGM/SFX/ナレーション/字幕は最終編集(Palmier Pro)で同期するのが基本方針(既存の`generate_audio=false`方針と一致)。
+- 音声生成・BGM生成は、映像承認後の別ゲートとして扱う(既存のPalmier Pro `upscale_media`承認と同じ運用ルール、`WORKFLOW.md`§7-9b参照)。
+- 高級ブランド案件では「音数を減らす」指示をBGM/SFXプロンプトに明記する。
+
+Avoid:
+- 「かっこいいBGMをつけて」のような抽象的指示(テンポ・楽器編成・展開を具体的に指定する)。
+- 過剰な効果音の指示(高級感を狙う場合は特に)。
+- 音楽・声・SEの権利確認を怠ること(既存曲風、特定アーティスト風、実在人物の声真似は避ける)。
+
+Source notes:
+- 広告向けサウンドデザイナーへのインタビュー記事(asoundeffect.com、prosoundeffects.com)、sonic brandingの考え方(Medium/H:12 Studio記事)。
+- whoosh/riser/impactの実務的な使い方・タイミング(soundstripe.com, krotosaudio.com等の音響ライブラリ解説記事)。
+
+## 8. プラットフォーム別の視聴文法(Platform-Specific Viewing Grammar)
+
+Why it matters:
+- 同じ映像でも、TikTok/YouTube Shorts/Instagram Reels/LP埋め込みでは視聴条件(音声のデフォルト、UIによる画面遮蔽、視聴意図)が違う。アスペクト比だけ変えて使い回すと効果が落ちる。
+- 広告運用の詳細(入稿仕様、Pixel、Spark Ads等)はここでは扱わない。`references/tiktok-ad-ops-workflow.md`に委ねる。ここは**クリエイティブ文法**に限定する。
+
+Principles(2026-07-01確認、変わりうる数値は都度確認すること):
+
+**TikTok**(公式: ads.tiktok.com/help/article/creative-best-practices):
+- 最初の3秒で提案内容を示す。広告想起の90%は最初の6秒で決まる。
+- hook → body → closeの3部構成。
+- pattern interrupt(意外な映像、大胆な発言、好奇心のギャップ)でスクロールを止める。
+- **サウンドオフでも伝わるテキストオーバーレイが必須**(5-10語/秒が目安)。フィード消費の多くはサウンドオフ。
+- 縦型9:16、720P以上、UIセーフゾーン内に収める。
+
+**YouTube Shorts**(業界解説記事ベース、公式の一次情報は限定的):
+- 最初の1-3秒がフック。視聴完了率がアルゴリズムの主要な順位シグナル。
+- 冒頭15秒でフックがないと保持率が下がりやすい。
+- 15-35秒程度が良好なパフォーマンス帯とされる(要検証、変わりうる)。
+
+**Instagram Reels**(公式: creators.instagram.com/blog):
+- 上部・下部の帯(プロフィール表示、キャプション/アクションボタン)がUIで隠れるため、CTA・テキスト・見せたいものは中央に配置する。
+- **デフォルトで音声ありで再生される(TikTokと異なる)**。音声込みのReelsは無音版よりエンゲージメントが高いというデータがある。
+- 字幕は視聴完了率を上げるため、音声ありが前提でも必須。
+- 最初の3秒で継続視聴が判断される。
+
+**LP埋め込み動画**(業界解説記事ベース):
+- 自動再生する場合は必ずミュートにする(ブラウザ制約上も必須)。
+- **ミュート前提の設計**: ナレーション/効果音なしで映像だけで意味が伝わる構成にする。
+- 序盤(10秒前後)・中盤(60秒前後)で離脱が発生しやすいというデータがあり、30-90秒程度に収めるのが目安。
+- 動画がCTAと競合しないようにする(動画に見入って離脱されるなら、CTAをより近くに配置)。
+- 動画はページ速度(LCP)への影響が大きいことにも留意する。
+
+Prompt implications:
+- `video_use_case=social-post`でプラットフォームが決まっている場合、該当項目をブリーフに明記する。
+- TikTok広告運用の詳細(Pixel、Spark Ads、入稿仕様等)は`references/tiktok-ad-ops-workflow.md`に委ねる。
+- Instagram Reelsは音声ありがデフォルトなので、TikTokと同じ「サウンドオフ前提」の設計をそのまま流用しない。
+
+Avoid:
+- 1つのプラットフォーム向けに作った映像を、アスペクト比だけ変えて他プラットフォームにそのまま流用すること。
+- LP埋め込み動画にナレーション必須の構成をそのまま使うこと(自動再生はミュート前提)。
+
+Source notes:
+- TikTok公式クリエイティブベストプラクティス(ads.tiktok.com/help、2026-07-01確認)。
+- Instagram Reels公式情報(creators.instagram.com/blog、2026-07-01確認)。
+- YouTube Shortsは公式仕様ではなく業界解説記事ベース(opus.pro等、2026-07-01確認、数値は変わりうる)。
+- LP動画のUX/CRO解説(unbounce.com等、2026-07-01確認)。
+
+## 9. 参照素材がある場合の分析手順(スクレイピング代替)
 
 ユーザーから「このCMのような感じにしたい」という具体的な参照がある場合:
 
@@ -134,3 +235,18 @@ Seedance/GPT Image/Blenderへの指示が「なんとなく」になり、出力
 - TVCMストーリーボードの構造・カット尺の実測値(Boords, StudioBinder等の広告制作解説サイト)
 
 新しい参照を追加する場合も、この形式(構造だけメモ、素材はコピーしない、ソースを明記)を守ること。
+
+## Source Log Additions(2026-07-01、Phase 1: 編集リズム/音響/プラットフォーム文法)
+
+| Source ID | Source | Type | Topic | Extracted principle | Checked |
+|---|---|---|---|---|---|
+| CRAFT-EDIT-001 | studiobinder.com, avid.com (Walter Murch editing principles) | editor interview / industry technical article | editing rhythm | 感情優先の編集原則、基準カット速度からの逸脱でリズムを作る | 2026-07-01 |
+| CRAFT-EDIT-002 | adobe.com, studiobinder.com, masterclass.com, backstage.com | industry technical article | match cut / jump cut | マッチカット3種(graphic/audio/J-L)、ジャンプカットの意図的な継続性破壊 | 2026-07-01 |
+| CRAFT-SOUND-001 | asoundeffect.com, prosoundeffects.com (sound designer interviews) | sound designer interview | advertising sound design / sonic branding | 音がブランド記憶・感情・タイミングを作る設計要素であること | 2026-07-01 |
+| CRAFT-SOUND-002 | soundstripe.com, krotosaudio.com | industry technical article | whoosh / riser / impact SFX | SFXのタイミング合わせ(riserのピークを視覚的瞬間に合わせる等)の実務原則 | 2026-07-01 |
+| CRAFT-PLATFORM-001 | ads.tiktok.com/help/article/creative-best-practices | **official platform guide** | TikTok creative grammar | 最初の3秒、hook/body/close、サウンドオフ前提のテキスト設計 | 2026-07-01 |
+| CRAFT-PLATFORM-002 | creators.instagram.com/blog | **official platform guide** | Instagram Reels creative grammar | 音声ありがデフォルト、UI遮蔽エリア(上下250px相当)を避ける配置 | 2026-07-01 |
+| CRAFT-PLATFORM-003 | opus.pro (YouTube Shorts分析記事) | industry technical article(非公式、数値は変わりうる) | YouTube Shorts retention | 冒頭1-3秒のフックと視聴完了率の関係 | 2026-07-01 |
+| CRAFT-PLATFORM-004 | unbounce.com | industry technical article | LP埋め込み動画のUX/CRO | ミュート前提設計、自動再生の離脱データ、CTAとの競合回避 | 2026-07-01 |
+
+公式ソースが確認できたもの: TikTok(CRAFT-PLATFORM-001)、Instagram Reels(CRAFT-PLATFORM-002)。YouTube ShortsとLP埋め込み動画は公式一次情報が見つからず、業界解説記事ベース(要再確認の対象として明記)。
