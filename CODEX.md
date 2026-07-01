@@ -214,7 +214,7 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
 
     手順:
     1. `references/known-failure-patterns.md`(FP-001〜007)と`references/cm-creative-craft-knowledge.md`(特に§3・§5・§10、2026-07-01完成)を読む。同じ失敗を絶対に繰り返さないこと。
-    2. 各ショットについて、まだなければ`workspace/run/lipstick-cm-30s.permission.json`を`workspace/run/permission.example.json`をベースに作成する(`prepare_image_generation_request: true`、`execute_image_generation`/`execute_paid_generation`はまだ`false`のまま)。その上で、実際にHiggsfield MCPツールがある環境で以下を実行してリクエストを準備する:
+    2. `workspace/run/lipstick-cm-30s.permission.json`は作成済み(2026-07-01、Claude Code、`prepare_image_generation_request: true`、`execute_image_generation`/`execute_paid_generation`はまだ`false`)。実際にHiggsfield MCPツールがある環境で以下を実行してリクエストを準備する:
        ```
        APPROVED=1 PERMISSION_MANIFEST=workspace/run/lipstick-cm-30s.permission.json \
        bash workspace/scripts/prepare-storyboard-image-request.sh \
