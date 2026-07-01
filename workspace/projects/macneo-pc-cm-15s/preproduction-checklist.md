@@ -13,7 +13,7 @@ The current browser preview image is a non-canonical photoreal key-visual previe
 - [x] Objective: colorful new PC, speed, color, premium feel
 - [x] Format: 15s / 16:9 / 1080p
 - [x] Product reference assets: 3 user-provided PC images
-- [ ] Higgsfield MCP `image2` storyboard/conte sheet: request pending
+- [x] Higgsfield MCP `image2` storyboard/conte sheet: execution approved, result pending
 - [ ] Higgsfield MCP `image2` photoreal key visuals: request pending
 - [ ] Storyboard approval: missing
 - [ ] Shot list locked against storyboard: missing

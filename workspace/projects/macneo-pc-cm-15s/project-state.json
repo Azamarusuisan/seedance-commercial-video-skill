@@ -8,29 +8,30 @@
     "operator_message": "新作PCの15秒CM。PC向け16:9、音声あり。参照画像3枚を使用し、電気が走るVFXで製品の凄さを表現する。"
   },
   "route": "light",
-  "current_stage": "higgsfield_storyboard_request_ready",
+  "current_stage": "higgsfield_storyboard_execution_approved",
   "generation_blocked": true,
-  "block_reason": "awaiting_higgsfield_image2_storyboard_and_keyvisual_execution",
-  "image_generation_allowed": false,
+  "block_reason": "higgsfield_mcp_tool_not_exposed_in_this_codex_session",
+  "image_generation_allowed": true,
+  "storyboard_generation_allowed": true,
   "seedance_generation_allowed": false,
   "audio_generation_allowed": false,
   "post_edit_allowed": false,
   "current_work": {
-    "title": "Higgsfield絵コンテ実行待ち",
-    "summary": "いま見えている写真は絵コンテではなく非正規の写真キープレビュー。正規フローはHiggsfield MCP image2でコンテシートと写真キーを作る。",
+    "title": "Higgsfield絵コンテ生成許可済み",
+    "summary": "Higgsfield MCP image2で絵コンテ1枚を生成する許可あり。Codex側にHiggsfield MCP実行ツールが出ていないため、実行者はrequest JSONを叩く。",
     "owner": "Human + Higgsfield MCP + Seedance",
     "input": "workspace/projects/macneo-pc-cm-15s/brief.md",
     "output": "workspace/outputs/macneo-pc-cm-15s-16x9.mp4",
-    "status_text": "Higgsfield image2 storyboard/keyvisual request pending"
+    "status_text": "approved: storyboard image2 only / Seedance still blocked"
   },
   "visual_handoff": {
-    "status": "higgsfield_image2_request_pending",
+    "status": "higgsfield_image2_storyboard_execution_approved",
     "canonical_provider": "higgsfield_mcp",
     "canonical_image_model": "image2",
     "blender_role": "not_used",
-    "storyboard_status": "pending_higgsfield_image2_execution",
+    "storyboard_status": "approved_for_higgsfield_image2_execution",
     "seedance_primary_image_allowed": false,
-    "block_reason": "絵コンテは未生成。Palmier/Codex由来の写真キープレビューは非正規素材で、Higgsfield image2成果物として扱わない。",
+    "block_reason": "このCodexセッションにはHiggsfield MCP実行ツールが露出していない。Palmier/Codex生成に切り替えず、Higgsfield MCP実行者へhandoffする。",
     "approval_board": "workspace/projects/macneo-pc-cm-15s/seedance-approval.md"
   },
   "audio_post": {
@@ -95,7 +96,7 @@
     ]
   },
   "storyboard": {
-    "status": "higgsfield_image2_request_pending",
+    "status": "approved_for_higgsfield_image2_execution",
     "required": true,
     "canonical_provider": "higgsfield_mcp",
     "canonical_model": "image2",
@@ -108,7 +109,7 @@
       "workspace/mcp-requests/macneo-keyvisual-02-image2.request.json"
     ],
     "generated_contact_sheet": "",
-    "approval_status": "pending_higgsfield_image2_execution",
+    "approval_status": "approved_to_execute_storyboard_only",
     "note": "絵コンテはImage #2のような構成確認用コンテシート。写真キーはSeedance用の別成果物。Palmier/Codex由来画像は非正規プレビューとしてのみ扱う。",
     "panels": [
       {
@@ -224,7 +225,7 @@
     {
       "id": "generated_storyboard_required",
       "label": "生成絵コンテ必須",
-      "status": "pending"
+      "status": "active"
     },
     {
       "id": "scope_alignment_required",
@@ -281,7 +282,7 @@
       "id": "gate_storyboard",
       "label": "承認ゲート:絵コンテ",
       "status": "blocked",
-      "output": "Higgsfield image2実行待ち"
+      "output": "Higgsfield image2生成許可済み / 実行結果待ち"
     },
     {
       "id": "seedance_conditions",
@@ -328,8 +329,8 @@
     {
       "id": "generated_storyboard",
       "label": "生成絵コンテ",
-      "status": "pending",
-      "note": "Higgsfield image2のコンテシート/写真キー実行待ち。既存画像は非正規プレビュー"
+      "status": "active",
+      "note": "Higgsfield image2のコンテシート1枚は生成許可済み。写真キー/Seedanceは未許可"
     },
     {
       "id": "material_plan",
