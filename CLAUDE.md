@@ -465,3 +465,54 @@ Do not run paid jobs because a previous generation was already approved; the fai
 - Heavy failed MP4s are normally not committed. This lipstick CM exception is intentional because the user explicitly asked to include them for Claude review/training context.
 - Do not commit `workspace/logs/` as training material. Use the sanitized learning manifest instead: `workspace/projects/lipstick-cm-30s/learning-materials-20260701.md`.
 - Keep failed-output notes in project markdown files so the next agent does not repeat the same mistake.
+
+## P0 Implementation Report (Claude Code, 2026-07-01)
+
+Implemented the P0 slice of the Blender-To-Storyboard Safety Rewrite. No paid generation, publishing, or external account action was executed.
+
+### Added files
+
+- `workspace/schemas/asset-manifest.schema.json`, `visual-handoff.schema.json`, `job-ledger.schema.json`
+- `workspace/prompts/templates/gpt-image-from-blender-previs.txt`
+- `workspace/scripts/build-visual-handoff.py`
+- `workspace/scripts/prepare-storyboard-image-request.sh`
+- `workspace/scripts/validate-seedance-input.py` (the enforcement gate)
+- `tests/fixtures/blender-previs-asset.json`, `approved-storyboard-asset.json`
+- `workspace/projects/demo/shots/shot_01/{previs.png,storyboard.png}` (placeholder fixtures for the required checks below)
+
+### Changed files
+
+- `workspace/scripts/seedance-cost.sh`, `seedance-generate.sh`: now call `validate-seedance-input.py` before building any request when `IMAGE_FILE` is set. `APPROVED=1` alone can no longer pass a Blender image through.
+- `workspace/scripts/gpt-image-reference.sh`, `higgsfield-image.sh`: added real multi-image support (`GPT_IMAGE_SOURCE_IMAGES`, `HIGGSFIELD_IMAGE_SOURCE_IMAGES`), and fixed a pre-existing macOS bash 3.2 bug (`set -u` + empty array expansion = "unbound variable") that would have broken these scripts (and the new validate-seedance-input.py wiring) the first time an optional array stayed empty.
+- `references/image-to-video-handoff.md`, `seedance-cm-workflow.md`, `end-to-end-movie-pipeline.md`, `blender-3d-preview-workflow.md`, `known-failure-patterns.md`: all rewritten so Blender is documented as `composition_only` and a photoreal storyboard/key-visual step is mandatory before Seedance. `image-to-video-handoff.md` and `seedance-cm-workflow.md` previously told the agent to use the Blender render directly as `IMAGE_FILE` — that was the actual doc bug behind the original failure, now fixed.
+- `workspace/prompts/hermes-run-permission.md`: added `allow_blender_as_seedance_input=false`, `require_approved_storyboard_frame=true`, the explicit allowed-action keys, and the new stop conditions from the spec.
+
+### Where Blender direct-to-Seedance is blocked
+
+Mechanically, in `validate-seedance-input.py`, called from both `seedance-cost.sh` and `seedance-generate.sh`. Verified against the exact original failure input (`IMAGE_FILE=workspace/assets/3d/renders/lipstick_cm_previs.png`) — blocked. Verified an ordinary non-Blender reference image still passes (backward compatible with other projects that predate this gate, with a warning). Verified an approved `photoreal_key_visual`/`approved_storyboard_frame` with a manifest passes cleanly.
+
+### Where GPT Image storyboard/key visual is mandatory
+
+Documented as required in all 5 references files above, and enforced by construction: `build-visual-handoff.py` always initializes `seedance_primary_image_allowed=false`, and only a human-approved `storyboard.png` (via `prepare-storyboard-image-request.sh`) can flip that.
+
+### Learning loop: scaled down from the full P1 spec
+
+Did not build the full `workspace/learning/` apparatus (pattern-memory.jsonl, prompt-rules.md, demand-signals.jsonl, iteration-log.csv, pre/post-generation learning-check scripts). `references/known-failure-patterns.md` already serves the same core purpose (symptom -> root cause -> corrected rule, checked before every generation) in a lighter-weight form that's already wired into `WORKFLOW.md` §7-8 and now referenced from all 5 P0 docs. Building a second, parallel learning system alongside it seemed like duplication rather than progress. If the user wants the fuller P1 apparatus (structured JSONL pattern memory, a scored review rubric, automated pre/post-generation learning-check scripts) specifically, that's a clear next ask, not something skipped by accident.
+
+### Still unimplemented / unverified
+
+- P1's learning folder and pre/post-generation learning-check scripts (see above).
+- P2 test fixtures beyond the 2 the spec explicitly required (which are done and passing).
+- UI wording changes in `workspace/ui/factory-futuristic.js` / `live-workflow.html` (the spec's "UI Update" section) — not touched this pass.
+- Whether Higgsfield MCP's Seedance model actually supports `start_image`/`end_image`/multi-reference — needs a live Higgsfield MCP connection to check (`CODEX.md` §6 task 12).
+- Whether Higgsfield's `image2` model and multi-image input actually work as assumed — same, needs a live connection.
+
+### Confirmation
+
+No Higgsfield MCP, Seedance, ElevenLabs, GPT Image, upscale, ad publishing, or external posting call was executed. Only local scripts, schemas, docs, and dry-run/fixture-based tests.
+
+### Next items needing human approval
+
+1. Whether to build the fuller P1 learning-loop apparatus, or keep `known-failure-patterns.md` as the lighter-weight equivalent.
+2. Whether to invest in the UI wording pass now or later.
+3. Confirm this P0 gate doesn't need to be stricter (e.g. hard-require an `ASSET_MANIFEST` even for non-Blender-looking paths) — currently it warns-and-passes for backward compatibility with existing lighter projects.

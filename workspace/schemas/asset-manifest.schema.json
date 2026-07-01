@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Asset Manifest",
+  "description": "Describes one image/video asset and whether it may be used as a Seedance primary input (start_image/end_image). Read by workspace/scripts/validate-seedance-input.py. See references/known-failure-patterns.md FP-001 for why this exists.",
+  "type": "object",
+  "required": ["asset_kind", "role", "seedance_input_allowed", "approval_status", "rights_status"],
+  "properties": {
+    "asset_kind": {
+      "type": "string",
+      "description": "What this asset actually is.",
+      "enum": [
+        "blender_previs",
+        "viewport_screenshot",
+        "blender_render",
+        "approved_storyboard_frame",
+        "photoreal_key_visual",
+        "rights_confirmed_user_asset",
+        "approved_product_reference",
+        "other"
+      ]
+    },
+    "role": {
+      "type": "string",
+      "description": "What job this asset does in the pipeline.",
+      "enum": ["composition_only", "visual_truth", "motion_truth"]
+    },
+    "seedance_input_allowed": {
+      "type": "boolean",
+      "description": "Must be true for this asset to pass validate-seedance-input.py. blender_previs/viewport_screenshot/blender_render with role=composition_only must always be false."
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": ["pending", "approved", "rejected"]
+    },
+    "rights_status": {
+      "type": "string",
+      "enum": ["company_owned", "generated", "user_provided", "rights_confirmed", "unknown"]
+    },
+    "source_path": {
+      "type": "string",
+      "description": "Repo-relative path to the actual image/video file."
+    },
+    "project_id": { "type": "string" },
+    "shot_id": { "type": "string" },
+    "notes": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "examples": [
+    {
+      "asset_kind": "blender_previs",
+      "role": "composition_only",
+      "seedance_input_allowed": false,
+      "approval_status": "approved",
+      "rights_status": "generated",
+      "source_path": "workspace/assets/3d/renders/lipstick_cm_previs.png",
+      "notes": "Composition/camera reference only. Never a Seedance primary input."
+    },
+    {
+      "asset_kind": "photoreal_key_visual",
+      "role": "visual_truth",
+      "seedance_input_allowed": true,
+      "approval_status": "approved",
+      "rights_status": "generated",
+      "source_path": "workspace/assets/references/lipstick-cm/clip_01_end_key.png",
+      "notes": "Approved by user after side-by-side review against Blender panels."
+    }
+  ]
+}

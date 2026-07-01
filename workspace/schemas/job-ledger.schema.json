@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Job Ledger",
+  "description": "One entry per generation attempt (image or video), for review history and linking to known-failure-patterns.md. Append-only; never rewrite past entries.",
+  "type": "object",
+  "required": ["job_id", "project_id", "kind", "status", "created_at"],
+  "properties": {
+    "job_id": { "type": "string" },
+    "project_id": { "type": "string" },
+    "shot_id": { "type": "string" },
+    "kind": { "type": "string", "enum": ["image_generation", "seedance_video"] },
+    "model": { "type": "string" },
+    "primary_input_asset_kind": {
+      "type": "string",
+      "description": "Copied from the asset-manifest that validate-seedance-input.py approved for this job, for audit purposes."
+    },
+    "cost_credits": { "type": "number" },
+    "status": {
+      "type": "string",
+      "enum": ["prepared_only", "pending_mcp_execution", "generated", "review_pending", "approved", "rejected"]
+    },
+    "review_notes": { "type": "string" },
+    "matched_failure_patterns": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "FP-XXX ids from references/known-failure-patterns.md that this job's review matched, if rejected."
+    },
+    "output_path": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

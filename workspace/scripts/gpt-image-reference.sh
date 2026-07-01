@@ -78,13 +78,13 @@ if [ "${#image_args[@]}" -gt 0 ]; then
   python3 "$IMAGE_GEN" edit \
     --model "$MODEL" \
     --prompt-file "$PROMPT_FILE" \
-    "${image_args[@]}" \
-    "${mask_args[@]}" \
+    ${image_args[@]+"${image_args[@]}"} \
+    ${mask_args[@]+"${mask_args[@]}"} \
     --input-fidelity "$INPUT_FIDELITY" \
     --size "$SIZE" \
     --quality "$QUALITY" \
     --out "$OUT_FILE" \
-    "${force_args[@]}"
+    ${force_args[@]+"${force_args[@]}"}
 else
   python3 "$IMAGE_GEN" generate \
     --model "$MODEL" \
@@ -92,7 +92,7 @@ else
     --size "$SIZE" \
     --quality "$QUALITY" \
     --out "$OUT_FILE" \
-    "${force_args[@]}"
+    ${force_args[@]+"${force_args[@]}"}
 fi
 
 write_status_json "$LOG_PATH" "GPT Image reference generation" "generated" "Generated $OUT_FILE with $MODEL."

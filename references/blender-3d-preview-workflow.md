@@ -10,7 +10,7 @@
 - 生成工場UIや説明動画用の3D風背景素材
 - GLB / OBJ / FBX / USDZ などの読み込み確認
 - カメラパス、ライト、マテリアル、簡易レンダー
-- Seedanceへ渡すための静止画参照や背景plateの作成
+- Seedance用の写実キービジュアルを作るための**構図の下絵**(静止画参照や背景plate)の作成。Blenderの出力自体をSeedanceにそのまま渡すことではない(下記manifest注記参照)。
 - Higgsfieldのimage-to-3D / multi-image-to-3D成果物をローカル確認する導線
 
 扱わないこと:
@@ -73,9 +73,13 @@ workspace/assets/3d/manifests/
   "use_scope": "",
   "created_at": "",
   "review_status": "pending | approved | blocked",
+  "role": "composition_only",
+  "seedance_input_allowed": false,
   "notes": ""
 }
 ```
+
+**`role`は常に`composition_only`、`seedance_input_allowed`は常に`false`にする。** Blenderのレンダーは構図・カメラ・配置の確認用であって、Seedanceの`start_image`/`end_image`に直接使うものではない。これは`workspace/schemas/asset-manifest.schema.json`と揃えている。実際にSeedance参照へ渡す画像は、この構図を元にGPT Image/Higgsfield画像生成で作った写実キービジュアル(`asset_kind=photoreal_key_visual`、`seedance_input_allowed=true`)であり、別のマニフェストで管理する(`references/known-failure-patterns.md` FP-001、リップスティックCMで実際に試して失敗済み)。
 
 ## Workflow
 

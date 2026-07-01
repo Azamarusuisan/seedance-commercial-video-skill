@@ -21,6 +21,8 @@ Status: required before autonomous paid generation, ad-account operations, exter
   - internal_draft_only:
   - unknown:
 - AIGC disclosure checked: yes / no / not needed
+- allow_blender_as_seedance_input: false (must stay false; see references/known-failure-patterns.md FP-001)
+- require_approved_storyboard_frame: true
 
 ## Allowed Actions
 
@@ -31,9 +33,17 @@ Mark only what is allowed.
 - Tier C ad publish/account operations:
 - Tier D destructive/billing/identity operations:
 
-Exact allowed actions:
+Exact allowed actions (mark each true/false; default false):
 
-- TBD
+- analyze_references:
+- create_blender_previs:
+- prepare_gpt_image_storyboard_prompt:
+- prepare_image_generation_request:
+- execute_image_generation:
+- prepare_seedance_cost_request:
+- prepare_seedance_generation_request:
+- execute_paid_generation:
+- publish_ad:
 
 Explicitly disallowed actions:
 
@@ -69,6 +79,11 @@ Explicitly disallowed actions:
 - Stop on LP/account mismatch:
 - Stop on missing rights:
 - Stop on login/MFA/payment prompt:
+- Stop condition: missing_approved_storyboard
+- Stop condition: blender_previs_used_as_seedance_input
+- Stop condition: unknown_rights
+- Stop condition: budget_cap_reached
+- Stop condition: HERMES_STOP_exists
 
 ## Logging
 

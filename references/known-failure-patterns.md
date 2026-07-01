@@ -21,7 +21,8 @@ Seedance生成(cost見積もりも含む)前に、このファイルの全エン
 - **症状**: 動画が写実的なCMではなく、3Dソフトのレンダーやプレビューのように見える。マテリアルが安っぽい・平坦・プラスチック調。
 - **原因**: Blenderは構図・カメラ・商品形状の設計図であり、画作り(質感・光・素材)の参照ではない。低ポリ/仮ライトの画像を`start_image`に渡すと、Seedanceはその見た目自体を保持しようとする。
 - **修正ルール**: Seedanceに渡す前に、必ず写実的な「キービジュアル」(photoreal key visual)を別途生成し、それを`start_image`/`end_image`にする。Blenderレンダーは構図確認・比較用にのみ残す。
-- **出典**: `workspace/projects/lipstick-cm-30s/postmortem-20260701-blender-fleshout-mismatch.md`
+- **機械的な強制(2026-07-01追加)**: これはもう「運用ルールとして覚えておく」だけではない。`workspace/scripts/validate-seedance-input.py`が、`workspace/scripts/seedance-cost.sh`/`seedance-generate.sh`から`IMAGE_FILE`を使うたびに自動で呼ばれる。`asset_kind=blender_previs`(または`role=composition_only`)なアセットマニフェストがあれば即ブロック。マニフェストがなくても、`workspace/assets/3d/renders/`等のBlenderらしきパスなら見出しヒューリスティックでブロックする。Blenderの直渡しは、エージェントが忘れてももう通らない。
+- **出典**: `workspace/projects/lipstick-cm-30s/postmortem-20260701-blender-fleshout-mismatch.md`、`workspace/schemas/asset-manifest.schema.json`、`workspace/scripts/validate-seedance-input.py`
 
 ## FP-002: 商品参照と人物参照を1枚の画像に合成すると「貼り合わせ」に見える
 
@@ -44,6 +45,13 @@ Seedance生成(cost見積もりも含む)前に、このファイルの全エン
 - **修正ルール**: 新しい参照画像の渡し方を実装する前に、**ラップ先のツール本来のAPI/CLIが複数画像・マルチモーダル入力に対応していないか必ず確認する。** 対応していれば、事前合成で1枚に潰すのではなく、複数画像をそのまま渡し、プロンプト側で各画像の役割(index/role)を明記する。スクリプトが単一画像しかサポートしていないという理由だけで設計を単純化しない。
 - **出典**: `${CODEX_HOME}/skills/.system/imagegen/references/cli.md`(2026-07-01、Claude Codeが確認)、ユーザー指摘「素材が結局1個しか入ってなかったり、マルチモーダルが強みなはずなのに全然活用できてない」。
 - **修正状況**: 対応済み(2026-07-01、Claude Code)。`gpt-image-reference.sh`(`GPT_IMAGE_SOURCE_IMAGES`)と`higgsfield-image.sh`(`HIGGSFIELD_IMAGE_SOURCE_IMAGES`、`path:role`形式)の両方に複数画像対応を実装、dry-runで確認済み。Seedance側(`start_image`/`end_image`対応)はHiggsfield MCP接続環境での確認が未着手(`CODEX.md`§6タスク12)。
+
+## FP-005: UI/ドキュメントの文言がBlenderを「主素材」であるかのように見せてしまう
+
+- **症状**: `IMAGE_FILE=workspace/assets/3d/renders/xxx_previs.png`のような使い方が、UIやドキュメント上「これが正しい主参照だ」と読める書き方になっている。結果、エージェントも人間も「Blenderレンダーをそのまま使ってよい」と誤解する。
+- **原因**: アセットに`asset_kind`(blender_previs/photoreal_key_visualなど)、`role`(composition_only/visual_truth)、`approval_status`が明示されておらず、UI(`workspace/ui/factory-futuristic.js`)や各種`references/*.md`が「Blenderプリビズ = 素材」という並びで表示・記述していた。
+- **修正ルール**: Blenderに関する表示・記述は必ず「構図参照専用、Seedance入力不可」であることを明記する。UI文言は`構図参照: Blender Previs / Seedance入力不可`のように、役割と禁止事項をセットで書く。`主素材`という言葉をBlenderに使わない。
+- **出典**: `CLAUDE.md`(2026-07-01、UI Update指示)。
 
 ---
 

@@ -21,6 +21,14 @@ approval_gate "$PROMPT_FILE" "$LOG_PATH" "Higgsfield MCP Seedance cost $MODEL"
 
 image_arg=""
 if [ -f "$IMAGE_PATH" ]; then
+  manifest_args=()
+  if [ -n "${ASSET_MANIFEST:-}" ]; then
+    manifest_args=(--asset-manifest "$ASSET_MANIFEST")
+  fi
+  if ! python3 "$REPO_ROOT/workspace/scripts/validate-seedance-input.py" --image "$IMAGE_PATH" ${manifest_args[@]+"${manifest_args[@]}"}; then
+    write_status_json "$LOG_PATH" "Higgsfield MCP Seedance cost $MODEL" "blocked" "validate-seedance-input.py rejected IMAGE_FILE=$IMAGE_PATH. See references/known-failure-patterns.md FP-001."
+    exit 1
+  fi
   image_arg="image=$IMAGE_PATH"
 fi
 

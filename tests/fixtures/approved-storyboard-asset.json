@@ -1,0 +1,9 @@
+{
+  "asset_kind": "approved_storyboard_frame",
+  "role": "visual_truth",
+  "seedance_input_allowed": true,
+  "approval_status": "approved",
+  "rights_status": "generated",
+  "source_path": "workspace/projects/demo/shots/shot_01/storyboard.png",
+  "notes": "Fixture: must pass validate-seedance-input.py."
+}

@@ -1,0 +1,19 @@
+{
+  "project_id": "demo",
+  "shot_id": "shot_01",
+  "blender_role": "composition_only",
+  "blender_source": {
+    "blend_path": "",
+    "render_path": "workspace/assets/3d/renders/lipstick_cm_previs.png",
+    "camera_notes": "low macro angle",
+    "placement_notes": "centered product",
+    "scale_notes": "",
+    "motion_intent": "slow rotate reveal"
+  },
+  "storyboard_prompt_path": "workspace/projects/demo/shots/shot_01/gpt-image-storyboard-prompt.txt",
+  "storyboard_status": "prompt_prepared",
+  "storyboard_image_path": "",
+  "seedance_primary_image_allowed": false,
+  "block_reason": "写実キービジュアル未生成・未承認のため、Seedanceの主参照にはまだ使えません。",
+  "updated_at": "2026-07-01T09:37:12.766671+00:00"
+}

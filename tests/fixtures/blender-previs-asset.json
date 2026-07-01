@@ -1,0 +1,9 @@
+{
+  "asset_kind": "blender_previs",
+  "role": "composition_only",
+  "seedance_input_allowed": false,
+  "approval_status": "approved",
+  "rights_status": "generated",
+  "source_path": "workspace/projects/demo/shots/shot_01/previs.png",
+  "notes": "Fixture: must be blocked by validate-seedance-input.py regardless of approval_status."
+}

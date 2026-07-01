@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Visual Handoff",
+  "description": "Per-shot record of the Blender-previs-to-photoreal-storyboard handoff. Written by workspace/scripts/build-visual-handoff.py, lives at workspace/projects/<project_id>/shots/<shot_id>/visual-handoff.json.",
+  "type": "object",
+  "required": ["project_id", "shot_id", "blender_role", "storyboard_status", "seedance_primary_image_allowed"],
+  "properties": {
+    "project_id": { "type": "string" },
+    "shot_id": { "type": "string" },
+    "blender_role": {
+      "type": "string",
+      "const": "composition_only",
+      "description": "Always composition_only. Blender is never visual truth for high-brand/photoreal work."
+    },
+    "blender_source": {
+      "type": "object",
+      "properties": {
+        "blend_path": { "type": "string" },
+        "render_path": { "type": "string" },
+        "camera_notes": { "type": "string" },
+        "placement_notes": { "type": "string" },
+        "scale_notes": { "type": "string" },
+        "motion_intent": { "type": "string" }
+      }
+    },
+    "storyboard_prompt_path": {
+      "type": "string",
+      "description": "Path to the generated GPT-Image-from-Blender-previs prompt for this shot."
+    },
+    "storyboard_status": {
+      "type": "string",
+      "enum": ["not_started", "prompt_prepared", "generated", "reviewed", "approved", "rejected"]
+    },
+    "storyboard_image_path": {
+      "type": "string",
+      "description": "Path to the generated photoreal storyboard/key-visual image, once it exists."
+    },
+    "seedance_primary_image_allowed": {
+      "type": "boolean",
+      "description": "True only once storyboard_status=approved and an asset-manifest for storyboard_image_path has seedance_input_allowed=true."
+    },
+    "block_reason": {
+      "type": "string",
+      "description": "Human-readable reason generation is currently blocked, if applicable."
+    },
+    "updated_at": { "type": "string", "format": "date-time" }
+  }
+}

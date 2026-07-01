@@ -48,12 +48,13 @@ Use this route when a still reference image should drive the Seedance video:
 1. Check whether Blender can be used before preparing the reference image:
    - Run `command -v blender`.
    - If Blender is available, ask once: "Blenderを使うとこのクオリティが出ます。使用しますか?"
-   - YES: use the same local previs method as the heavy path: create a project-specific `bpy` script based on `workspace/blender/action_movie_previs.py`, run `blender --background --python`, render one still, save it under `workspace/assets/`, and use that render as the reference image.
+   - YES: use the same local previs method as the heavy path: create a project-specific `bpy` script based on `workspace/blender/action_movie_previs.py`, run `blender --background --python`, render one still, save it under `workspace/assets/`.
+     **This render is composition reference only (`role=composition_only`) and must never become `IMAGE_FILE` directly** (`references/known-failure-patterns.md` FP-001; tried for real on the lipstick CM project and failed). It must go through GPT Image / Higgsfield image generation (`workspace/prompts/templates/gpt-image-from-blender-previs.txt`) to produce a photoreal storyboard frame / key visual first.
    - NO, or Blender is not installed: continue with the existing reference-image route.
-   - Do not create a new approval gate. The Blender render is reviewed through the existing reference image/assets approval gate.
-2. Prepare the reference prompt in `workspace/prompts/reference-image-v1.txt` or a project-specific prompt file if a generated reference image is still needed.
-3. Generate or select a reference image and save it under `workspace/assets/`.
-4. Use that image as `IMAGE_FILE` when preparing Seedance cost/generation requests.
+   - The Blender render itself is reviewed via the existing reference image/assets approval gate; the *generated photoreal key visual* needs a further explicit approval before it can be used as `IMAGE_FILE` (see `references/image-to-video-handoff.md`).
+2. Prepare the reference prompt in `workspace/prompts/reference-image-v1.txt` or a project-specific prompt file if a generated reference image is still needed. If Blender was used, this is the GPT-Image-from-Blender-previs prompt instead.
+3. Generate or select a reference image and save it under `workspace/assets/`. If Blender was used, this is the photoreal key visual output, not the Blender render.
+4. Use that (photoreal, human-approved) image as `IMAGE_FILE` when preparing Seedance cost/generation requests. `seedance-cost.sh`/`seedance-generate.sh` call `workspace/scripts/validate-seedance-input.py` first and will block a raw Blender render.
 5. Keep the Seedance prompt explicit about what to inherit from the image:
    - subject
    - mood

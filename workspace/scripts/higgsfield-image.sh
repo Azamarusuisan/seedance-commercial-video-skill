@@ -68,7 +68,7 @@ write_mcp_request_with_prompt \
   "model=$MODEL" \
   "aspect_ratio=$ASPECT_RATIO" \
   "output_file=$OUT_FILE" \
-  "${image_pairs[@]}"
+  ${image_pairs[@]+"${image_pairs[@]}"}
 
 write_status_json "$LOG_PATH" "Higgsfield MCP image generation $MODEL" "pending_mcp_execution" "Prepared MCP request at $REQ_PATH. Run it with the host-provided Higgsfield MCP image tool, then record the sanitized result with: bash workspace/scripts/record-mcp-json.sh image <mcp-response.json>"
 
