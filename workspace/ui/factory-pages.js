@@ -3,17 +3,40 @@ const PAGE_STATE_PATH = "state/generation-state.json";
 const PAGE_LIBRARY_PATH = "state/asset-library.json";
 
 const PAGE_NAV = [
-  ["factory", "工場", "live-workflow.html"],
-  ["studio-lines", "制作ライン", "studio-lines.html"],
-  ["assets", "素材", "assets.html"],
-  ["cast-library", "演者ライブラリ", "cast-library.html"],
-  ["script", "台本", "script.html"],
-  ["jobs", "ジョブ", "jobs.html"],
-  ["gates", "ゲート", "gates.html"],
-  ["activity", "履歴", "activity.html"],
+  { id: "factory", label: "ダッシュボード", href: "live-workflow.html", note: "全体管制" },
+  { id: "generation-review", label: "生成レビュー", href: "generation-review.html", note: "承認判断" },
+  { id: "studio-lines", label: "制作ライン", href: "studio-lines.html", note: "工程フロー" },
+  { id: "assets", label: "素材", href: "assets.html", note: "入力可否" },
+  { id: "cast-library", label: "演者（キャスト）", href: "cast-library.html", note: "権利範囲" },
+  { id: "script", label: "台本", href: "script.html", note: "秒割り" },
+  { id: "jobs", label: "ジョブ", href: "jobs.html", note: "生成キュー" },
+  { id: "gates", label: "ゲート", href: "gates.html", note: "承認停止" },
+  { id: "publish", label: "発信（配信）", href: "publish.html", note: "公開準備" },
+  { id: "activity", label: "履歴", href: "activity.html", note: "監査ログ" },
 ];
 
 const PAGE_META = {
+  factory: {
+    title: "ダッシュボード",
+    subtitle: "AI動画制作コントロールルーム",
+    intent: "何を作っていて、どこで止まり、次に何をすれば進むかを見る。",
+    source: "/api/factory-data",
+    decision: "次にやることとブロック理由を確認する。",
+  },
+  "generation-review": {
+    title: "生成レビュー",
+    subtitle: "Seedance投入前の承認判断",
+    intent: "Blender構図コンポと写真キー候補を分け、Seedanceへ進めるかを判断する。",
+    source: "generation-state.json / storyboard / jobs / blender_assets",
+    decision: "承認済み写真キー画像があるか確認する。",
+  },
+  generation: {
+    title: "生成レビュー",
+    subtitle: "Seedance投入前の承認判断",
+    intent: "Blender構図コンポと写真キー候補を分け、Seedanceへ進めるかを判断する。",
+    source: "generation-state.json / storyboard / jobs / blender_assets",
+    decision: "承認済み写真キー画像があるか確認する。",
+  },
   "studio-lines": {
     title: "制作ライン",
     subtitle: "実データに連動する工程レーン",
@@ -55,6 +78,20 @@ const PAGE_META = {
     intent: "権利、費用、生成承認、広告公開の停止条件を一画面で見る。",
     source: "generation-state.json / gates[]",
     decision: "どのゲートが解除されるまで先へ進めないかを確認する。",
+  },
+  broadcast: {
+    title: "発信（配信）",
+    subtitle: "公開準備とパブリックサマリー",
+    intent: "外から見ても、何を作っていて、どこで止め、次に何を判断するかが分かる形にする。",
+    source: "generation-state.json / asset-library.json / source captures",
+    decision: "公開前ブロックと投稿文を確認する。",
+  },
+  publish: {
+    title: "発信（配信）",
+    subtitle: "公開準備とパブリックサマリー",
+    intent: "公開準備の最終確認と、発信に向けた判断・承認を行う。",
+    source: "generation-state.json / asset-library.json / source captures",
+    decision: "外部投稿はせず、承認に必要な情報だけ確認する。",
   },
   activity: {
     title: "履歴",
@@ -109,6 +146,10 @@ const STATUS_JA = {
   locked: "ロック中",
   captured: "取得済み",
   failed: "失敗",
+  failed_review: "レビュー失敗",
+  rejected: "却下",
+  needs_revision: "修正必要",
+  proposal: "提案中",
   ready: "準備完了",
   waiting_for_render: "レンダー待ち",
 };
@@ -142,6 +183,130 @@ function nowJst() {
   }).format(new Date());
 }
 
+function compactText(value, limit = 72) {
+  const text = displayText(value).replace(/\s+/g, " ").trim();
+  return text.length > limit ? `${text.slice(0, limit - 1)}...` : text;
+}
+
+function summaryText(value) {
+  const text = displayText(value).replace(/\s+/g, " ").trim();
+  return /(workspace\/|videos\/|assets\/|prompts\/|state\/|\.json|\.png|\.jpg|\.mp4|\.blend)/i.test(text) ? "証跡ファイルあり" : text;
+}
+
+function sourceLabel(value) {
+  const text = String(value || "");
+  return /(\/|\.json|workspace|state)/i.test(text) ? "ローカル状態データ" : text;
+}
+
+function imageRecord(path) {
+  return path ? { path, exists: true, mtime_ns: Date.now() } : null;
+}
+
+function currentJob() {
+  const jobs = pageState.state.jobs || [];
+  return jobs.find(job => /generating|processing|active|failed|review|estimated/i.test(String(job.status || ""))) || jobs[0] || {};
+}
+
+function jobImage(job) {
+  const panels = pageState.state.storyboard?.panels || [];
+  const panel = panels.find(item => item.id === job.id || item.id === job.storyboard_panel) || {};
+  return job.storyboard_image || job.reference_image || panel.generated_image || panel.reference_image || pageState.state.blender?.render_path || "";
+}
+
+function isBlenderDerived(path) {
+  return /(^|\/)(blender|3d|renders?)\/|previs|viewport|blockout|render_plate|_panel_/i.test(String(path || ""));
+}
+
+function isSupportOnly(path) {
+  return /lips|support|reference_only|crop/i.test(String(path || ""));
+}
+
+function jobPreview(job, className = "") {
+  if (job.local_path) {
+    return `<video class="${html(className)}" src="${html(toProjectPath(job.local_path))}" autoplay muted loop playsinline controls></video>`;
+  }
+  const image = jobImage(job);
+  return image ? `<img class="${html(className)}" src="${html(toProjectPath(image))}" alt="${html(job.title || job.id || "生成プレビュー")}">` : `<div class="generation-placeholder">プレビュー待機中</div>`;
+}
+
+function blenderFrame() {
+  const assets = pageState.runtime?.blender_assets || {};
+  const screen = assets.screen_capture;
+  return (screen?.exists && screen) || assets.latest_live_frame || assets.latest_render || imageRecord(pageState.state.blender?.render_path);
+}
+
+function clipNumberFrom(value) {
+  const match = String(value || "").match(/clip[_\s-]?0?(\d+)/i);
+  return match ? Number.parseInt(match[1], 10) : null;
+}
+
+function clipLabelFromJob(job) {
+  const number = clipNumberFrom(job?.id) || clipNumberFrom(job?.title);
+  return number ? `Clip ${number}` : "";
+}
+
+function beatsForJob(job) {
+  const beats = pageState.state.script?.beats || [];
+  const label = clipLabelFromJob(job);
+  return label ? beats.filter(beat => String(beat.clip || "").toLowerCase() === label.toLowerCase()) : beats.slice(0, 3);
+}
+
+function materialsForJob(job, frame) {
+  const referenceNote = job.reference_image
+    ? (isBlenderDerived(job.reference_image) ? "Blender由来: 入力不可" : "写真キー候補: 要承認")
+    : "";
+  return [
+    ["動画", job.local_path || job.output_path ? "レビュー対象あり" : ""],
+    ["主参照", referenceNote || job.primary_reference],
+    ["補助", job.secondary_reference ? "補助参照あり" : ""],
+    ["絵コンテ", job.storyboard_image ? "構図コンポ / 入力不可" : ""],
+    ["Blender", frame?.path || pageState.state.blender?.render_path ? "構図・動き設計専用" : ""],
+  ].filter(([, value]) => value).slice(0, 5);
+}
+
+function workflowNodeClass(step) {
+  const key = String(step?.status || "").toLowerCase();
+  if (["done", "completed", "approved", "ready"].includes(key)) return "done";
+  if (["active", "generating", "rendering", "processing", "estimated", "needs_revision", "failed", "failed_review"].includes(key)) return "active";
+  if (["blocked", "locked"].includes(key)) return "locked";
+  return "pending";
+}
+
+function visualHandoff() {
+  const state = pageState.state || {};
+  const approvedKey = (state.jobs || []).find(job => /approved|ready/i.test(`${job.approval_status || ""} ${job.review_decision || ""}`) && job.reference_image && !isBlenderDerived(job.reference_image) && !isSupportOnly(job.reference_image));
+  return {
+    blenderRole: "構図参照 / Seedance入力不可",
+    storyboardStatus: state.storyboard?.status || "pending",
+    seedancePrimaryAllowed: Boolean(approvedKey),
+    keyVisualPath: approvedKey?.reference_image || "",
+    blockReason: approvedKey ? "承認済み写真キー画像があります" : "承認済みの写真キー画像が未確定です",
+  };
+}
+
+function normalizeFactoryState(runtime, state, library) {
+  const panels = state.storyboard?.panels || [];
+  const jobs = state.jobs || [];
+  const gates = state.gates || [];
+  const handoff = visualHandoff();
+  return {
+    project: state.meta?.project || state.script?.title || "新作リップCM 30s / ROUGE NOIR",
+    updatedAt: state.meta?.updated_at || runtime?.generated_at || "",
+    blockReason: "承認済みphotoreal key visualが未生成 / 未承認",
+    nextAction: "4枚の写真キー画像を生成 → レビュー → 承認する",
+    handoff,
+    panels,
+    jobs,
+    gates,
+    counts: runtime?.counts || {},
+    blenderImage: state.blender?.render_path || panels[0]?.generated_image || "",
+    supportImage: jobs.find(job => job.reference_image && isSupportOnly(job.reference_image))?.reference_image || "",
+    keySlots: [0, 1, 2, 3],
+    approvedKeyCount: 0,
+    library,
+  };
+}
+
 async function pageJson(path) {
   const response = await fetch(`${path}?t=${Date.now()}`, { cache: "no-store" });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -149,8 +314,11 @@ async function pageJson(path) {
 }
 
 function navMarkup() {
-  return PAGE_NAV.map(([id, label, href]) => `
-    <a href="${href}" class="${id === pageState.page ? "active" : ""}">${label}</a>
+  return PAGE_NAV.map(item => `
+    <a href="${item.href}" class="${item.id === pageState.page ? "active" : ""}" aria-current="${item.id === pageState.page ? "page" : "false"}">
+      <strong>${html(item.label)}</strong>
+      <span>${html(item.note)}</span>
+    </a>
   `).join("");
 }
 
@@ -169,15 +337,16 @@ function shellMarkup() {
           </div>
         </div>
         <nav class="rail-nav">${navMarkup()}</nav>
-        <section class="rail-card">
-          <span class="eyebrow">状態ファイル</span>
-          <code>workspace/ui/state/generation-state.json</code>
-          <p id="loadStatus">接続中...</p>
-        </section>
-        <section class="rail-card compact">
-          <span class="eyebrow">ページの目的</span>
+        <section class="rail-card rail-status-card">
+          <span class="eyebrow">現在ページ</span>
           <strong>${html(meta.title)}</strong>
+          <p>${html(meta.subtitle)}</p>
+          <small id="loadStatus">接続中...</small>
+        </section>
+        <section class="rail-card rail-purpose-card">
+          <span class="eyebrow">見るもの</span>
           <p>${html(meta.intent)}</p>
+          <code>${html(sourceLabel(meta.source))}</code>
         </section>
       </aside>
       <main class="factory-page detail-page">
@@ -188,7 +357,7 @@ function shellMarkup() {
           </div>
           <div class="top-status-grid">
             <div class="status-tile"><span>システム時刻</span><strong id="systemTime">--:--:--</strong><small>JST</small></div>
-            <div class="status-tile live"><span>データ元</span><strong>ローカル状態</strong><small>${html(meta.source)}</small></div>
+            <div class="status-tile live"><span>稼働状態</span><strong>ローカル稼働中</strong><small>外部生成は実行しない</small></div>
             <div class="status-tile"><span>プロジェクト</span><strong id="projectName">読み込み中</strong><small>Seedance劇場</small></div>
           </div>
           <div class="theater-lockup">
@@ -204,9 +373,16 @@ function shellMarkup() {
 }
 
 function renderHero() {
-  const meta = PAGE_META[pageState.page];
+  const meta = PAGE_META[pageState.page] || PAGE_META["studio-lines"];
   const counts = pageState.runtime?.counts || {};
-  document.getElementById("pageHero").innerHTML = `
+  const target = document.getElementById("pageHero");
+  if (["factory", "generation", "generation-review", "assets", "publish", "broadcast"].includes(pageState.page)) {
+    target.hidden = true;
+    target.innerHTML = "";
+    return;
+  }
+  target.hidden = false;
+  target.innerHTML = `
     <article class="hero-intent">
       <span class="eyebrow">目的</span>
       <h3>${html(meta.intent)}</h3>
@@ -225,102 +401,246 @@ function renderHero() {
   `;
 }
 
-function renderStudioLines() {
-  const workflow = pageState.state.workflow || [];
+function panel({ eyebrow, title, body, className = "", badge = "" }) {
   return `
-    <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">制作ライン</span><h3>実データから見る工程</h3></div></div>
-      <div class="line-board">
-        ${workflow.map((phase, index) => `
-          <article class="line-card ${statusClass(phase.status)}">
-            <span class="thin-pill ${statusClass(phase.status)}">${html(statusJa(phase.status))}</span>
-            <h3>${String(index + 1).padStart(2, "0")} / ${html(phase.label)}</h3>
-            <p>${html(displayText(phase.note))}</p>
-            <div class="kv-grid"><span>担当</span><strong>${html(displayText(phase.owner))}</strong><span>出力</span><strong>${html(displayText(phase.output))}</strong></div>
-          </article>
-        `).join("")}
+    <section class="page-panel cockpit-panel ${className}">
+      <div class="panel-heading">
+        <div><span class="eyebrow">${html(eyebrow)}</span><h3>${html(title)}</h3></div>
+        ${badge ? `<span class="thin-pill">${html(badge)}</span>` : ""}
       </div>
-    </section>
-    <section class="page-panel">
-      <span class="eyebrow">現在の作業</span>
-      <h3>${html(pageState.state.current_work?.title || pageState.state.meta?.active_stage)}</h3>
-      <p>${html(pageState.state.current_work?.summary || pageState.state.meta?.operator_message)}</p>
+      ${body}
     </section>
   `;
 }
 
-function renderAssets() {
-  const lib = pageState.library || {};
-  const captures = lib.source_captures || [];
-  const pageRenders = lib.page_renders || [];
-  const refs = lib.external_references || [];
-  const blocked = lib.blocked_assets || lib.removed_assets || [];
-  const blender = pageState.runtime?.blender || {};
-  const blenderAssets = pageState.runtime?.blender_assets || {};
-  const blenderRenders = blenderAssets.renders || [];
-  const blenderScreen = blenderAssets.screen_capture || {};
-  const blenderScreenState = blenderAssets.screen_state || {};
-  const blenderManifests = blenderAssets.manifests || [];
+function miniStats(items) {
+  return `<div class="cockpit-stats">${items.map(([label, value]) => `
+    <div><span>${html(label)}</span><strong>${html(value ?? 0)}</strong></div>
+  `).join("")}</div>`;
+}
+
+function compactList(items, empty = "表示データなし") {
+  return `<div class="compact-list">${items.length ? items.map(item => `
+    <article>
+      <strong>${html(item.title || "")}</strong>
+      <span>${html(item.meta || "")}</span>
+      ${item.note ? `<p>${html(item.note)}</p>` : ""}
+    </article>
+  `).join("") : `<article><strong>${html(empty)}</strong><span>state待機中</span></article>`}</div>`;
+}
+
+function imageCard(src, title, note = "") {
   return `
-    <section class="page-panel">
-      <div class="panel-heading"><div><span class="eyebrow">素材棚</span><h3>ローカル素材一覧</h3></div></div>
-      <div class="binding-grid large">
-        <div><span>生成演者</span><strong>${pageState.runtime?.counts?.generated_cast_files ?? 0}</strong></div>
-        <div><span>ソースキャプチャ</span><strong>${captures.length}</strong></div>
-        <div><span>ページレンダー</span><strong>${pageRenders.length}</strong></div>
-        <div><span>外部参考</span><strong>${refs.length}</strong></div>
-        <div><span>ブロック記録</span><strong>${blocked.length}</strong></div>
-        <div><span>Blender素材</span><strong>${blenderRenders.length + (blenderScreen.exists ? 1 : 0)}</strong></div>
-      </div>
+    <article class="image-card">
+      ${src ? `<img src="${html(toProjectPath(src))}" alt="${html(title)}">` : `<div class="image-placeholder">NO IMAGE</div>`}
+      <strong>${html(title)}</strong>
+      <span>${html(note)}</span>
+    </article>
+  `;
+}
+
+function workflowCards(workflow) {
+  return `<div class="cockpit-flow">${workflow.map((phase, index) => `
+    <article class="${statusClass(phase.status)}">
+      <i>${String(index + 1).padStart(2, "0")}</i>
+      <strong>${html(compactText(phase.label || phase.id || "工程", 18))}</strong>
+      <span>${html(statusJa(phase.status))}</span>
+      <small>${html(compactText(summaryText(phase.output || phase.note || ""), 42))}</small>
+    </article>
+  `).join("")}</div>`;
+}
+
+function renderFactory() {
+  const data = normalizeFactoryState(pageState.runtime, pageState.state || {}, pageState.library || {});
+  const steps = [
+    ["01", "企画 / 台本", "完了", "done", "構成済み"],
+    ["02", "Blender previs", "完了", "done", "composition_only"],
+    ["03", "Visual handoff", "完了", "done", "構図の正"],
+    ["04", "写実絵コンテ / Key visual", "未生成", "current", "次に実行"],
+    ["05", "Key visual承認", "未承認", "blocked", "BLOCK"],
+    ["06", "Seedance見積", "禁止", "blocked", "写真キー待ち"],
+    ["07", "Seedance生成", "禁止", "blocked", "写真キー待ち"],
+    ["08", "レビュー", "未開始", "pending", "映像後"],
+    ["09", "音声 / 字幕 / Palmier", "映像承認後", "pending", "後工程"],
+    ["10", "発信", "禁止", "blocked", "公開不可"],
+  ];
+  return `
+    <section class="p0-dashboard">
+      <article class="p0-hero p0-blocked">
+        <div>
+          <span class="danger-label">BLOCKED</span>
+          <h3>${html(data.project)}</h3>
+          <p class="p0-lead">写真キー画像を生成・レビュー・承認するまで、Seedance生成と公開工程は止めます。</p>
+          <dl class="p0-status-lines">
+            <div><dt>ブロック理由</dt><dd>${html(data.blockReason)}</dd></div>
+            <div><dt>Seedance</dt><dd>禁止</dd></div>
+            <div><dt>音声・字幕・Palmier</dt><dd>映像承認後</dd></div>
+          </dl>
+        </div>
+        <div class="p0-blender-mini">
+          ${data.blenderImage ? `<img src="${html(toProjectPath(data.blenderImage))}" alt="Blender構図ソース">` : `<div class="image-placeholder">BLENDER</div>`}
+          <strong>Blender構図ソース</strong>
+          <span>composition_only / Seedance入力不可</span>
+        </div>
+      </article>
+      <aside class="p0-next">
+        <span class="eyebrow">次にやること（最優先）</span>
+        <h3>4枚の写真キー画像を生成・レビュー・承認する</h3>
+        <ol>
+          <li>Blender構図から写実キーを4枚作る</li>
+          <li>レビュー画面で構図と質感を確認</li>
+          <li>承認済みだけSeedance候補にする</li>
+          <li>承認まで動画・音声・公開は禁止</li>
+        </ol>
+        <a href="generation-review.html">生成レビューへ</a>
+      </aside>
+      <section class="p0-panel p0-pipeline">
+        <div class="p0-panel-head"><span>制作パイプライン</span><strong>写真キー未承認で全工程停止</strong></div>
+        <div class="p0-steps">
+          ${steps.map(step => `
+            <article class="${step[3]}">
+              <i>${step[0]}</i>
+              <strong>${html(step[1])}</strong>
+              <span>${html(step[2])}</span>
+              <small>${html(step[4])}</small>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+      <section class="p0-panel p0-summary">
+        <div class="p0-panel-head"><span>現在の状況サマリー</span><strong>判断だけ表示</strong></div>
+        <div class="p0-metrics">
+          <article><span>工程の現在地</span><strong>04 写真キー生成待ち</strong></article>
+          <article><span>ブロック</span><strong>写真キー未承認</strong></article>
+          <article><span>写真キー</span><strong>${data.approvedKeyCount}/4 承認</strong></article>
+          <article><span>公開可否</span><strong>公開不可</strong></article>
+        </div>
+      </section>
+      <section class="p0-panel">
+        <div class="p0-panel-head"><span>安全ゲート概要</span><strong>Seedance / 公開は停止</strong></div>
+        <div class="p0-gate-list">
+          <span class="bad">写真キー承認: 未承認</span>
+          <span class="bad">Seedance生成: 禁止</span>
+          <span class="warn">音声・字幕: 映像承認後</span>
+          <span class="ok">ローカル限定: ON</span>
+        </div>
+      </section>
+      <section class="p0-panel">
+        <div class="p0-panel-head"><span>役割</span><strong>混同禁止</strong></div>
+        <div class="p0-role-grid">
+          <article><b>Blender</b><span>composition_only</span><em>Seedance入力不可</em></article>
+          <article><b>GPT Image / Key visual</b><span>visual_truth</span><em>承認後のみ入力候補</em></article>
+          <article><b>Seedance</b><span>motion_truth</span><em>写真キー承認後</em></article>
+        </div>
+      </section>
     </section>
-    <section class="page-panel">
-      <span class="eyebrow">Blender / 3Dプレビューレーン</span>
-      <h3>${blender.available ? "利用可能" : "未検出"}</h3>
-      <p>${html(displayText(blender.note || "Local-only Blender lane for 3D preview plates."))}</p>
-      <div class="kv-grid"><span>実行ファイル</span><strong>${html(blender.executable || blender.cli || "未検出")}</strong><span>バージョン</span><strong>${html(blender.version || "-")}</strong><span>方式</span><strong>${html(blender.mode || "ローカル限定")}</strong><span>状態</span><strong>${html(statusJa(blenderAssets.status || "waiting"))}</strong></div>
-    </section>
-    <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">Blender実画面</span><h3>ワークフロー中央へ投影</h3></div></div>
-      <div class="render-shelf">
-        ${blenderScreen.exists ? `
-          <article class="render-card">
-            <img src="${html(toProjectPath(blenderScreen.path))}?t=${encodeURIComponent(blenderScreen.mtime || "")}" alt="Blender実画面キャプチャ">
-            <div>
-              <strong>${html(blenderScreen.path)}</strong>
-              <span>${html(statusJa(blenderScreenState.status || "captured"))} / ${html(blenderScreenState.window_rect || "")} / ${html(blenderScreen.mtime || "")}</span>
+  `;
+}
+
+function renderStudioLines() {
+  const workflow = pageState.state.workflow || [];
+  return `
+    ${panel({ eyebrow: "制作ライン", title: "現在の生成フロー", className: "wide", body: workflowCards(workflow) })}
+    ${panel({
+      eyebrow: "現在の作業",
+      title: pageState.state.current_work?.title || pageState.state.meta?.active_stage || "待機中",
+      body: `<p class="compact-copy">${html(pageState.state.current_work?.summary || pageState.state.meta?.operator_message || "")}</p>`,
+    })}
+    ${panel({
+      eyebrow: "実データ",
+      title: "工程サマリー",
+      body: miniStats([["工程", workflow.length], ["ジョブ", pageState.state.jobs?.length || 0], ["ゲート", pageState.state.gates?.length || 0], ["停止", pageState.runtime?.counts?.blocked_gates || 0]]),
+    })}
+  `;
+}
+
+function renderAssets() {
+  const data = normalizeFactoryState(pageState.runtime, pageState.state || {}, pageState.library || {});
+  const lib = data.library || {};
+  const refs = lib.external_references || [];
+  const cast = pageState.castManifest?.cast || [];
+  const blenderCards = data.panels.slice(0, 4).map(panel => ({
+    title: panel.title || panel.id,
+    image: panel.generated_image,
+    kind: "blender_previs",
+    role: "composition_only",
+    approval: "承認済み構図",
+    rights: "OK",
+    allowed: false,
+  }));
+  const keyCards = data.keySlots.map((_, index) => ({
+    title: `写真キー候補0${index + 1}`,
+    image: "",
+    kind: "photoreal_key_visual",
+    role: "visual_truth",
+    approval: "未生成 / 未承認",
+    rights: "未確認",
+    allowed: false,
+  }));
+  const supportCards = data.supportImage ? [{
+    title: "Rina唇クロップ",
+    image: data.supportImage,
+    kind: "support_reference_only",
+    role: "lips-skin-tone only",
+    approval: "補助参照",
+    rights: "OK",
+    allowed: false,
+  }] : [];
+  const refCards = refs.slice(0, 2).map(item => ({
+    title: item.id || "外部参考",
+    image: item.thumbnail_path || item.path,
+    kind: "external_reference",
+    role: "reference_only",
+    approval: "参考のみ",
+    rights: item.rights_status || "要確認",
+    allowed: false,
+  }));
+  const cards = [...blenderCards, ...keyCards, ...supportCards, ...refCards];
+  return `
+    <section class="p0-assets">
+      <header class="p0-page-alert">
+        <div>
+          <span class="warn-label">素材分類</span>
+          <h3>Blenderプレビューは構図検討専用です</h3>
+          <p>Seedance入力不可。承認済みphotoreal key visualだけがSeedance入力候補になります。</p>
+        </div>
+      </header>
+      <section class="p0-panel p0-asset-summary">
+        <div class="p0-metrics">
+          <article><span>総素材</span><strong>${cards.length}</strong></article>
+          <article><span>Blender</span><strong>${blenderCards.length}</strong></article>
+          <article><span>写真キー承認済み</span><strong>0</strong></article>
+          <article><span>Seedance入力可</span><strong>0</strong></article>
+          <article><span>キャスト</span><strong>${cast.length}</strong></article>
+        </div>
+      </section>
+      <section class="p0-panel p0-handoff">
+        <div class="p0-panel-head"><span>ハンドオフフロー</span><strong>Blender -> 写真キー -> 承認 -> Seedance</strong></div>
+        <div class="asset-handoff-flow">
+          <article class="blocked"><strong>Blenderプレビュー</strong><span>構図のみ / 入力不可</span></article>
+          <article><strong>GPT Image</strong><span>写真キー化</span></article>
+          <article><strong>承認</strong><span>人間レビュー</span></article>
+          <article class="ready"><strong>Seedance入力可</strong><span>承認済みのみ</span></article>
+        </div>
+      </section>
+      <nav class="p0-tabs">
+        ${["すべて", "Blender", "ストーリーボード", "商品素材", "キャスト", "外部参考"].map((tab, index) => `<span class="${index === 0 ? "active" : ""}">${html(tab)}</span>`).join("")}
+      </nav>
+      <section class="p0-asset-grid">
+        ${cards.map(card => `
+          <article class="${card.allowed ? "allowed" : "blocked"}">
+            ${card.image ? `<img src="${html(toProjectPath(card.image))}" alt="${html(card.title)}">` : `<div class="p0-asset-empty">未生成</div>`}
+            <strong>${html(card.title)}</strong>
+            <div class="p0-badges">
+              <span>${html(card.kind)}</span>
+              <span>${html(card.role)}</span>
+              <span>${html(card.approval)}</span>
+              <span>${html(card.rights)}</span>
+              <span>${card.allowed ? "Seedance入力可" : "Seedance入力不可"}</span>
             </div>
           </article>
-        ` : "<article class=\"render-card\"><div><strong>Blender実画面なし</strong><span>workspace/scripts/capture-blender-screen.sh を実行</span></div></article>"}
-      </div>
-    </section>
-    <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">Blenderライブプレート</span><h3>レンダー結果とマニフェスト</h3></div></div>
-      <div class="render-shelf">
-        ${blenderRenders.map(item => `
-          <article class="render-card">
-            ${item.path && item.path.match(/\.(png|jpe?g|webp)$/i) ? `<img src="${html(toProjectPath(item.path))}?t=${encodeURIComponent(item.mtime || "")}" alt="${html(item.path)}">` : ""}
-            <div>
-              <strong>${html(item.path)}</strong>
-              <span>${html(item.mtime || "")} / ${html(item.bytes || 0)} bytes</span>
-            </div>
-          </article>
-        `).join("") || "<article class=\"render-card\"><div><strong>Blenderレンダーなし</strong><span>workspace/scripts/render-blender-demo.sh を実行</span></div></article>"}
-      </div>
-      <div class="data-list">
-        ${blenderManifests.map(item => `<article><strong>${html(item.name || item.id)}</strong><span>${html(item.path || "")} / ${html(statusJa(item.review_status || ""))}</span></article>`).join("") || "<article><strong>マニフェストなし</strong><span>レンダースクリプトが workspace/assets/3d/manifests/*.json に書き込みます</span></article>"}
-      </div>
-    </section>
-    <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">ページレンダー</span><h3>ダウンロード可能なローカル出力</h3></div></div>
-      <div class="data-list">
-        ${pageRenders.map(item => `<article><strong>${html(item.name || item.id)}</strong><span>${html(item.type)} / ${html(item.path)}</span></article>`).join("") || "<article><strong>ページレンダーなし</strong><span>先にローカルレンダー取得を実行</span></article>"}
-      </div>
-    </section>
-    <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">ソースキャプチャ</span><h3>ワークフローと操作画面の記録</h3></div></div>
-      <div class="data-list">
-        ${captures.map(item => `<article><strong>${html(item.name || item.id)}</strong><span>${html(item.type)} / ${html(item.path)}</span></article>`).join("") || "<article><strong>キャプチャなし</strong><span>source capturesフォルダは空です</span></article>"}
-      </div>
+        `).join("")}
+      </section>
     </section>
   `;
 }
@@ -328,22 +648,19 @@ function renderAssets() {
 function renderCastLibrary() {
   const cast = pageState.castManifest?.cast || [];
   return `
-    <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">AI演者ライブラリ</span><h3>${cast.length}人の生成演者</h3></div><span class="thin-pill success">使用中ライブラリ</span></div>
-      <div class="cast-library-grid">
+    ${panel({ eyebrow: "AI演者ライブラリ", title: `${cast.length}人の生成演者`, className: "wide", badge: "使用中ライブラリ", body: `
+      <div class="cast-compact-grid">
         ${cast.map(item => `
-          <article class="cast-card">
+          <article class="cast-compact-card">
             <img src="${html(toProjectPath(item.asset_path))}" alt="${html(item.name)}">
-            <div>
-              <h3>${html(item.name)}</h3>
-              <span>${html(item.id)}</span>
-              <p>${html(displayText(item.role))}</p>
-              <div class="kv-grid"><span>権利</span><strong>${html(displayText(item.rights_status))}</strong><span>範囲</span><strong>${html(displayText(item.use_scope))}</strong></div>
-            </div>
+            <strong>${html(item.name)}</strong>
+            <span>${html(compactText(item.id, 28))}</span>
+            <p>${html(compactText(displayText(item.role), 54))}</p>
+            <em>${html(compactText(displayText(item.rights_status || item.use_scope), 24))}</em>
           </article>
         `).join("")}
       </div>
-    </section>
+    ` })}
   `;
 }
 
@@ -353,68 +670,168 @@ function renderScript() {
   const voiceLines = script.voice_script?.length ? script.voice_script : beats.map(beat => beat.narration).filter(Boolean);
   const telopLines = script.telop_plan?.length ? script.telop_plan : beats.map(beat => beat.telop).filter(Boolean);
   return `
-    <section class="page-panel wide">
-      <div class="panel-heading">
-        <div><span class="eyebrow">60秒台本</span><h3>${html(script.title || "台本未登録")}</h3></div>
-        <span class="thin-pill success">${html(statusJa(script.status || "done"))}</span>
-      </div>
-      <div class="script-board">
+    ${panel({ eyebrow: "台本", title: script.title || "台本未登録", className: "wide", badge: statusJa(script.status || "done"), body: `
+      <div class="script-timeline">
         ${beats.map(beat => `
-          <article class="script-row">
-            <div><strong>${html(beat.time || "")}</strong><span>${html(beat.clip || "")}</span></div>
-            <div><span>映像</span><p>${html(beat.visual || "")}</p></div>
-            <div><span>ナレーション</span><p>${html(beat.narration || "")}</p></div>
-            <div><span>テロップ</span><strong>${html(beat.telop || "")}</strong></div>
+          <article>
+            <time>${html(beat.time || "")}</time>
+            <strong>${html(beat.clip || "")}</strong>
+            <p>${html(compactText(beat.visual || "", 84))}</p>
+            <span>${html(compactText(beat.telop || beat.narration || "", 42))}</span>
           </article>
-        `).join("") || "<article class=\"script-row\"><p>台本がまだ登録されていません。</p></article>"}
+        `).join("") || `<article><strong>台本未登録</strong><p>generation-state.json 待機中</p></article>`}
       </div>
-    </section>
-    <section class="page-panel">
-      <div class="panel-heading"><div><span class="eyebrow">音声台本</span><h3>${html(script.voice || "Higgsfield ElevenLabs")}</h3></div></div>
-      <div class="script-line-list">${voiceLines.map(line => `<p>${html(line)}</p>`).join("")}</div>
-    </section>
-    <section class="page-panel">
-      <div class="panel-heading"><div><span class="eyebrow">字幕テロップ</span><h3>${html(script.subtitles || "後編集")}</h3></div></div>
-      <div class="script-line-list">${telopLines.map(line => `<p>${html(line)}</p>`).join("")}</div>
-    </section>
+    ` })}
+    ${panel({ eyebrow: "音声", title: script.voice || "Higgsfield ElevenLabs", body: compactList(voiceLines.slice(0, 12).map((line, index) => ({ title: `${index + 1}`, meta: line })), "音声台本なし") })}
+    ${panel({ eyebrow: "字幕", title: script.subtitles || "後編集", body: compactList(telopLines.slice(0, 12).map((line, index) => ({ title: `${index + 1}`, meta: line })), "字幕なし") })}
   `;
 }
 
 function renderJobs() {
   const jobs = pageState.state.jobs || [];
   return `
-    <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">Seedanceジョブ</span><h3>実ジョブ状態</h3></div><span class="thin-pill danger">有料生成未実行</span></div>
-      <div class="job-table">
+    ${panel({ eyebrow: "Seedanceジョブ", title: "生成キューとレビュー", className: "wide", badge: "承認必須", body: `
+      <div class="job-card-grid">
         ${jobs.map(job => `
-          <article class="job-row ${statusClass(job.status)}">
-            <div><strong>${html(displayText(job.title))}</strong><span>${html(job.id)}</span></div>
-            <div><span>状態</span><strong>${html(statusJa(job.status))}</strong></div>
-            <div><span>参照素材</span><strong>${html(job.primary_reference || "-")}</strong></div>
-            <div><span>クレジット</span><strong>${html(displayText(job.cost_credits || "not estimated"))}</strong></div>
-            <div><span>レビュー</span><strong>${html(statusJa(job.review || "pending"))}</strong></div>
-            <p>${html(displayText(job.note || ""))}</p>
+          <article class="${statusClass(job.status)}">
+            ${jobPreview(job, "job-card-media")}
+            <div>
+              <strong>${html(displayText(job.title || job.id))}</strong>
+              <span>${html(statusJa(job.status))} / ${html(job.duration_seconds ? `${job.duration_seconds}s` : "-")} / ${html(job.aspect_ratio || "-")}</span>
+              <p>${html(compactText(job.rejection_reason || job.note || "", 76))}</p>
+              <em>${html(job.cost_credits || "未見積")} credits</em>
+            </div>
           </article>
-        `).join("")}
+        `).join("") || `<article><div></div><strong>ジョブなし</strong><span>state待機中</span></article>`}
       </div>
-    </section>
+    ` })}
   `;
 }
 
 function renderGates() {
   const gates = pageState.state.gates || [];
   return `
-    <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">安全ゲート</span><h3>生成・公開前の停止条件</h3></div></div>
-      <div class="gate-grid">
+    ${panel({ eyebrow: "安全ゲート", title: "生成・公開前の停止条件", className: "wide", body: `
+      <div class="gate-signal-grid">
         ${gates.map(gate => `
-          <article class="gate-detail ${statusClass(gate.status)}">
-            <span class="thin-pill ${statusClass(gate.status)}">${html(statusJa(gate.status))}</span>
-            <h3>${html(gate.label)}</h3>
-            <p>${html(gate.id)}</p>
+          <article class="${statusClass(gate.status)}">
+            <i></i>
+            <strong>${html(gate.label || gate.id)}</strong>
+            <span>${html(statusJa(gate.status))}</span>
+            <small>${html(gate.id || "")}</small>
           </article>
-        `).join("")}
+        `).join("") || `<article><i></i><strong>ゲートなし</strong><span>待機中</span></article>`}
       </div>
+    ` })}
+  `;
+}
+
+function renderGeneration() {
+  const data = normalizeFactoryState(pageState.runtime, pageState.state || {}, pageState.library || {});
+  return `
+    <section class="p0-review">
+      <header class="p0-page-alert">
+        <div>
+          <span class="danger-label">BLOCKED</span>
+          <h3>承認済みphotoreal key visualが必要です</h3>
+          <p>この画像はBlender構図コンポジションです。Seedanceへ投入するには、承認済みの写実キー画像が必要です。BlenderはSeedance入力不可。</p>
+        </div>
+        <a href="assets.html">素材分類を見る</a>
+      </header>
+      <main class="p0-review-board">
+        <article class="p0-review-card p0-blender-card">
+          <div class="p0-card-head"><span>Blender構図（構図の正）</span><b>Seedance入力不可</b></div>
+          ${data.blenderImage ? `<img src="${html(toProjectPath(data.blenderImage))}" alt="Blender構図コンポ">` : `<div class="image-placeholder">BLENDER</div>`}
+          <p>構図・カメラ・動きの設計図です。画作りの正ではありません。</p>
+        </article>
+        <article class="p0-review-card p0-key-card">
+          <div class="p0-card-head"><span>写真キー候補（画作りの正）</span><b>未生成</b></div>
+          <div class="p0-empty-key">
+            <strong>未生成</strong>
+            <span>写真キー画像を4枚生成してください</span>
+          </div>
+          <p>承認後のみSeedance primary image候補になります。</p>
+        </article>
+      </main>
+      <aside class="p0-checklist">
+        <div class="p0-panel-head"><span>承認チェックリスト</span><strong>未完了 0/5</strong></div>
+        ${["構図は意図通りか", "商品が美しく見えるか", "質感・ライティングの品質", "色味はブランドに合うか", "権利・素材の利用範囲"].map(item => `<label><input type="checkbox" disabled> ${html(item)}</label>`).join("")}
+        <div class="p0-actions">
+          <button type="button">差し戻し</button>
+          <button type="button">修正依頼</button>
+          <button type="button" disabled>承認する</button>
+          <button type="button" disabled>次へ</button>
+        </div>
+      </aside>
+      <section class="p0-key-slots">
+        <div class="p0-panel-head"><span>4 key visual候補スロット</span><strong>0/4 生成済み</strong></div>
+        <div>
+          ${data.keySlots.map((_, index) => `
+            <article>
+              <i>0${index + 1}</i>
+              <strong>写真キー候補 ${index + 1}</strong>
+              <span>not_generated</span>
+              <small>Seedance入力不可</small>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+    </section>
+  `;
+}
+
+function broadcastPostText() {
+  const state = pageState.state || {};
+  const project = compactText(state.meta?.project || state.script?.title || "新作リップCM", 34);
+  return compactText(
+    `${project}を制作中です。完成後に、商品の質感と余韻を丁寧に届ける短編映像として公開します。#ROUGENOIR #リップ #新作CM`,
+    276,
+  );
+}
+
+function renderBroadcast() {
+  const data = normalizeFactoryState(pageState.runtime, pageState.state || {}, pageState.library || {});
+  const post = broadcastPostText();
+  return `
+    <section class="p0-publish">
+      <article class="p0-publish-hero p0-blocked">
+        <span class="danger-label">公開不可 / BLOCKED</span>
+        <h3>${html(data.project)}</h3>
+        <p>理由: 写真キー画像未承認のため、まだ公開できません。</p>
+        <div class="p0-gate-list">
+          <span class="bad">外部投稿: 未実行</span>
+          <span class="bad">人間承認: 必須</span>
+          <span class="ok">ローカル限定: ON</span>
+        </div>
+      </article>
+      <section class="p0-panel">
+        <div class="p0-panel-head"><span>内部ステータス</span><strong>工場内の判断</strong></div>
+        <div class="p0-publish-status">
+          <label><input type="checkbox" disabled> 写真キー画像: 未生成 / 未承認</label>
+          <label><input type="checkbox" disabled> Seedance生成: 禁止中</label>
+          <label><input type="checkbox" disabled> 音声 / 字幕 / Palmier: 映像承認後</label>
+          <label><input type="checkbox" disabled> 公開可否: 公開不可</label>
+        </div>
+      </section>
+      <section class="p0-panel">
+        <div class="p0-panel-head"><span>外向けコピー（ドラフト）</span><strong>内部失敗理由は混ぜない</strong></div>
+        <textarea class="broadcast-post" id="broadcastPost" readonly>${html(post)}</textarea>
+        <div class="broadcast-copy-row"><button type="button" id="copyBroadcastPost">コピー</button><span id="broadcastCopyStatus">未コピー</span></div>
+      </section>
+      <section class="p0-panel">
+        <div class="p0-panel-head"><span>安全性・コンプライアンス</span><strong>公開前ゲート</strong></div>
+        <div class="p0-gate-list">
+          <span class="bad">有料生成: 未実行</span>
+          <span class="bad">外部投稿: 未実行</span>
+          <span class="warn">人間承認: 必須</span>
+          <span class="ok">権利確認: UI上で分離</span>
+        </div>
+      </section>
+      <section class="p0-panel">
+        <div class="p0-panel-head"><span>次の判断</span><strong>公開ではなくレビューへ戻す</strong></div>
+        <p class="compact-copy">写真キー画像4枚を生成し、レビュー画面で承認してください。承認まで発信導線はロックします。</p>
+        <a class="p0-link" href="generation-review.html">生成レビューへ</a>
+      </section>
     </section>
   `;
 }
@@ -424,32 +841,66 @@ function renderActivity() {
   const inbox = pageState.runtime?.inbox || [];
   const files = pageState.runtime?.files?.recent || [];
   return `
-    <section class="page-panel">
-      <div class="panel-heading"><div><span class="eyebrow">履歴</span><h3>状態監査ログ</h3></div></div>
-      <div class="data-list">${activity.slice().reverse().map(item => `<article><strong>${html(displayText(item.actor))}</strong><span>${html(item.time)} / ${html(displayText(item.event))}</span></article>`).join("")}</div>
-    </section>
-    <section class="page-panel">
-      <div class="panel-heading"><div><span class="eyebrow">Codex受信箱</span><h3>${inbox.length}件のメッセージ</h3></div></div>
-      <div class="data-list">${inbox.slice().reverse().slice(0, 8).map(item => `<article><strong>${html(item.source || "UI")}</strong><span>${html(item.time)} / ${html(item.message || "")}</span></article>`).join("") || "<article><strong>空</strong><span>配布モードでは受信箱ログなし</span></article>"}</div>
-    </section>
-    <section class="page-panel wide">
-      <div class="panel-heading"><div><span class="eyebrow">監視ファイル</span><h3>${files.length}件の最近更新</h3></div><span class="thin-pill">git ${html(pageState.runtime?.git?.changed_files ?? 0)}件変更</span></div>
-      <div class="data-list">${files.map(file => `<article><strong>${html(file.path)}</strong><span>${html(file.mtime || "")} / ${html(file.bytes || 0)} bytes</span></article>`).join("")}</div>
-    </section>
+    ${panel({ eyebrow: "履歴", title: "状態監査ログ", body: compactList(activity.slice().reverse().slice(0, 18).map(item => ({ title: displayText(item.actor), meta: `${item.time} / ${displayText(item.event)}` })), "履歴なし") })}
+    ${panel({ eyebrow: "Codex受信箱", title: `${inbox.length}件のメッセージ`, body: compactList(inbox.slice().reverse().slice(0, 12).map(item => ({ title: item.source || "UI", meta: item.time, note: item.message })), "受信箱は空") })}
+    ${panel({ eyebrow: "監視ファイル", title: `${files.length}件の最近更新`, className: "wide", badge: `git ${pageState.runtime?.git?.changed_files ?? 0}`, body: compactList(files.slice(0, 18).map(file => ({ title: file.path, meta: `${file.mtime || ""} / ${file.bytes || 0} bytes` })), "更新ファイルなし") })}
   `;
 }
 
 function renderPageContent() {
   const renderers = {
+    factory: renderFactory,
+    generation: renderGeneration,
+    "generation-review": renderGeneration,
     "studio-lines": renderStudioLines,
     assets: renderAssets,
     "cast-library": renderCastLibrary,
     script: renderScript,
     jobs: renderJobs,
     gates: renderGates,
+    broadcast: renderBroadcast,
+    publish: renderBroadcast,
     activity: renderActivity,
   };
   document.getElementById("pageContent").innerHTML = (renderers[pageState.page] || renderStudioLines)();
+  setupBroadcastCopy();
+  setupGenerationCopy();
+}
+
+function setupBroadcastCopy() {
+  const button = document.getElementById("copyBroadcastPost");
+  const textarea = document.getElementById("broadcastPost");
+  const status = document.getElementById("broadcastCopyStatus");
+  if (!button || !textarea || button.dataset.ready) return;
+  button.dataset.ready = "1";
+  button.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(textarea.value);
+      status.textContent = "コピー済み";
+    } catch {
+      textarea.select();
+      document.execCommand("copy");
+      status.textContent = "コピー済み";
+    }
+  });
+}
+
+function setupGenerationCopy() {
+  const button = document.getElementById("copyGenerationPost");
+  const textarea = document.getElementById("generationPost");
+  const status = document.getElementById("generationCopyStatus");
+  if (!button || !textarea || button.dataset.ready) return;
+  button.dataset.ready = "1";
+  button.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(textarea.value);
+      status.textContent = "コピー済み";
+    } catch {
+      textarea.select();
+      document.execCommand("copy");
+      status.textContent = "コピー済み";
+    }
+  });
 }
 
 async function loadPageData() {
