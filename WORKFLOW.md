@@ -146,6 +146,7 @@ Palmier Pro仕上げ(import_media → sync_audio → 字幕 → 色 → [upscale
 - ショットごとに同じ`.blend`由来の参照画像を使うことで、複数ショット間の一貫性を保つ。
 - **プロンプトは「肉付け」方針で書く**: Blenderの構図・配置・カメラを守り、写実キービジュアルの質感・光・素材感を起点に、映画的な動きを足す。低品質なBlender画像をテキストだけで高級CMへ変換できると期待しない。
 - **光・空気感は撮影用語で書く。図形的な名詞(ring/particle/line/dot)を数えられるモノとして描写しない**(FP-003)。bokeh、volumetric haze、soft glints、lens flareなど写真的な語彙を使う。
+- **複数の参照素材(商品/人物/構図違い)がある場合、1枚に事前合成しない。まずツール本来のAPI/CLIが複数画像入力に対応していないか確認する**(FP-004)。対応していれば、複数画像をそのまま渡し、プロンプトで各画像の役割(index/role)を明記する。`gpt-image-reference.sh`は複数`--image`対応が必要(§6タスク12参照)。Higgsfield MCPのSeedanceが`start_image`/`end_image`や複数参照に対応しているかも、`higgsfield-status.sh`のmodel_get相当で確認してから前提を決める。
 
 ### 7-9. 承認ゲート2: 素材承認
 
@@ -271,6 +272,7 @@ MCPリクエスト自体(実行前のペイロード)は`workspace/mcp-requests/
 
 - Higgsfield MCPの画像生成(任意・補助トーン確認用)のモデル実名(暫定`image2`)とimg2img対応可否は未検証だが、必須の通過点ではなくなったため、パイプライン全体のブロッカーにはならない。使わない選択も可。
 - **検証済み・失敗: 「Blenderレンダーをそのまま`start_image`にして、テキストプロンプトの『肉付け』指示だけで写実化する」は実際に試して失敗した**(リップスティックCM、2026-07-01、270 credits消費)。低ポリ感が残り、図形的な光表現(`ring`/`particle`)が2Dグラフィックとして描画された。正しくは、写実キービジュアルを別途生成(GPT Image edit mode等)し、承認してからSeedanceに渡す。詳細は`references/known-failure-patterns.md`(FP-001〜003)。
+- **`gpt-image-reference.sh`と`seedance-cost.sh`/`seedance-generate.sh`は参照画像を1枚しか渡せない設計になっている。** しかしGPT Imageの実CLIは複数`--image`(役割付き)に対応済み(FP-004)。Higgsfield MCP側のSeedanceが`start_image`/`end_image`や複数参照に対応しているかは未確認。スクリプト側が複数画像に未対応だったため、これまで参照素材を1枚に事前合成する不自然な運用をしていた(FP-002の一因)。§6タスク12で修正予定。
 - Palmier Proの`mirelo-sfx-v1.5-video-to-audio`(動画からSFX生成)は`list_models`で存在を確認しただけで、実際に動画を渡して満足のいく効果音が返るかは未検証。`elevenlabs-music`等のBGM尺指定(`durations`)も同様に未実行。最初の1回は試し生成で品質を見る前提とする。
 - リップシンクは未解決。カメラ目線の会話カットは演出で回避するか、専用ツールを別途検討する。
 - 音声と映像のタイミング合わせはPalmier Proの`sync_audio`と手動の速度調整に依存し、完全自動同期は保証しない。

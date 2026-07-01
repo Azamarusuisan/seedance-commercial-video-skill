@@ -202,6 +202,12 @@ Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.
     5. コスト承認と生成承認は別物として扱う(`CLAUDE.md`のSafety/Cost Gate参照)。
     6. 結果が今回も失敗なら、`references/known-failure-patterns.md`に新しいFPエントリを追記してから次を試す。成功なら、そのこと自体も同ファイルか案件のcondition mdに記録する(何が効いたかも財産になる)。
 
+12. **未着手: マルチモーダル/複数参照画像への未対応を修正する(`references/known-failure-patterns.md`FP-004)。** ユーザー指摘: 「素材が結局1個しか入ってなかったり、マルチモーダルが強みなはずなのに全然活用できてない」。実装内容:
+    - `workspace/scripts/gpt-image-reference.sh`を、複数の`--image`を渡せるように拡張する(`image_gen.py`のCLIは複数`--image`フラグ+役割はプロンプト側で指定、に対応済み。`references/cli.md`参照)。例: `GPT_IMAGE_SOURCE_IMAGES`(改行/カンマ区切り)を受け取り、ループして複数`--image`を組み立てる。既存の単数`GPT_IMAGE_SOURCE_IMAGE`は後方互換で残す。
+    - Higgsfield MCPのSeedanceが`start_image`/`end_image`や複数参照画像に対応しているか、`higgsfield-status.sh`のmodel_get相当のリクエストで確認する。対応していれば`seedance-cost.sh`/`seedance-generate.sh`に`END_IMAGE_FILE`等の追加パラメータを実装する。
+    - 対応確認・実装後、リップスティックCMのClip 2(唇キービジュアル)を、事前合成ではなく「商品キービジュアル+唇クロップの2枚を役割指定して渡す」方式に切り替えられないか検討する(タスク11の後、任意)。
+    - この修正は今後の全プロジェクトに適用される、スクリプトレベルの改善(プロジェクト固有ではない)。
+
 ## 7. 未確定・ユーザー判断が必要な点
 
 - **Higgsfield MCPの画像生成モデル名・img2img(参照画像入力)対応可否は未検証。** Higgsfield MCPが接続された環境で最初に確認すること。

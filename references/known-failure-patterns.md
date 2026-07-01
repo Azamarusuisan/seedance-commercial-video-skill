@@ -37,6 +37,13 @@ Seedance生成(cost見積もりも含む)前に、このファイルの全エン
 - **修正ルール**: 光や空気感を表現する時は、図形的な名詞(ring, line, dot, particle)ではなく、撮影用語(bokeh, soft glints, volumetric haze, shallow depth of field, warm rim light, lens flare)を使う。「輪」「粒」を数えられるモノとして描写しない。
 - **出典**: `workspace/outputs/lipstick-cm-30s/review_frames/clip_01_contact.jpg`、`clip_02_contact.jpg`の目視レビュー(2026-07-01、Claude Code)。この文書が初出。
 
+## FP-004: ツールが複数画像入力に対応しているのに、スクリプトが1枚しか渡せず、無理な事前合成に頼ってしまう
+
+- **症状**: 参照素材を1枚の画像に手動で合成してから渡す羽目になり、その合成が不自然(FP-002のような貼り合わせ)になる。あるいは、本来複数の参照(商品/人物/構図違い)を活かせるはずが、結局1枚しか使われず情報量が落ちる。
+- **原因**: ツール自体はマルチモーダル・複数参照画像に対応していることが多いが、それをラップするシェルスクリプトが単一の`image=`/`--image`パラメータしか実装していないため、使う側が「1枚に収めないといけない」と誤解する。具体例: `workspace/scripts/gpt-image-reference.sh`は`--image`を1つしか渡せないが、`image_gen.py`のCLI(`references/cli.md`)は「For multi-image edits, pass repeated `--image` flags. Their order is meaningful, so describe each image by index and role in the prompt.」と明記しており、複数画像+役割指定に対応している。`seedance-cost.sh`/`seedance-generate.sh`も`image=`単数のみで、Higgsfield MCP側が`start_image`/`end_image`や複数参照に対応しているかは未確認のまま。
+- **修正ルール**: 新しい参照画像の渡し方を実装する前に、**ラップ先のツール本来のAPI/CLIが複数画像・マルチモーダル入力に対応していないか必ず確認する。** 対応していれば、事前合成で1枚に潰すのではなく、複数画像をそのまま渡し、プロンプト側で各画像の役割(index/role)を明記する。スクリプトが単一画像しかサポートしていないという理由だけで設計を単純化しない。
+- **出典**: `${CODEX_HOME}/skills/.system/imagegen/references/cli.md`(2026-07-01、Claude Codeが確認)、ユーザー指摘「素材が結局1個しか入ってなかったり、マルチモーダルが強みなはずなのに全然活用できてない」。
+
 ---
 
 ## 新規エントリのテンプレート
