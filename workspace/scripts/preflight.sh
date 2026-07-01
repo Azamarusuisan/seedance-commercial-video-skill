@@ -30,7 +30,7 @@ do
   fi
 done
 
-for cmd in git rg python3 node npm; do
+for cmd in git rg python3; do
   if command -v "$cmd" >/dev/null 2>&1; then
     log_info "$cmd=$(command -v "$cmd")"
   else

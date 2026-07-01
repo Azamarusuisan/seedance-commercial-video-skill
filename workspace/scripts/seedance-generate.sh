@@ -49,12 +49,14 @@ write_mcp_request_with_prompt \
   "$image_arg"
 
 write_status_json "$JOB_LOG" "Higgsfield MCP Seedance generate $MODEL" "pending_mcp_execution" "Prepared MCP request at $REQ_PATH. Run it with the host-provided Higgsfield MCP tool."
-cat > "$URL_LOG" <<'EOF'
+# Single-job semantics: record-mcp-json.sh rewrites this file wholesale from the
+# job JSON, so write a fresh placeholder here too. For multiple clips, override
+# URL_LOG per clip instead of accumulating in one file.
+cat > "$URL_LOG" <<EOF
 # Result URLs
 
-Pending Higgsfield MCP execution.
-
-After running the prepared Seedance generation MCP request with Higgsfield MCP, record the result URL here and download the MP4 to the configured output path if available.
+Pending Higgsfield MCP execution for $REQ_PATH.
+After running the prepared Seedance generation MCP request, record the result URL here and download the MP4 to $OUT_MP4 if available.
 EOF
 
 log_info "Prepared Seedance generation MCP request: $REQ_PATH"

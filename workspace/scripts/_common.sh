@@ -179,13 +179,21 @@ PY
 default_image_file() {
   if [ -n "${IMAGE_FILE:-}" ]; then
     printf '%s\n' "$IMAGE_FILE"
-  elif [ -f "$REPO_ROOT/workspace/assets/reference-image-v1.png" ]; then
-    printf '%s\n' "$REPO_ROOT/workspace/assets/reference-image-v1.png"
-  elif [ -f "$REPO_ROOT/workspace/assets/reference-keiba-ai-gptimage-v1.png" ]; then
-    printf '%s\n' "$REPO_ROOT/workspace/assets/reference-keiba-ai-gptimage-v1.png"
-  else
-    printf '%s\n' "$REPO_ROOT/workspace/assets/reference-keiba-ai-v1.png"
+    return
   fi
+  if [ -f "$REPO_ROOT/workspace/assets/reference-image-v1.png" ]; then
+    printf '%s\n' "$REPO_ROOT/workspace/assets/reference-image-v1.png"
+    return
+  fi
+  # No generic reference image. The keiba assets are a shipped sample, not a
+  # universal default, so never adopt them silently: warn loudly so a fresh
+  # project doesn't ship another project's image. Set IMAGE_FILE to override.
+  local fallback="$REPO_ROOT/workspace/assets/reference-keiba-ai-v1.png"
+  if [ -f "$REPO_ROOT/workspace/assets/reference-keiba-ai-gptimage-v1.png" ]; then
+    fallback="$REPO_ROOT/workspace/assets/reference-keiba-ai-gptimage-v1.png"
+  fi
+  log_warn "No generic reference image at workspace/assets/reference-image-v1.png. Falling back to sample asset: $fallback. Set IMAGE_FILE=... to use your own."
+  printf '%s\n' "$fallback"
 }
 
 approval_gate() {
@@ -199,7 +207,8 @@ approval_gate() {
     exit 2
   fi
 
-  if rg -i 'do not run|pending|proposal|not approved' "$prompt_file" >/dev/null 2>&1; then
+  # grep, not rg: a safety gate must not fail open when ripgrep is absent.
+  if grep -iE 'do not run|pending|proposal|not approved' "$prompt_file" >/dev/null 2>&1; then
     write_status_json "$log_path" "$command_name" "blocked" "Prompt still contains pending/proposal markers."
     log_warn "Blocked: remove pending/proposal markers from $prompt_file after final approval."
     exit 2

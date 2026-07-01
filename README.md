@@ -2,6 +2,18 @@
 
 Higgsfield / Seedance short-video production skill and MCP-first workflow package. It supports commercials, social posts, product demos, app walkthroughs, explainers, event teasers, portfolio clips, background loops, and story scenes.
 
+## Quick Start
+
+```bash
+bash workspace/scripts/preflight.sh          # 環境チェック
+bash workspace/scripts/serve-ui.sh           # ローカルUI (127.0.0.1:8787)
+# 承認後のみ: APPROVED=1 で費用見積もり→生成
+APPROVED=1 bash workspace/scripts/seedance-cost.sh
+APPROVED=1 bash workspace/scripts/seedance-generate.sh
+```
+
+生成系は `APPROVED=1` と最終承認なしでは止まります。詳細手順・MCP連結・Factory UI・TikTok広告運用・Hermes自律ループは以降の節を参照。
+
 ## Included Skill
 
 - `SKILL.md`

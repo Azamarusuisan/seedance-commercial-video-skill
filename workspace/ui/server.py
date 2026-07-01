@@ -122,7 +122,8 @@ def blender_summary() -> dict[str, object]:
     app_paths = sorted(Path("/Applications").glob("Blender*")) if Path("/Applications").exists() else []
     executable = ""
     if app_paths:
-        app_executable = app_paths[0] / "Contents" / "MacOS" / "Blender"
+        # Highest version: glob+sort is ascending, so the last entry wins.
+        app_executable = app_paths[-1] / "Contents" / "MacOS" / "Blender"
         if app_executable.exists():
             executable = str(app_executable)
     if not executable:
@@ -445,16 +446,25 @@ class CodexWorkflowHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_OPTIONS(self) -> None:
+        # No CORS allow-headers: cross-origin requests are intentionally rejected.
+        # This server pastes-and-runs text into the user's Terminal, so it must
+        # never accept requests a malicious site could trigger via the browser.
         self.send_response(204)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "content-type")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.end_headers()
+
+    def origin_is_local(self) -> bool:
+        # Browsers always send Origin on cross-origin requests. A missing Origin
+        # means a local CLI/curl, which is allowed. A present Origin must be
+        # loopback. ponytail: host allowlist, tighten to exact port if needed.
+        origin = self.headers.get("Origin")
+        if not origin:
+            return True
+        host = urlparse(origin).hostname
+        return host in {"127.0.0.1", "localhost", "::1"}
 
     def send_json(self, payload: dict[str, object], status: int = 200) -> None:
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
-        self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
@@ -470,6 +480,10 @@ class CodexWorkflowHandler(SimpleHTTPRequestHandler):
     def do_POST(self) -> None:
         if self.path != "/api/send-to-codex":
             self.send_error(404, "Unknown endpoint")
+            return
+
+        if not self.origin_is_local():
+            self.send_error(403, "Cross-origin requests are not allowed")
             return
 
         try:
