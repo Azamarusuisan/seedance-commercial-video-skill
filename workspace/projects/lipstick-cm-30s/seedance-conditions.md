@@ -2,7 +2,7 @@
 
 Status:
 - Reference image and camera storyboard approved by user.
-- Conditions are proposed here for review.
+- Cost estimate completed on 2026-07-01.
 - Paid Seedance generation is not approved yet.
 
 ## Video Generation
@@ -12,7 +12,7 @@ Status:
 - Count: 2 clips
 - Duration: 15 seconds each, 30 seconds total
 - Primary format: `9:16`
-- Resolution target: `4k` if the cost estimate is acceptable; fall back to `1080p` only if credits are too high
+- Resolution target: recommended `1080p`; optional `720p` if user wants the lowest draft cost; `4k` is available but expensive
 - Bitrate mode: `high`
 - Seedance audio: `generate_audio=false`
 - Visual quality target: high-brand luxury cosmetics commercial, not casual SNS beauty content
@@ -42,7 +42,7 @@ Add on top:
 ## Clip 1
 
 - Time: 0-15s
-- Prompt: `workspace/prompts/lipstick-cm/clip_01_0-15s_9x16_seedance_draft.txt`
+- Prompt: `workspace/prompts/lipstick-cm/final/clip_01_0-15s_9x16_seedance_final.txt`
 - Primary reference: `workspace/assets/3d/renders/lipstick_cm_previs.png`
 - Camera storyboard:
   - `workspace/assets/3d/renders/lipstick_cm_panel_01_silhouette.png`
@@ -54,8 +54,8 @@ Add on top:
 ## Clip 2
 
 - Time: 15-30s
-- Prompt: `workspace/prompts/lipstick-cm/clip_02_15-30s_9x16_seedance_draft.txt`
-- Primary reference: `workspace/assets/3d/renders/lipstick_cm_previs.png`
+- Prompt: `workspace/prompts/lipstick-cm/final/clip_02_15-30s_9x16_seedance_final.txt`
+- Primary reference: `workspace/assets/references/lipstick-cm/clip_02_product_plus_rina_lips_clean.png`
 - Lips reference only: `workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png`
 - Camera storyboard:
   - `workspace/assets/3d/renders/lipstick_cm_panel_03_hero_vfx.png`
@@ -73,6 +73,20 @@ Seedance video generation remains silent. High-brand sound is handled after the 
 - SFX: soft cap lift, metal shimmer, gloss sweep, subtle particle sparkle, low cinematic tail at the final hero frame
 - Tooling: Palmier Pro `generate_audio` for BGM/SFX only, after model specs and cost impact are shown to the user
 
+## Cost Estimate
+
+Credits before generation: `996.8`
+
+| Option | Clip 1 | Clip 2 | Total | Remaining | Recommendation |
+|---|---:|---:|---:|---:|---|
+| `4k/high` | 330 | 330 | 660 | 336.8 | Best quality, high cost |
+| `1080p/high` | 135 | 135 | 270 | 726.8 | Recommended lower-cost production option |
+| `720p/high` | 67 | 67 | 134 | 862.8 | Cheapest review draft, lower finish quality |
+
+Use `1080p/high` unless the user explicitly chooses `720p/high` or `4k/high`.
+
+Generation command must still wait for final human permission. Cost approval is not the same as generation approval.
+
 ## Rights / Safety
 
 - `ROUGE NOIR` is a placeholder fictional brand.
@@ -83,7 +97,10 @@ Seedance video generation remains silent. High-brand sound is handled after the 
 
 ## Next Approval
 
-Next step is cost estimate only, not generation.
+Next step is final paid-generation permission, not automatic generation.
 
 Ask:
-`この条件でSeedance 2本のコスト見積を取ってください`
+`1080p/high、合計270 creditsでSeedance 2本を生成して`
+
+Alternative:
+`720p/high、合計134 creditsでSeedance 2本を生成して`

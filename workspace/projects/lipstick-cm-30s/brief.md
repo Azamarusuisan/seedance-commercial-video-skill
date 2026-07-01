@@ -4,9 +4,9 @@ Source script:
 `workspace/briefs/lipstick-cm-30s-script.md`
 
 Status:
-- Proposal only.
-- Paid generation is not approved.
-- Reference image is not approved yet.
+- Reference image and camera storyboard approved.
+- Cost estimate completed.
+- Paid generation is not approved yet.
 - Product/brand name is still a placeholder: `ROUGE NOIR`.
 
 Path:
@@ -21,9 +21,10 @@ Local files prepared:
   - `workspace/assets/3d/renders/lipstick_cm_panel_02_cap_macro.png`
   - `workspace/assets/3d/renders/lipstick_cm_panel_03_hero_vfx.png`
   - `workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png`
-- Clip 1 prompt draft: `workspace/prompts/lipstick-cm/clip_01_0-15s_9x16_seedance_draft.txt`
-- Clip 2 prompt draft: `workspace/prompts/lipstick-cm/clip_02_15-30s_9x16_seedance_draft.txt`
+- Clip 1 final prompt: `workspace/prompts/lipstick-cm/final/clip_01_0-15s_9x16_seedance_final.txt`
+- Clip 2 final prompt: `workspace/prompts/lipstick-cm/final/clip_02_15-30s_9x16_seedance_final.txt`
 - Rina Hayun lips reference: `workspace/assets/cast/generated_20260629/rina_hayun_lips_closeup.png`
+- Clip 2 clean combined reference: `workspace/assets/references/lipstick-cm/clip_02_product_plus_rina_lips_clean.png`
 
 Current direction:
 - Use the Blender render as structure, product geometry, lighting, and camera-cut reference.
@@ -32,7 +33,12 @@ Current direction:
 - Clip 2 action: product hero -> cropped Rina-inspired lips as deep rouge color blooms on the lips -> product hero. No hand-held product shot.
 - Keep the product fictional. Do not copy Dior logos, packaging, type, or trade dress.
 
-Next approval needed:
-`この参照画像とカメラ割りでOK。Seedance 2本の条件を提示して`
+Cost estimate:
+- Recommended: `1080p/high`, 15s x 2, total `270 credits`
+- Cheapest draft: `720p/high`, 15s x 2, total `134 credits`
+- Highest quality: `4k/high`, 15s x 2, total `660 credits`
 
-Do not run Higgsfield image/video/audio generation until the reference image, final prompts, rights, cost, and budget are approved.
+Next approval needed:
+`1080p/high、合計270 creditsでSeedance 2本を生成して`
+
+Do not run Higgsfield image/video/audio generation until final paid-generation permission is explicit.

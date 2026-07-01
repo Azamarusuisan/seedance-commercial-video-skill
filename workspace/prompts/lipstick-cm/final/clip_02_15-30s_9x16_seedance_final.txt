@@ -1,0 +1,28 @@
+Create a 15-second 9:16 premium cosmetics commercial with Higgsfield Seedance.
+
+Project:
+ROUGE NOIR, placeholder luxury lipstick brand. Original fictional product. Do not copy Dior, any real logo, real packaging, real font, or real brand trade dress.
+
+Reference image:
+Use the provided clean combined reference image as the visual anchor: Blender lipstick previs on the left, Rina Hayun lower-face lips crop on the right. Use the lips crop only as a lips/skin-tone reference for the color-application close-up. Preserve the black lacquer tube, champagne-gold highlight, deep red lipstick color, floating gold/red particles, anamorphic light blades, orbit glow rings, dark luxury studio mood, and minimal composition.
+
+Non-negotiable flesh-out rule:
+Do not replace the Blender storyboard with a different beauty ad. Flesh out the exact Blender previs: keep the same product silhouette, gold rings, black tube, vertical 9:16 packshot framing, orbit light rings, floating particles, camera cuts, and dark stage geometry. Use the Rina Hayun crop only for the anonymous lips color-on close-up, then cut back to the same Blender product hero structure. Add high-end CG polish, cinematic reflections, volumetric light, depth of field, and premium motion on top of that structure.
+
+Visual direction:
+Hollywood-level CG beauty finish, macro product and anonymous lips close-up, glossy red lip color appearing on lips, slow camera movement, match cuts, shallow depth of field, controlled particles, cinematic gold bloom, restrained premium lighting, high-brand cosmetics pacing.
+
+Timing:
+15-18s: Match cut from the previous packshot into an anonymous cropped close-up of Rina Hayun-inspired lips, lower face only. No full face, no selfie background, no hand holding the product.
+18-22s: A deep rouge color blooms across the lips as a cinematic gloss sweep, like pigment and light moving together; keep it elegant and subtle, not magical or cartoonish.
+22-26s: Tight macro lips shot with finished glossy red color, shallow depth of field, champagne highlights, drifting particles in foreground. Keep the model unidentifiable.
+26-30s: Cinematic cut back to the product hero shot. Orbit rings fade, particles settle, and the frame holds premium negative space for the final title.
+
+In-video text:
+Final beat only: small clean text "ROUGE NOIR". Optional tagline must not appear unless the exact tagline is approved later.
+
+Audio:
+generate_audio=false. No narration, no music, no dialogue. High-brand BGM and SFX will be produced later in post.
+
+Safety:
+Rina Hayun is a fictional AI-generated adult cast reference. Do not present her as a real influencer, customer, celebrity, expert, or reviewer. No real brand logos, no Dior name, no copied packaging, no full identifiable face, no hand holding product, no medical/beauty-effect claims, no sales guarantee, no discount or campaign language.
