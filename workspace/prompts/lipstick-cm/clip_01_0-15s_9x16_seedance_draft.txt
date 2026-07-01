@@ -1,0 +1,27 @@
+Status: proposal v1. Do not run. Not approved.
+
+Create a 15-second 9:16 premium cosmetics commercial with Higgsfield Seedance.
+
+Project:
+ROUGE NOIR, placeholder luxury lipstick brand. This is an original fictional product. Do not copy Dior, any real logo, real packaging, real font, or real brand trade dress.
+
+Reference image:
+Use the provided Blender lipstick previs render and camera storyboard panels as the primary visual anchor. Preserve the black lacquer lipstick tube, champagne-gold rim light, dark premium background, deep red bullet, floating gold/red particles, anamorphic light blades, orbit glow rings, macro product photography mood, and large negative space.
+
+Visual direction:
+Hollywood-level CG cosmetics reveal, quiet luxury, restrained color palette, glossy black and deep red, champagne-gold highlights, macro lens, shallow depth of field, slow motion, volumetric light, premium studio reflections, controlled lens bloom, elegant silence, no salesy mood.
+
+Timing:
+0-3s: Extreme macro silhouette. Start almost black. A razor-thin champagne rim light sweeps across the lipstick edge, with faint suspended gold dust.
+3-6s: Hard cut to a cap macro shot. The cap rises in slow motion; black lacquer and gold metal edges catch large softbox reflections.
+6-10s: Match cut to a rotating product hero. Red and champagne orbit light rings wrap around the lipstick, particles drift in depth, reflections glide over the tube.
+10-15s: Slow dolly back into a full premium packshot. The product settles center-frame with cinematic bloom and negative space for title.
+
+In-video text:
+Use no text until the final beat. On the final beat only, show small clean text: "ROUGE NOIR". If readable text is unstable, leave the frame text-free.
+
+Audio:
+generate_audio=false. No narration, no music, no dialogue. Audio will be handled later.
+
+Safety:
+No real brand logos, no Dior name, no copied packaging, no claims, no discount language, no medical or beauty-effect guarantee, no visible real person or celebrity likeness.

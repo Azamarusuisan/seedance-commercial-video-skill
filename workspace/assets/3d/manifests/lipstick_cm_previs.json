@@ -1,0 +1,20 @@
+{
+  "id": "lipstick_cm_previs",
+  "title": "新作リップCM Blenderプリビズ",
+  "status": "ready",
+  "local_only": true,
+  "paid_generation_executed": false,
+  "blend_path": "workspace/assets/3d/blend/lipstick_cm_previs.blend",
+  "render_path": "workspace/assets/3d/renders/lipstick_cm_previs.png",
+  "storyboard_panels": [
+    "workspace/assets/3d/renders/lipstick_cm_panel_01_silhouette.png",
+    "workspace/assets/3d/renders/lipstick_cm_panel_02_cap_macro.png",
+    "workspace/assets/3d/renders/lipstick_cm_panel_03_hero_vfx.png",
+    "workspace/assets/3d/renders/lipstick_cm_panel_04_negative_space_tag.png"
+  ],
+  "scene": "Premium lipstick product-previs with black lacquer, champagne gold rim light, deep red bullet, floating particles, anamorphic light blades, orbit glow rings, and four camera cuts.",
+  "use_scope": "Seedance image-to-video reference plate and local Factory UI review only.",
+  "rights_status": "generated_local",
+  "source_brief": "workspace/briefs/lipstick-cm-30s-script.md",
+  "updated_at": "2026-07-01T06:41:16Z"
+}
