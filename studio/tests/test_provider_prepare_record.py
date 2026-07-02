@@ -80,6 +80,11 @@ class ProviderPrepareRecordTests(unittest.TestCase):
     def test_candidate_pricing_blocks_estimate(self):
         with self.assertRaises(RuntimeError):
             SeedanceProvider().estimate(prompt="x", duration_sec=4)
+        with tempfile.TemporaryDirectory() as tmp:
+            root, contract_path = _root(tmp)
+            ApprovalLog(root / "approvals.jsonl").append(gate="G_storyboard", project="p", target="shot_001", target_sha256=sha256_file(contract_path), verdict="approved")
+            with self.assertRaisesRegex(GenerationBlocked, "active provider pricing missing"):
+                run_generation_from_contract(root=root, contract_path=contract_path, provider=SeedanceProvider())
 
     def test_higgsfield_prepare_and_record_flow(self):
         with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, {"STUDIO_SEED_DIR": str(_active_pricing(tmp))}):

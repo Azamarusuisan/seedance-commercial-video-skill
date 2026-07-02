@@ -145,7 +145,10 @@ def run_generation_from_contract(*, root: Path, contract_path: Path, provider: P
         raise GenerationBlocked(str(exc)) from exc
 
     duration = float(contract.get("duration_sec", 0))
-    estimate = provider.estimate(prompt=prompt, duration_sec=duration)
+    try:
+        estimate = provider.estimate(prompt=prompt, duration_sec=duration)
+    except RuntimeError as exc:
+        raise GenerationBlocked(str(exc)) from exc
     budget = _budget_for_today(project)
     spent_usd = float(budget.get("spent_usd", 0))
     today_spent_usd = float(budget.get("today_spent_usd", 0))
