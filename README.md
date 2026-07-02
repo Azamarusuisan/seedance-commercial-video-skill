@@ -1,5 +1,11 @@
 # seedance-commercial-video-skill
 
+> **V1 FROZEN**
+>
+> `workspace/` is frozen and read-only for production workflow purposes.
+> New production work must use `studio/` (Studio v2).
+> See `PLAN.md` for the Studio v2 workflow and migration rules.
+
 Higgsfield / Seedance short-video production skill and MCP-first workflow package. It supports commercials, social posts, product demos, app walkthroughs, explainers, event teasers, portfolio clips, background loops, and story scenes.
 
 ## Quick Start

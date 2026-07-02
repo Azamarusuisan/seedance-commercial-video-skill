@@ -6,7 +6,7 @@
   "allowed_actions": {
     "analyze_references": true,
     "prepare_image_generation_request": true,
-    "execute_image_generation": true,
+    "execute_image_generation": false,
     "prepare_seedance_cost_request": false,
     "prepare_seedance_generation_request": false,
     "execute_paid_generation": false,

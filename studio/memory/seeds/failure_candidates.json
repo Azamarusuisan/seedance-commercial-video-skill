@@ -1,0 +1,15 @@
+{
+  "schema_version": "studio_seed.v1",
+  "kind": "failure_candidates",
+  "items": [
+    {
+      "id": "process_conflicting_workorder_invariants_wo2_t18",
+      "category": "process",
+      "status": "candidate",
+      "source": "docs/workorder-2-completion-audit.md",
+      "content": "作業書内の相反要件: 上位前提(workspace不変)と個別タスク(T18 v1バナー追記)の矛盾。",
+      "cause": "発注者の作業書に例外条項の明記漏れ。",
+      "mitigation": "不変条件に抵触するタスクは作業書冒頭の例外リストに列挙必須。"
+    }
+  ]
+}

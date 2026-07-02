@@ -16,6 +16,26 @@ git ls-files | grep -E "^studio/projects/" && exit 1 || true
 git ls-files -z studio docs PLAN.md CODEX.md CLAUDE.md AGENTS.md HERMES.md OPENCREW.md SKILL.md README.md .gitignore 2>/dev/null \
   | tr '\0' '\n' | grep -v '^studio/tests/self_audit.sh$' | tr '\n' '\0' \
   | xargs -0 rg -l "cloudfront|X-Amz-|Bearer " 2>/dev/null && exit 1 || true
+for permission_file in workspace/run/*.permission.json; do
+  [ -e "$permission_file" ] || continue
+  open_keys="$(
+    jq -r '
+      paths(scalars) as $p
+      | select(getpath($p) == true)
+      | ($p | map(tostring)) as $parts
+      | ($parts | join(".")) as $key
+      | select(any($parts[]; test("(^execute$|^execute_|_execute$|_execute_|_generate$|_generation$|^seedance_generate$|^execute_paid_generation$|^execute_image_generation$)")))
+      | $key
+    ' "$permission_file"
+  )"
+  if [ -n "$open_keys" ]; then
+    echo "FAIL: v1有料経路が開いている(人間が該当フラグをfalseに設定すること)"
+    while IFS= read -r key; do
+      [ -n "$key" ] && echo "  $permission_file: $key=true"
+    done <<< "$open_keys"
+    exit 1
+  fi
+done
 
 python3 -m studio.tests.run
 echo "SELF-AUDIT: ALL GREEN"

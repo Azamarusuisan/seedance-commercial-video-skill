@@ -30,6 +30,14 @@ Work Order 2 contains two incompatible requirements:
 1. Global premise and T-A require no diff under `workspace/`, `references/`, or `tests/fixtures` after the Studio v2 base commit.
 2. T18 asks to modify v1 `workspace/ui/live-workflow.html` and Factory pages to add a visible frozen banner.
 
+> T18 original clause:
+>
+> v1 `workspace/ui/live-workflow.html` ほかFactoryページの先頭に固定バナー
+> `V1 FROZEN — 閲覧専用。制作はStudio v2へ`
+> を追記する。
+
+⛔ SUPERSEDED — Option A 決定により、v2 UI側バナー + README告知 + self_audit の permission機械検証で代替する。v1 `workspace/ui/*.html` は凍結維持のため変更しない。
+
 Directly editing `workspace/ui/*.html` would satisfy T18 but fail T-A self-audit. The current implementation preserves T-A and shows the frozen banner in Studio v2 UI instead:
 
 `V1 FROZEN — 閲覧専用。制作はStudio v2へ`
