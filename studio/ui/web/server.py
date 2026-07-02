@@ -6,7 +6,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from studio.core.approvals import ApprovalLog
-from studio.core.permission import Permission
+from studio.core.jobs import GenerationBlocked, run_generation_from_contract
 from studio.core.registry import AssetRegistry, sha256_file
 from studio.memory.production_memory import ProductionMemory
 from studio.providers.mock import MockProvider
@@ -39,6 +39,8 @@ code{color:#70ffbd}
 <button onclick="loadStatus()">状態を見る</button>
 <button onclick="post('/api/approve',{root:v('root'),project:v('project'),target_file:v('asset_path'),target_name:'photo_001'})">採用</button>
 <button onclick="post('/api/review',{root:v('root'),project:v('project'),take:'take_001',file:v('asset_path'),verdict:'rejected',failure_tag:'needs_retry'})">やり直し</button>
+<label>契約JSON <input id="contract_path" placeholder="/path/to/shot_contract.json"></label>
+<button onclick="post('/api/generate',{root:v('root'),contract:v('contract_path'),take:'take_001'})">契約から生成</button>
 </div>
 <div class="card"><h2>保存</h2><p>完パケDLはassembly後。公開は人間の外部判断。</p><button disabled title="assembly後に有効">完パケDL</button></div>
 <pre id="out" class="card"><span class="demo">DEMO DATA</span></pre>
@@ -59,10 +61,18 @@ def _write_json(path: Path, data: dict) -> None:
     path.write_text(encode_json(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def _permission_example_path(root: Path) -> Path:
+    return root / "permission.json.example"
+
+
 def api_create_project(payload: dict) -> dict:
     from datetime import UTC, datetime
 
     root = _root(payload)
+    protected = [root / "project.json", root / "permission.json"]
+    existing = [str(path) for path in protected if path.exists()]
+    if existing:
+        return {"blocked": "existing project/permission file would be overwritten", "files": existing}
     now = datetime.now(UTC).isoformat()
     project_id = payload["project"]
     project = {
@@ -96,11 +106,11 @@ def api_create_project(payload: dict) -> dict:
     }
     _write_json(root / "project.json", project)
     _write_json(root / "bible.json", {"project": project_id, "characters": [], "locations": [], "props": [], "style": {}, "brand": {}})
-    _write_json(root / "permission.json", permission)
+    _write_json(_permission_example_path(root), permission)
     (root / "assets" / "registry.jsonl").parent.mkdir(parents=True, exist_ok=True)
     (root / "assets" / "registry.jsonl").touch()
     (root / "approvals.jsonl").touch()
-    return {"project": project, "root": str(root)}
+    return {"project": project, "root": str(root), "permission_template": str(_permission_example_path(root))}
 
 
 def api_register_asset(payload: dict) -> dict:
@@ -147,11 +157,13 @@ def api_approve(payload: dict) -> dict:
 
 def api_generate(payload: dict) -> dict:
     root = _root(payload)
-    allowed = Permission.load(root / "permission.json").can_execute("seedance_generate", estimated_cost=float(payload.get("estimated_cost", 1)))
-    if not allowed.allowed:
-        return {"blocked": allowed.reason}
-    result = MockProvider().generate(prompt=payload.get("prompt", "mock"), output_dir=root / "takes", duration_sec=float(payload.get("duration", 4)))
-    return {"output_path": str(result.output_path), "provider_job_id": result.job_id}
+    contract = payload.get("contract")
+    if not contract:
+        return {"blocked": "contract is required"}
+    try:
+        return run_generation_from_contract(root=root, contract_path=Path(contract), provider=MockProvider(), take=payload.get("take", "take_001"))
+    except GenerationBlocked as exc:
+        return {"blocked": str(exc)}
 
 
 def api_review(payload: dict) -> dict:

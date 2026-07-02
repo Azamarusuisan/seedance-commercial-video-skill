@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 import unittest
 
 from studio.memory.seeds import SEED_DIR, active_items, load_seed
@@ -26,6 +27,17 @@ class SeedTests(unittest.TestCase):
         for item in luxury:
             if item["status"] == "candidate":
                 self.assertEqual(item.get("origin"), "claude_generated_candidate")
+
+    def test_seed_source_paths_exist(self):
+        root = Path.cwd()
+        for path in sorted(SEED_DIR.glob("*.json")):
+            data = load_seed(path.stem)
+            for item in data["items"]:
+                for source in str(item["source"]).split(";"):
+                    source_path = source.strip().split("#", 1)[0].strip()
+                    if "/" not in source_path and not source_path.endswith((".md", ".json")):
+                        continue
+                    self.assertTrue((root / source_path).exists(), f"{path.name}:{item['id']} source missing: {source_path}")
 
 
 if __name__ == "__main__":

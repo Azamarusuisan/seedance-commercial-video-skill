@@ -45,7 +45,7 @@ class CompilerSeedTests(unittest.TestCase):
             self.assertIn("first two seconds", prompt)
             self.assertIn("macro push-in", prompt)
             self.assertIn("No watermark", prompt)
-            self.assertIn("Candidate vocabulary not used: teal_orange_check", prompt)
+            self.assertNotIn("Candidate vocabulary", prompt)
             self.assertNotIn("restrained color contrast", prompt)
 
 

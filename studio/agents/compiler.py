@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from studio.core.contract_validator import validate_contract
 from studio.core.registry import AssetRegistry
-from studio.memory.seeds import active_items, candidate_items
+from studio.memory.seeds import active_items
 
 
 def _negative_defaults() -> str:
@@ -59,7 +59,6 @@ def compile_prompt(contract: dict, bible: dict, registry: AssetRegistry) -> str:
         raise ValueError("; ".join(report.blocked))
     camera_terms = ", ".join(item["phrase"] for item in active_items("camera_playbook")[:5])
     look_terms = ", ".join(token for item in active_items("look_luxury") for token in item.get("tokens", [])[:2])
-    candidates = ", ".join(item["id"] for item in candidate_items("look_luxury")) or "none"
     camera, action = normalize_camera_action(contract["camera"], contract["action"])
     lines = [
         f"Project: {bible.get('project', 'Studio video')}",
@@ -69,7 +68,6 @@ def compile_prompt(contract: dict, bible: dict, registry: AssetRegistry) -> str:
         f"CM structure: first two seconds must contain a silent visual hook.",
         f"Camera vocabulary: {camera_terms}",
         f"Look vocabulary: {look_terms}",
-        f"Candidate vocabulary not used: {candidates}",
         f"Camera: {camera}",
         f"Action: {action}",
         "References:",

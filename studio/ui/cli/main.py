@@ -9,7 +9,7 @@ from studio.agents.compiler import compile_prompt
 from studio.assembly.ffmpeg import assemble_videos
 from studio.core.approvals import ApprovalLog
 from studio.core.contract_validator import validate_contract
-from studio.core.permission import Permission
+from studio.core.jobs import GenerationBlocked, run_generation_from_contract
 from studio.core.registry import AssetRegistry, sha256_file
 from studio.memory.import_v1 import import_project
 from studio.memory.production_memory import ProductionMemory
@@ -22,9 +22,17 @@ def _write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def _permission_example_path(root: Path) -> Path:
+    return root / "permission.json.example"
+
+
 def cmd_new(args: argparse.Namespace) -> None:
     root = Path(args.root)
     root.mkdir(parents=True, exist_ok=True)
+    protected = [root / "project.json", root / "permission.json"]
+    existing = [str(path) for path in protected if path.exists()]
+    if existing:
+        raise SystemExit("blocked: existing project/permission file would be overwritten: " + ", ".join(existing))
     now = datetime.now(UTC).isoformat()
     project = {
         "id": args.project,
@@ -58,11 +66,11 @@ def cmd_new(args: argparse.Namespace) -> None:
     }
     _write_json(root / "project.json", project)
     _write_json(root / "bible.json", bible)
-    _write_json(root / "permission.json", permission)
+    _write_json(_permission_example_path(root), permission)
     (root / "assets").mkdir(exist_ok=True)
     (root / "assets" / "registry.jsonl").touch()
     (root / "approvals.jsonl").touch()
-    print(root)
+    print(f"{root}\npermission template: {_permission_example_path(root)} (rename to permission.json after human approval)")
 
 
 def cmd_status(args: argparse.Namespace) -> None:
@@ -98,13 +106,11 @@ def cmd_estimate(args: argparse.Namespace) -> None:
 
 
 def cmd_generate(args: argparse.Namespace) -> None:
-    permission = Permission.load(Path(args.root) / "permission.json")
-    allowed = permission.can_execute("seedance_generate", estimated_cost=args.estimated_cost)
-    if not allowed.allowed:
-        raise SystemExit(f"blocked: {allowed.reason}")
-    prompt = Path(args.prompt).read_text(encoding="utf-8")
-    gen = MockProvider().generate(prompt=prompt, output_dir=Path(args.root) / "takes", duration_sec=args.duration)
-    print(gen.output_path)
+    try:
+        result = run_generation_from_contract(root=Path(args.root), contract_path=Path(args.contract), provider=MockProvider(), take=args.take)
+    except GenerationBlocked as exc:
+        raise SystemExit(f"blocked: {exc}") from exc
+    print(result["output_path"])
 
 
 def cmd_assemble(args: argparse.Namespace) -> None:
@@ -188,9 +194,8 @@ def main() -> None:
     p.set_defaults(func=cmd_estimate)
     p = sub.add_parser("generate")
     p.add_argument("--root", required=True)
-    p.add_argument("--prompt", required=True)
-    p.add_argument("--duration", type=float, default=8)
-    p.add_argument("--estimated-cost", type=float, default=1)
+    p.add_argument("--contract", required=True)
+    p.add_argument("--take", default="take_001")
     p.set_defaults(func=cmd_generate)
     p = sub.add_parser("assemble")
     p.add_argument("--output", required=True)
