@@ -11,6 +11,7 @@
     {"id": "FP-007", "fp_id": "FP-007", "status": "active", "source": "references/known-failure-patterns.md#FP-007", "severity": "block", "trigger_terms": ["Status: template", "fill in the placeholders"], "message": "未記入テンプレートを実行プロンプトにしない。"},
     {"id": "FP-008", "fp_id": "FP-008", "status": "active", "source": "references/known-failure-patterns.md#FP-008", "severity": "block", "trigger_terms": ["SUPERSEDED", "DO NOT USE"], "message": "撤回済みfinalプロンプトを使わない。"},
     {"id": "no_exact_text", "status": "active", "source": "references/public-demand-short-video-patterns.md#use-post-production-for-exact-text", "severity": "warn", "trigger_terms": ["subtitle", "caption", "readable text", "exact text", "字幕", "テロップ"], "message": "正確な日本語字幕/CTAはポスト編集で入れる。"},
+    {"id": "reference_slot_limit", "status": "active", "source": "PLAN.md#2a-4", "severity": "block", "max_reference_slots": 12, "message": "参照スロットは12件まで。多素材は役割別に整理して渡す。"},
     {"id": "negative_defaults", "status": "active", "source": "references/seedance-cm-workflow.md#generic-prompt-template", "severity": "append", "negative": "No watermark, no subtitles, no captions, no unreadable text, no unsupported claims, no unauthorized logos."}
   ]
 }

@@ -12,7 +12,13 @@ class CompilerSeedTests(unittest.TestCase):
     def test_draft_short_ad_has_hook_beat(self):
         draft = draft_short_ad_contract()
         self.assertIn("0-2s hook", draft["narrative_function"])
+        for name in ("problem", "demo", "afterglow", "cta"):
+            self.assertIn(name, draft["narrative_function"])
         self.assertTrue(any(item.startswith("0-2s") for item in draft["acceptance_criteria"]))
+
+    def test_draft_short_ad_uses_platform_structure(self):
+        draft = draft_short_ad_contract(platform="ugc")
+        self.assertIn("ugc_15s", draft["narrative_function"])
 
     def test_camera_is_normalized_to_playbook_phrase(self):
         camera, action = normalize_camera_action("dolly toward product", "open lid")

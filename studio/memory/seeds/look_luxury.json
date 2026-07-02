@@ -5,6 +5,6 @@
     {"id": "soft_key_rim_light", "status": "active", "source": "references/cm-creative-craft-knowledge.md#lighting-color", "tokens": ["soft key light", "controlled rim light", "clean negative space"]},
     {"id": "premium_materials", "status": "active", "source": "references/cm-creative-craft-knowledge.md#prompt-vocabulary", "tokens": ["physically-plausible reflections", "visible micro-texture", "polished material"]},
     {"id": "photographic_energy", "status": "active", "source": "workspace/projects/macneo-pc-cm-15s/storyboard-structure.md#15s-structure", "tokens": ["rim light glints", "lens flare", "fast reflections"], "avoid": ["drawn lines", "bolts", "graphic overlays"]},
-    {"id": "teal_orange_check", "status": "candidate", "source": "claude_generated_candidate: luxury grade caution", "tokens": ["restrained color contrast"], "note": "ブランドに合う時だけ人間承認後に使う"}
+    {"id": "teal_orange_check", "status": "candidate", "origin": "claude_generated_candidate", "source": "claude_generated_candidate: luxury grade caution", "tokens": ["restrained color contrast"], "note": "ブランドに合う時だけ人間承認後に使う"}
   ]
 }

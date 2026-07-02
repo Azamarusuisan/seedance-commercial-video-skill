@@ -12,11 +12,17 @@ def _negative_defaults() -> str:
     raise FileNotFoundError("negative_defaults missing from prompt_rules seed")
 
 
-def draft_short_ad_contract(*, shot_id: str = "shot_001", duration_sec: float = 15.0) -> dict:
-    template = next(item for item in active_items("cm_structure") if item["id"] == "product_ad_15s")
+def _structure_for_platform(platform: str) -> dict:
+    platform_l = platform.lower()
+    structure_id = "ugc_15s" if platform_l in {"ugc", "reels_ugc", "tiktok_ugc"} else "product_ad_15s"
+    return next(item for item in active_items("cm_structure") if item["id"] == structure_id)
+
+
+def draft_short_ad_contract(*, shot_id: str = "shot_001", duration_sec: float = 15.0, platform: str = "tiktok") -> dict:
+    template = _structure_for_platform(platform)
     return {
         "shot_id": shot_id,
-        "narrative_function": " / ".join(f"{beat['time']} {beat['name']}" for beat in template["beats"]),
+        "narrative_function": f"{template['id']}: " + " / ".join(f"{beat['time']} {beat['name']}" for beat in template["beats"]),
         "duration_sec": duration_sec,
         "camera": template["beats"][0]["camera_default"],
         "action": "show product transformation and final hero memory",

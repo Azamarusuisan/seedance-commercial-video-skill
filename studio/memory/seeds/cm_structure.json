@@ -8,9 +8,10 @@
       "source": "references/public-demand-short-video-patterns.md#15s-product-ad; references/cm-creative-craft-knowledge.md#structure",
       "beats": [
         {"name": "hook", "time": "0-2s", "purpose": "無音でも止まる商品/変化/問題を見せる", "camera_default": "macro push-in", "subtitle_policy": "post"},
-        {"name": "problem_or_demo", "time": "2-6s", "purpose": "欲しくなる文脈か商品ビューティを見せる", "camera_default": "slow dolly-in", "subtitle_policy": "post"},
-        {"name": "product_beauty", "time": "6-11s", "purpose": "質感・機能・色を記憶させる", "camera_default": "orbit or macro slide", "subtitle_policy": "post"},
-        {"name": "afterglow_cta", "time": "11-15s", "purpose": "余韻とブランド記憶", "camera_default": "locked-off hero", "subtitle_policy": "post"}
+        {"name": "problem", "time": "2-5s", "purpose": "欲しくなる文脈や小さな課題を見せる", "camera_default": "slow dolly-in", "subtitle_policy": "post"},
+        {"name": "demo", "time": "5-9s", "purpose": "商品ビューティ/機能/変化を見せる", "camera_default": "macro slide", "subtitle_policy": "post"},
+        {"name": "afterglow", "time": "9-12s", "purpose": "質感・余韻・記憶を残す", "camera_default": "controlled product orbit", "subtitle_policy": "post"},
+        {"name": "cta", "time": "12-15s", "purpose": "ブランド名/CTA/最終商品記憶", "camera_default": "locked-off hero", "subtitle_policy": "post"}
       ]
     },
     {

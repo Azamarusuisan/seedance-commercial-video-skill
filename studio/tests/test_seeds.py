@@ -23,6 +23,9 @@ class SeedTests(unittest.TestCase):
     def test_candidate_entries_are_distinct(self):
         luxury = load_seed("look_luxury")["items"]
         self.assertTrue(any(item["status"] == "candidate" for item in luxury))
+        for item in luxury:
+            if item["status"] == "candidate":
+                self.assertEqual(item.get("origin"), "claude_generated_candidate")
 
 
 if __name__ == "__main__":
