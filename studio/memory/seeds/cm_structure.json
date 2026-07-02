@@ -1,0 +1,38 @@
+{
+  "schema_version": "studio_seed.v1",
+  "kind": "cm_structure",
+  "items": [
+    {
+      "id": "product_ad_15s",
+      "status": "active",
+      "source": "references/public-demand-short-video-patterns.md#15s-product-ad; references/cm-creative-craft-knowledge.md#structure",
+      "beats": [
+        {"name": "hook", "time": "0-2s", "purpose": "無音でも止まる商品/変化/問題を見せる", "camera_default": "macro push-in", "subtitle_policy": "post"},
+        {"name": "problem_or_demo", "time": "2-6s", "purpose": "欲しくなる文脈か商品ビューティを見せる", "camera_default": "slow dolly-in", "subtitle_policy": "post"},
+        {"name": "product_beauty", "time": "6-11s", "purpose": "質感・機能・色を記憶させる", "camera_default": "orbit or macro slide", "subtitle_policy": "post"},
+        {"name": "afterglow_cta", "time": "11-15s", "purpose": "余韻とブランド記憶", "camera_default": "locked-off hero", "subtitle_policy": "post"}
+      ]
+    },
+    {
+      "id": "ugc_15s",
+      "status": "active",
+      "source": "references/public-demand-short-video-patterns.md#UGC-batch-beats-one-perfect-draft",
+      "beats": [
+        {"name": "silent_hook", "time": "0-2s", "purpose": "顔/商品/問題で止める", "camera_default": "handheld close-up", "subtitle_policy": "post"},
+        {"name": "context", "time": "2-5s", "purpose": "日常の小さな困りごと", "camera_default": "handheld follow", "subtitle_policy": "post"},
+        {"name": "use", "time": "5-10s", "purpose": "商品体験", "camera_default": "POV insert", "subtitle_policy": "post"},
+        {"name": "memory", "time": "10-15s", "purpose": "商品名/CTA", "camera_default": "pack shot", "subtitle_policy": "post"}
+      ]
+    },
+    {
+      "id": "story_60s",
+      "status": "active",
+      "source": "workspace/prompts/tiktok-storyboard-60s-template.md#storyboard-table",
+      "beats": [
+        {"name": "opening", "time": "0-15s", "purpose": "状況とフック", "camera_default": "establishing to close-up", "subtitle_policy": "post"},
+        {"name": "development", "time": "15-45s", "purpose": "展開と変化", "camera_default": "shot-reverse and follow", "subtitle_policy": "post"},
+        {"name": "payoff", "time": "45-60s", "purpose": "結末/次回フック", "camera_default": "hero or loop close", "subtitle_policy": "post"}
+      ]
+    }
+  ]
+}

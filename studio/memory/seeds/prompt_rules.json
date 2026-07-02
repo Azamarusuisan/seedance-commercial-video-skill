@@ -1,0 +1,16 @@
+{
+  "schema_version": "studio_seed.v1",
+  "kind": "prompt_rules",
+  "items": [
+    {"id": "FP-001", "fp_id": "FP-001", "status": "active", "source": "references/known-failure-patterns.md#FP-001", "severity": "block", "trigger_terms": ["blender_render", "blender_previs", "start_image"], "message": "Blender直渡し禁止。写実キービジュアルを先に承認する。"},
+    {"id": "FP-002", "fp_id": "FP-002", "status": "active", "source": "references/known-failure-patterns.md#FP-002", "severity": "warn", "trigger_terms": ["collage", "combined reference", "product plus face"], "message": "商品参照と人物参照を1枚に合成しない。"},
+    {"id": "FP-003", "fp_id": "FP-003", "status": "active", "source": "references/known-failure-patterns.md#FP-003", "severity": "warn", "trigger_terms": ["ring", "rings", "particle", "particles", "line", "lines", "dot", "dots", "arc", "arcs", "bolt", "bolts", "spark", "sparks", "beam", "beams", "ray", "rays", "streak", "orb"], "context_terms": ["electric", "light", "glow", "neon", "laser", "energy"], "message": "図形的な電気/光エフェクト語は撮影語彙へ置換する。"},
+    {"id": "FP-004", "fp_id": "FP-004", "status": "active", "source": "references/known-failure-patterns.md#FP-004", "severity": "warn", "trigger_terms": ["single reference only", "merged references"], "message": "複数参照を1枚へ潰す前にAPIの複数画像対応を確認する。"},
+    {"id": "FP-005", "fp_id": "FP-005", "status": "active", "source": "references/known-failure-patterns.md#FP-005", "severity": "block", "trigger_terms": ["Blender as main asset", "主素材: Blender"], "message": "Blenderは構図参照専用、Seedance入力不可と表示する。"},
+    {"id": "FP-006", "fp_id": "FP-006", "status": "active", "source": "references/known-failure-patterns.md#FP-006", "severity": "block", "trigger_terms": ["workspace/assets/3d/renders", "lipstick_cm_previs"], "message": "manifest自己申告だけを信用せず、Blenderらしいパスは止める。"},
+    {"id": "FP-007", "fp_id": "FP-007", "status": "active", "source": "references/known-failure-patterns.md#FP-007", "severity": "block", "trigger_terms": ["Status: template", "fill in the placeholders"], "message": "未記入テンプレートを実行プロンプトにしない。"},
+    {"id": "FP-008", "fp_id": "FP-008", "status": "active", "source": "references/known-failure-patterns.md#FP-008", "severity": "block", "trigger_terms": ["SUPERSEDED", "DO NOT USE"], "message": "撤回済みfinalプロンプトを使わない。"},
+    {"id": "no_exact_text", "status": "active", "source": "references/public-demand-short-video-patterns.md#use-post-production-for-exact-text", "severity": "warn", "trigger_terms": ["subtitle", "caption", "readable text", "exact text", "字幕", "テロップ"], "message": "正確な日本語字幕/CTAはポスト編集で入れる。"},
+    {"id": "negative_defaults", "status": "active", "source": "references/seedance-cm-workflow.md#generic-prompt-template", "severity": "append", "negative": "No watermark, no subtitles, no captions, no unreadable text, no unsupported claims, no unauthorized logos."}
+  ]
+}

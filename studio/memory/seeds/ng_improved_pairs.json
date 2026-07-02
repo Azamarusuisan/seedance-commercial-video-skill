@@ -1,0 +1,24 @@
+{
+  "schema_version": "studio_seed.v1",
+  "kind": "ng_improved_pairs",
+  "items": [
+    {
+      "id": "lipstick_blender_direct_to_keyvisual",
+      "status": "active",
+      "source": "workspace/projects/lipstick-cm-30s/postmortem-20260701-blender-fleshout-mismatch.md#wrong-understanding",
+      "source_file": "workspace/projects/lipstick-cm-30s/postmortem-20260701-blender-fleshout-mismatch.md",
+      "source_sha256": "b40a0c1db9b54a4073d0aa4c4f0e99c047360029fd453635c7b85a48749d094e",
+      "bad": "Use raw Blender previs as Seedance start image and ask the model to flesh it out.",
+      "improved": "Use Blender only as composition source, generate a photoreal storyboard/key visual first, then seek human approval."
+    },
+    {
+      "id": "macneo_electric_graphics_to_photographic_light",
+      "status": "active",
+      "source": "workspace/projects/macneo-pc-cm-15s/storyboard-structure.md#visual-safety-rule",
+      "source_file": "workspace/projects/macneo-pc-cm-15s/storyboard-structure.md",
+      "source_sha256": "098dc8242d9bc26e27cb7cf0a8f0fe1eff37b721d3c6e4001806c34a0f30a08b",
+      "bad": "electric sparks, rings, lines, bolts, graphic overlays",
+      "improved": "rim light glints, lens flare, reflections, light catching brushed metal"
+    }
+  ]
+}

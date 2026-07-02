@@ -1,0 +1,11 @@
+{
+  "schema_version": "studio_seed.v1",
+  "kind": "camera_playbook",
+  "items": [
+    {"id": "macro_push_in", "status": "active", "source": "references/cm-creative-craft-knowledge.md#shot-grammar", "phrase": "macro push-in", "use": "質感・薄さ・高級感", "duration": "0.8-2s", "avoid_with": ["multi-subject chaos"]},
+    {"id": "slow_dolly_in", "status": "active", "source": "references/cm-creative-craft-knowledge.md#camera-emotion", "phrase": "slow dolly-in", "use": "重要な商品瞬間へ集中", "duration": "2-4s", "avoid_with": ["fast jump cuts"]},
+    {"id": "orbit_showcase", "status": "active", "source": "references/cm-creative-craft-knowledge.md#camera-emotion", "phrase": "controlled product orbit", "use": "全方位の商品ショーケース", "duration": "3-5s", "avoid_with": ["tiny text"]},
+    {"id": "rack_focus", "status": "active", "source": "references/cm-creative-craft-knowledge.md#shot-grammar", "phrase": "rack focus", "use": "前景から商品へ視線誘導", "duration": "1-2s", "avoid_with": ["busy background"]},
+    {"id": "locked_hero", "status": "active", "source": "references/cm-creative-craft-knowledge.md#shot-grammar", "phrase": "locked-off hero shot", "use": "最後の商品記憶/CTA", "duration": "2-4s", "avoid_with": ["unapproved text"]}
+  ]
+}

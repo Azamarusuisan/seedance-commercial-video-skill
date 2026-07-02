@@ -1,0 +1,11 @@
+{
+  "schema_version": "studio_seed.v1",
+  "kind": "retry_playbook",
+  "items": [
+    {"id": "face_drift", "status": "active", "source": "references/public-demand-short-video-patterns.md#identity-preserving-vlog", "recipe": "reduce motion, use one approved identity reference, keep outfit and camera texture constant"},
+    {"id": "motion_chaos", "status": "active", "source": "references/cm-creative-craft-knowledge.md#editing-rhythm", "recipe": "split into one concept per shot, simplify camera to slow dolly or locked-off hero"},
+    {"id": "text_artifact", "status": "active", "source": "references/public-demand-short-video-patterns.md#use-post-production-for-exact-text", "recipe": "remove exact text from generation, reserve clean negative space for post subtitles"},
+    {"id": "cheap_vfx", "status": "active", "source": "references/known-failure-patterns.md#FP-003", "recipe": "replace rings/lines/particles/bolts with bokeh, soft glints, rim light, lens flare, reflections"},
+    {"id": "product_dull", "status": "active", "source": "references/cm-creative-craft-knowledge.md#lighting-color", "recipe": "add controlled rim light, macro push-in, visible micro-texture, physically-plausible reflections"}
+  ]
+}

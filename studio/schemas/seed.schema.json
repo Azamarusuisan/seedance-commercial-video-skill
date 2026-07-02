@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "required": ["schema_version", "kind", "items"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "kind": {"type": "string"},
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "source"],
+        "properties": {
+          "id": {"type": "string"},
+          "status": {"type": "string", "enum": ["active", "candidate"]},
+          "source": {"type": "string"}
+        }
+      }
+    }
+  }
+}

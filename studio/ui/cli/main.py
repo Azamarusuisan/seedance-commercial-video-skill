@@ -11,6 +11,8 @@ from studio.core.approvals import ApprovalLog
 from studio.core.contract_validator import validate_contract
 from studio.core.permission import Permission
 from studio.core.registry import AssetRegistry, sha256_file
+from studio.memory.import_v1 import import_project
+from studio.memory.production_memory import ProductionMemory
 from studio.providers.mock import MockProvider
 from studio.schemas.validate import validate_document
 
@@ -64,8 +66,12 @@ def cmd_new(args: argparse.Namespace) -> None:
 
 
 def cmd_status(args: argparse.Namespace) -> None:
-    project = json.loads((Path(args.root) / "project.json").read_text(encoding="utf-8"))
+    root = Path(args.root)
+    project = json.loads((root / "project.json").read_text(encoding="utf-8"))
     print(f"{project['id']}: {project['status']}")
+    mem = root / "memory.sqlite"
+    if mem.exists():
+        print(f"memory: {ProductionMemory(mem).counts()}")
 
 
 def cmd_validate(args: argparse.Namespace) -> None:
@@ -85,6 +91,10 @@ def cmd_estimate(args: argparse.Namespace) -> None:
     prompt = Path(args.prompt).read_text(encoding="utf-8")
     est = MockProvider().estimate(prompt=prompt, duration_sec=args.duration)
     print(json.dumps(est.__dict__, ensure_ascii=False))
+    if getattr(args, "root", None):
+        mem = Path(args.root) / "memory.sqlite"
+        if mem.exists():
+            print(json.dumps({"memory": ProductionMemory(mem).counts()}, ensure_ascii=False))
 
 
 def cmd_generate(args: argparse.Namespace) -> None:
@@ -103,6 +113,7 @@ def cmd_assemble(args: argparse.Namespace) -> None:
 
 
 def cmd_review(args: argparse.Namespace) -> None:
+    root = Path(args.root)
     log = ApprovalLog(Path(args.root) / "approvals.jsonl")
     event = log.append(
         gate="G_take",
@@ -110,6 +121,14 @@ def cmd_review(args: argparse.Namespace) -> None:
         target=args.take,
         target_sha256=sha256_file(args.file),
         verdict=args.verdict,
+        note=args.note,
+    )
+    ProductionMemory(root / "memory.sqlite").record_generation(
+        project=args.project,
+        take=args.take,
+        verdict=args.verdict,
+        failure_tag=args.failure_tag,
+        cost_usd=args.cost,
         note=args.note,
     )
     print(event["event_id"])
@@ -126,6 +145,12 @@ def cmd_compile(args: argparse.Namespace) -> None:
     prompt = compile_prompt(contract, bible, registry)
     Path(args.output).write_text(prompt + "\n", encoding="utf-8")
     print(args.output)
+
+
+def cmd_import(args: argparse.Namespace) -> None:
+    root = Path(args.root)
+    result = import_project(args.source, ProductionMemory(root / "memory.sqlite"))
+    print(json.dumps(result, ensure_ascii=False, sort_keys=True))
 
 
 def main() -> None:
@@ -159,6 +184,7 @@ def main() -> None:
     p = sub.add_parser("cost")
     p.add_argument("--prompt", required=True)
     p.add_argument("--duration", type=float, default=8)
+    p.add_argument("--root")
     p.set_defaults(func=cmd_estimate)
     p = sub.add_parser("generate")
     p.add_argument("--root", required=True)
@@ -176,6 +202,8 @@ def main() -> None:
     p.add_argument("--take", required=True)
     p.add_argument("--file", required=True)
     p.add_argument("--verdict", default="approved", choices=["approved", "rejected", "revoked"])
+    p.add_argument("--failure-tag", default="")
+    p.add_argument("--cost", type=float, default=0)
     p.add_argument("--note", default="")
     p.set_defaults(func=cmd_review)
     p = sub.add_parser("compile")
@@ -183,5 +211,9 @@ def main() -> None:
     p.add_argument("--contract", required=True)
     p.add_argument("--output", required=True)
     p.set_defaults(func=cmd_compile)
+    p = sub.add_parser("import")
+    p.add_argument("--root", required=True)
+    p.add_argument("source")
+    p.set_defaults(func=cmd_import)
     args = parser.parse_args()
     args.func(args)
