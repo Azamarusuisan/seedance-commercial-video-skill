@@ -1,3 +1,10 @@
+# v1凍結 / workspace/ 経路の有料生成禁止
+
+This repository is entering the Studio v2 implementation track described in `PLAN.md`.
+The existing v1 `workspace/` generation paths are frozen for new paid execution.
+Do not run Higgsfield, Seedance, Palmier, ElevenLabs, upscale, export, publishing, or external-posting actions through v1.
+Treat `workspace/`, `references/`, and `tests/fixtures/` as preserved legacy evidence unless a task explicitly says to add a non-destructive notice or new v2-compatible file.
+
 # OpenCrew Instructions
 
 Follow `AGENTS.md` and `workspace/agent-guides/cross-agent-runbook.md`.

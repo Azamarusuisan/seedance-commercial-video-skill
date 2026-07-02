@@ -48,3 +48,4 @@ playwright-report/
 test-results/
 videos/**/x-reference-*.png
 dist/
+studio/projects/
