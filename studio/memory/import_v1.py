@@ -31,10 +31,27 @@ def import_retry_playbooks(memory: ProductionMemory) -> int:
 
 
 def import_project(project_path: str | Path, memory: ProductionMemory, *, known_failures: str | Path = "references/known-failure-patterns.md") -> dict[str, int]:
-    # v1 project import is intentionally read-only; current minimal import captures global FP/playbook facts.
-    Path(project_path).exists()
+    project = Path(project_path)
+    imported_files = 0
+    if project.exists():
+        for path in sorted(project.rglob("*")):
+            if path.suffix.lower() not in {".md", ".txt", ".json"}:
+                continue
+            rel = path.relative_to(project)
+            name = path.name.lower()
+            if not any(token in name for token in ("prompt", "review", "postmortem", "condition", "brief", "learning", "storyboard")):
+                continue
+            tag = "postmortem" if "postmortem" in name else "review" if "review" in name else ""
+            memory.record_generation(
+                project=project.name,
+                take=f"v1:{rel}",
+                verdict="imported",
+                failure_tag=tag,
+                note=f"sha256={sha256_file(path)}",
+            )
+            imported_files += 1
     return {
         "failure_patterns": import_known_failures(known_failures, memory),
         "playbooks": import_retry_playbooks(memory),
+        "project_files": imported_files,
     }
-

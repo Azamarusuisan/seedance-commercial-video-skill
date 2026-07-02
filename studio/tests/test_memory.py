@@ -18,6 +18,7 @@ class MemoryTests(unittest.TestCase):
             self.assertEqual(before, Path("references/known-failure-patterns.md").read_bytes())
             self.assertTrue({f"FP-{i:03d}" for i in range(1, 9)} <= mem.failure_ids())
             self.assertGreaterEqual(mem.counts()["playbooks"], 5)
+            self.assertGreater(mem.counts()["generations"], 0)
 
     def test_review_can_record_generation(self):
         with tempfile.TemporaryDirectory() as tmp:
