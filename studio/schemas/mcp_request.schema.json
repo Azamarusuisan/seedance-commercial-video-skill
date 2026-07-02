@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "required": ["schema_version", "kind", "project", "created_at", "status", "execution_token"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "kind": {"type": "string", "enum": ["seedance_video", "palmier_edit"]},
+    "project": {"type": "string"},
+    "shot_id": {"type": "string"},
+    "take": {"type": "string"},
+    "contract_sha256": {"type": "string"},
+    "prompt_sha256": {"type": "string"},
+    "prompt": {"type": "string"},
+    "duration_sec": {"type": "number"},
+    "aspect": {"type": "string"},
+    "references": {"type": "array"},
+    "estimate": {"type": "object"},
+    "gates": {"type": "string"},
+    "created_at": {"type": "string"},
+    "status": {"type": "string"},
+    "mcp_hint": {"type": "object"},
+    "execution_token": {"type": "string"}
+  }
+}

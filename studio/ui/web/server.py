@@ -6,10 +6,11 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from studio.core.approvals import ApprovalLog
-from studio.core.jobs import GenerationBlocked, run_generation_from_contract
+from studio.core.jobs import GenerationBlocked, record_generation_result, run_generation_from_contract
 from studio.core.registry import AssetRegistry, sha256_file
 from studio.memory.production_memory import ProductionMemory
 from studio.providers.mock import MockProvider
+from studio.providers.seedance import SeedanceProvider
 
 INDEX = """<!doctype html>
 <meta charset="utf-8">
@@ -40,7 +41,11 @@ code{color:#70ffbd}
 <button onclick="post('/api/approve',{root:v('root'),project:v('project'),target_file:v('asset_path'),target_name:'photo_001'})">採用</button>
 <button onclick="post('/api/review',{root:v('root'),project:v('project'),take:'take_001',file:v('asset_path'),verdict:'rejected',failure_tag:'needs_retry'})">やり直し</button>
 <label>契約JSON <input id="contract_path" placeholder="/path/to/shot_contract.json"></label>
-<button onclick="post('/api/generate',{root:v('root'),contract:v('contract_path'),take:'take_001'})">契約から生成</button>
+<label>Provider <input id="provider" value="mock"></label>
+<button onclick="post('/api/generate',{root:v('root'),contract:v('contract_path'),take:'take_001',provider:v('provider')})">契約から生成/準備</button>
+<label>Request <input id="request_path" placeholder="/path/to/request.json"></label>
+<label>Output <input id="output_path" placeholder="/path/to/output.mp4"></label>
+<button onclick="post('/api/record',{root:v('root'),request:v('request_path'),output:v('output_path')})">生成結果を記録</button>
 </div>
 <div class="card"><h2>保存</h2><p>完パケDLはassembly後。公開は人間の外部判断。</p><button disabled title="assembly後に有効">完パケDL</button></div>
 <pre id="out" class="card"><span class="demo">DEMO DATA</span></pre>
@@ -90,7 +95,7 @@ def api_create_project(payload: dict) -> dict:
             "must_avoid": [],
             "reference_urls": [],
         },
-        "budget": {"cap_usd": 20, "daily_cap_usd": 10, "spent_usd": 0, "generations": 0},
+        "budget": {"cap_usd": 20, "daily_cap_usd": 10, "spent_usd": 0, "today_spent_usd": 0, "today_date": "", "generations": 0},
         "audio_policy": {"dialogue": "none", "narration": "post"},
         "bible_ref": "bible.json",
         "shots": ["shot_001"],
@@ -100,7 +105,17 @@ def api_create_project(payload: dict) -> dict:
     }
     permission = {
         "project": project_id,
-        "execute": {"gpt_image": False, "seedance_estimate": True, "seedance_generate": False, "elevenlabs": False, "palmier_or_upscale": False, "publish": False},
+        "execute": {
+            "gpt_image": False,
+            "seedance_estimate": True,
+            "seedance_generate": False,
+            "higgsfield_image": False,
+            "elevenlabs": False,
+            "palmier_or_upscale": False,
+            "palmier_edit": False,
+            "palmier_export": False,
+            "publish": False,
+        },
         "budget": {"cap_usd": 20, "daily_cap_usd": 10, "max_takes_per_shot": 3, "max_parallel": 1},
         "edited_by": "human_only",
     }
@@ -160,8 +175,20 @@ def api_generate(payload: dict) -> dict:
     contract = payload.get("contract")
     if not contract:
         return {"blocked": "contract is required"}
+    provider_name = payload.get("provider", "mock")
+    providers = {"mock": MockProvider, "higgsfield": SeedanceProvider}
+    if provider_name not in providers:
+        return {"blocked": f"unsupported provider: {provider_name}"}
     try:
-        return run_generation_from_contract(root=root, contract_path=Path(contract), provider=MockProvider(), take=payload.get("take", "take_001"))
+        return run_generation_from_contract(root=root, contract_path=Path(contract), provider=providers[provider_name](), take=payload.get("take", "take_001"))
+    except (GenerationBlocked, RuntimeError) as exc:
+        return {"blocked": str(exc)}
+
+
+def api_record(payload: dict) -> dict:
+    root = _root(payload)
+    try:
+        return record_generation_result(root=root, request_path=Path(payload["request"]), output_path=Path(payload["output"]), cost_usd=payload.get("cost"), response_path=Path(payload["response"]) if payload.get("response") else None)
     except GenerationBlocked as exc:
         return {"blocked": str(exc)}
 
@@ -219,6 +246,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(api_register_asset(payload))
         elif path == "/api/generate":
             self._send(api_generate(payload))
+        elif path == "/api/record":
+            self._send(api_record(payload))
         elif path == "/api/review":
             self._send(api_review(payload))
         else:

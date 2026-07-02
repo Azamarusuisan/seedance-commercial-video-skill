@@ -36,9 +36,14 @@ def validate_contract(contract: dict[str, Any], registry: AssetRegistry) -> Vali
     refs = contract.get("references", [])
     if len(refs) > 12:
         report.blocked.append("too many references; maximum is 12")
+    counts = {"image": 0, "video": 0, "audio": 0}
     for ref in refs:
         asset_id = ref["asset_id"]
         role = ref["role"]
+        # Reference caps follow Seedance slot practice: audio role is audio,
+        # motion role is video, everything else consumes image slots.
+        ref_type = "audio" if role == "audio" else "video" if role == "motion" else "image"
+        counts[ref_type] += 1
         record = registry.get(asset_id)
         if not record:
             report.blocked.append(f"asset not registered: {asset_id}")
@@ -60,6 +65,14 @@ def validate_contract(contract: dict[str, Any], registry: AssetRegistry) -> Vali
                 continue
             if any(term.lower() in path for term in rule.get("trigger_terms", [])):
                 report.blocked.append(f"{rule.get('fp_id', rule['id'])}: {rule.get('message', 'blocked')}")
+    if counts["image"] > 9:
+        report.blocked.append("too many image references; maximum is 9")
+    elif counts["image"] > 5:
+        report.warnings.append("image references above default comfort range; keep roles explicit")
+    if counts["video"] > 3:
+        report.blocked.append("too many video references; maximum is 3")
+    if counts["audio"] > 3:
+        report.blocked.append("too many audio references; maximum is 3")
     text = f"{contract.get('camera', '')} {contract.get('action', '')}".lower()
     for rule in active_rules:
         terms = [term.lower() for term in rule.get("trigger_terms", [])]

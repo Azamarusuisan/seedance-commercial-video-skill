@@ -6,7 +6,7 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - optional runtime adapter
     app = None
 else:
-    from studio.ui.web.server import INDEX, api_approve, api_create_project, api_generate, api_register_asset, api_review, api_status
+    from studio.ui.web.server import INDEX, api_approve, api_create_project, api_generate, api_record, api_register_asset, api_review, api_status
 
     app = FastAPI(title="Studio v2")
 
@@ -33,6 +33,10 @@ else:
     @app.post("/api/generate")
     def generate(payload: dict) -> dict:
         return api_generate(payload)
+
+    @app.post("/api/record")
+    def record(payload: dict) -> dict:
+        return api_record(payload)
 
     @app.post("/api/review")
     def review(payload: dict) -> dict:

@@ -18,7 +18,7 @@ def _contract() -> dict:
         "shot_id": "shot_001",
         "narrative_function": "hook",
         "duration_sec": 4,
-        "camera": "wide electric arcs",
+        "camera": "wide shot",
         "action": "product opens",
         "audio": {},
         "references": [{"slot": "@Image1", "asset_id": "product", "role": "product"}],
@@ -28,14 +28,16 @@ def _contract() -> dict:
 
 
 class ValidatorSeedTests(unittest.TestCase):
-    def test_active_rule_warns_with_fp_id(self):
+    def test_active_rule_blocks_with_fp_id(self):
         with tempfile.TemporaryDirectory() as tmp:
             asset = Path(tmp) / "asset.txt"
             asset.write_text("x", encoding="utf-8")
             reg = AssetRegistry(Path(tmp) / "assets" / "registry.jsonl")
             reg.register(asset_id="product", file_path=asset, asset_kind="product_photo", rights_status="ai_generated")
-            report = validate_contract(_contract(), reg)
-            self.assertTrue(any("FP-003" in item for item in report.warnings))
+            contract = _contract()
+            contract["camera"] = "wide electric arcs"
+            report = validate_contract(contract, reg)
+            self.assertTrue(any("FP-003" in item for item in report.blocked))
 
     def test_candidate_warns_only_and_active_blocks(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -69,6 +71,25 @@ class ValidatorSeedTests(unittest.TestCase):
                 report = validate_contract(_contract(), reg)
             self.assertFalse(report.ok)
             self.assertIn("seed missing", report.blocked[0])
+
+    def test_reference_type_limits(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            reg = AssetRegistry(Path(tmp) / "assets" / "registry.jsonl")
+            for index in range(12):
+                asset = Path(tmp) / f"asset-{index}.txt"
+                asset.write_text("x", encoding="utf-8")
+                reg.register(asset_id=f"a{index}", file_path=asset, asset_kind="product_photo", rights_status="ai_generated")
+            contract = _contract()
+            contract["references"] = [{"slot": f"@Image{index}", "asset_id": f"a{index}", "role": "product"} for index in range(6)]
+            report = validate_contract(contract, reg)
+            self.assertTrue(report.ok)
+            self.assertTrue(any("image references above" in item for item in report.warnings))
+            contract["references"] = [{"slot": f"@Image{index}", "asset_id": f"a{index}", "role": "product"} for index in range(10)]
+            self.assertTrue(any("maximum is 9" in item for item in validate_contract(contract, reg).blocked))
+            contract["references"] = [{"slot": f"@Video{index}", "asset_id": f"a{index}", "role": "motion"} for index in range(4)]
+            self.assertTrue(any("video references" in item for item in validate_contract(contract, reg).blocked))
+            contract["references"] = [{"slot": f"@Audio{index}", "asset_id": f"a{index}", "role": "audio"} for index in range(4)]
+            self.assertTrue(any("audio references" in item for item in validate_contract(contract, reg).blocked))
 
 
 if __name__ == "__main__":

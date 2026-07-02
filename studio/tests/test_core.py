@@ -125,8 +125,8 @@ class CoreTests(unittest.TestCase):
             report = validate_contract(contract, reg)
             self.assertFalse(report.ok)
             self.assertTrue(any("blender_render" in item for item in report.blocked))
-            self.assertTrue(report.warnings)
             contract["references"][0] = {"slot": "@Image1", "asset_id": "blend", "role": "composition", "experimental": True}
+            contract["camera"] = "wide soft glints"
             self.assertTrue(validate_contract(contract, reg).ok)
 
     def test_budget_and_idempotency(self):
@@ -203,6 +203,17 @@ class CoreTests(unittest.TestCase):
             run_generation_from_contract(root=root, contract_path=contract_path, provider=CountingProvider(), take="take_001")
             with self.assertRaisesRegex(GenerationBlocked, "daily budget exceeded"):
                 run_generation_from_contract(root=root, contract_path=contract_path, provider=CountingProvider(), take="take_002")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            contract_path = _generation_root(root, cap_usd=20, daily_cap_usd=0.5)
+            project = json.loads((root / "project.json").read_text(encoding="utf-8"))
+            project["budget"]["today_date"] = "2000-01-01"
+            project["budget"]["today_spent_usd"] = 0.5
+            _write_json(root / "project.json", project)
+            ApprovalLog(root / "approvals.jsonl").append(gate="G_storyboard", project="p", target="shot_001", target_sha256=sha256_file(contract_path), verdict="approved")
+            run_generation_from_contract(root=root, contract_path=contract_path, provider=CountingProvider(), take="take_001")
+            project = json.loads((root / "project.json").read_text(encoding="utf-8"))
+            self.assertEqual(project["budget"]["today_spent_usd"], 0.4)
 
     def test_generate_idempotency_does_not_rerun_provider(self):
         with tempfile.TemporaryDirectory() as tmp:

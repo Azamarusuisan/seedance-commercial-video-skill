@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Callable, Generic, TypeVar
 
@@ -15,6 +15,7 @@ from studio.core.permission import Permission
 from studio.core.registry import AssetRegistry, sha256_file
 from studio.memory.seeds import active_items
 from studio.providers.base import Generation, Provider
+from studio.providers.seedance import execution_token
 
 T = TypeVar("T")
 
@@ -82,8 +83,48 @@ def _existing_take(meta_path: Path) -> dict | None:
     if not meta_path.is_file():
         return None
     data = _read_json(meta_path)
+    if data.get("status") == "prepared" and Path(data.get("request_path", "")).is_file():
+        return data
     output = Path(data.get("output_path", ""))
     return data if output.is_file() else None
+
+
+def _today() -> str:
+    return date.today().isoformat()
+
+
+def _budget_for_today(project: dict) -> dict:
+    budget = dict(project.get("budget", {}))
+    today = _today()
+    if budget.get("today_date") != today:
+        budget["today_date"] = today
+        budget["today_spent_usd"] = 0
+    project["budget"] = budget
+    return budget
+
+
+def _charge_budget(project: dict, cost: float) -> None:
+    budget = _budget_for_today(project)
+    budget["spent_usd"] = round(float(budget.get("spent_usd", 0)) + cost, 6)
+    budget["today_spent_usd"] = round(float(budget.get("today_spent_usd", 0)) + cost, 6)
+    budget["generations"] = int(budget.get("generations", 0)) + 1
+    project["budget"] = budget
+    project["updated_at"] = datetime.now(UTC).isoformat()
+
+
+def _contract_references(contract: dict, registry: AssetRegistry) -> list[dict]:
+    resolved = []
+    for ref in contract.get("references", []):
+        record = registry.get(ref["asset_id"]) or {}
+        resolved.append(
+            {
+                "slot": ref["slot"],
+                "role": ref["role"],
+                "path": record.get("path", ref["asset_id"]),
+                "sha256": record.get("sha256", ""),
+            }
+        )
+    return resolved
 
 
 def run_generation_from_contract(*, root: Path, contract_path: Path, provider: Provider, take: str = "take_001") -> dict:
@@ -105,7 +146,7 @@ def run_generation_from_contract(*, root: Path, contract_path: Path, provider: P
 
     duration = float(contract.get("duration_sec", 0))
     estimate = provider.estimate(prompt=prompt, duration_sec=duration)
-    budget = project.get("budget", {})
+    budget = _budget_for_today(project)
     spent_usd = float(budget.get("spent_usd", 0))
     today_spent_usd = float(budget.get("today_spent_usd", 0))
 
@@ -141,6 +182,41 @@ def run_generation_from_contract(*, root: Path, contract_path: Path, provider: P
         existing["idempotent"] = True
         return existing
 
+    if getattr(provider, "mode", "") == "prepare":
+        request_path = provider.prepare(
+            prompt=prompt,
+            contract=contract,
+            output_dir=root / "requests",
+            meta={
+                "project": project["id"],
+                "shot_id": shot_id,
+                "take": take,
+                "contract_sha256": contract_sha,
+                "prompt_sha256": prompt_sha,
+                "estimate_cost": estimate.cost_usd,
+                "aspect": project.get("brief", {}).get("aspect", "9:16"),
+                "references": _contract_references(contract, registry),
+            },
+        )
+        record = {
+            "status": "prepared",
+            "project": project["id"],
+            "shot_id": shot_id,
+            "take": take,
+            "request_path": str(request_path),
+            "execution_token": _read_json(request_path)["execution_token"],
+            "contract_sha256": contract_sha,
+            "prompt_sha256": prompt_sha,
+            "cost_usd": estimate.cost_usd,
+            "idempotency_key": idempotency_key,
+            "created_at": datetime.now(UTC).isoformat(),
+        }
+        _write_json(meta_path, record)
+        with (root / "takes" / "takes.jsonl").open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
+        _write_json(project_path, project)
+        return record
+
     queue = JobQueue()
     result = queue.run_once(idempotency_key, lambda: provider.generate(prompt=prompt, output_dir=root / "takes", duration_sec=duration)).value
     record = _take_record(
@@ -157,11 +233,69 @@ def run_generation_from_contract(*, root: Path, contract_path: Path, provider: P
     with (root / "takes" / "takes.jsonl").open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
 
-    budget["spent_usd"] = round(spent_usd + estimate.cost_usd, 6)
-    budget["today_spent_usd"] = round(today_spent_usd + estimate.cost_usd, 6)
-    budget["generations"] = int(budget.get("generations", 0)) + 1
-    project["budget"] = budget
-    project["updated_at"] = datetime.now(UTC).isoformat()
+    _charge_budget(project, estimate.cost_usd)
+    _write_json(project_path, project)
+    return record
+
+
+def record_generation_result(*, root: Path, request_path: Path, output_path: Path, cost_usd: float | None = None, response_path: Path | None = None) -> dict:
+    root = root.resolve()
+    request_path = request_path.resolve()
+    output_path = output_path.resolve()
+    request = _read_json(request_path)
+    take = request["take"]
+    contract_sha = request["contract_sha256"]
+    shot_id = request["shot_id"]
+    meta_path = root / "takes" / f"{shot_id}-{contract_sha[:12]}-{take}.json"
+    existing = _existing_take(meta_path)
+    if existing and existing.get("status") == "recorded":
+        existing["idempotent"] = True
+        return existing
+    expected = request.get("execution_token")
+    if not expected or execution_token(request) != expected:
+        raise GenerationBlocked("request改竄またはtoken無し。MCP実行はtoken付きrequestのみ")
+    if not output_path.is_file():
+        raise GenerationBlocked(f"missing output: {output_path}")
+
+    project_path = root / "project.json"
+    project = _read_json(project_path)
+    actual_cost = float(cost_usd if cost_usd is not None else request.get("estimate", {}).get("cost_usd", 0))
+    permission = Permission.load(root / "permission.json")
+    unauthorized = permission.data.get("execute", {}).get("seedance_generate") is not True
+    response_copy = ""
+    if response_path:
+        response_dir = root / "responses"
+        response_dir.mkdir(parents=True, exist_ok=True)
+        response_copy = str(response_dir / response_path.name)
+        Path(response_copy).write_bytes(response_path.read_bytes())
+
+    record = {
+        "status": "recorded",
+        "project": request["project"],
+        "shot_id": shot_id,
+        "take": take,
+        "request_path": str(request_path),
+        "execution_token": expected,
+        "contract_sha256": contract_sha,
+        "prompt_sha256": request["prompt_sha256"],
+        "cost_usd": actual_cost,
+        "actual_cost_usd": actual_cost,
+        "output_path": str(output_path),
+        "output_sha256": sha256_file(output_path),
+        "provider": request.get("estimate", {}).get("provider", ""),
+        "model": request.get("estimate", {}).get("model", ""),
+        "executed_by": "human_mcp",
+        "unauthorized": unauthorized,
+        "response_path": response_copy,
+        "created_at": datetime.now(UTC).isoformat(),
+    }
+    _write_json(meta_path, record)
+    with (root / "takes" / "takes.jsonl").open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
+    request["status"] = "recorded"
+    request["recorded_at"] = datetime.now(UTC).isoformat()
+    _write_json(request_path, request)
+    _charge_budget(project, actual_cost)
     _write_json(project_path, project)
     return record
 

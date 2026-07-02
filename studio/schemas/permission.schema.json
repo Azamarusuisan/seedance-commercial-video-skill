@@ -5,13 +5,16 @@
     "project": {"type": "string"},
     "execute": {
       "type": "object",
-      "required": ["gpt_image", "seedance_estimate", "seedance_generate", "elevenlabs", "palmier_or_upscale", "publish"],
+      "required": ["gpt_image", "seedance_estimate", "seedance_generate", "higgsfield_image", "elevenlabs", "palmier_or_upscale", "palmier_edit", "palmier_export", "publish"],
       "properties": {
         "gpt_image": {"type": "boolean"},
         "seedance_estimate": {"type": "boolean"},
         "seedance_generate": {"type": "boolean"},
+        "higgsfield_image": {"type": "boolean"},
         "elevenlabs": {"type": "boolean"},
         "palmier_or_upscale": {"type": "boolean"},
+        "palmier_edit": {"type": "boolean"},
+        "palmier_export": {"type": "boolean"},
         "publish": {"type": "boolean"}
       }
     },

@@ -1,0 +1,14 @@
+{
+  "schema_version": "studio_seed.v1",
+  "kind": "provider_pricing",
+  "items": [
+    {
+      "id": "higgsfield_seedance_video",
+      "status": "candidate",
+      "source": "docs/provider-api-status.md",
+      "usd_per_second": 0,
+      "verified_at": "",
+      "note": "Human must verify Higgsfield Seedance pricing and set status=active before T12'."
+    }
+  ]
+}
