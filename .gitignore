@@ -44,6 +44,8 @@ workspace/assets/generated/**/*.jpg
 workspace/assets/generated/**/*.jpeg
 workspace/assets/generated/**/*.webp
 node_modules/
+__pycache__/
+*.pyc
 playwright-report/
 test-results/
 videos/**/x-reference-*.png

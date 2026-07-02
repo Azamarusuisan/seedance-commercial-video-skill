@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "required": ["project", "characters", "locations", "style", "brand"],
+  "properties": {
+    "project": {"type": "string"},
+    "characters": {"type": "array"},
+    "locations": {"type": "array"},
+    "props": {"type": "array"},
+    "style": {"type": "object"},
+    "brand": {"type": "object"}
+  }
+}

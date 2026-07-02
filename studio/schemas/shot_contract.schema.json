@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "required": ["shot_id", "narrative_function", "duration_sec", "camera", "action", "audio", "references", "acceptance_criteria", "state"],
+  "properties": {
+    "shot_id": {"type": "string"},
+    "narrative_function": {"type": "string"},
+    "duration_sec": {"type": "number"},
+    "continuity": {"type": "object"},
+    "camera": {"type": "string"},
+    "action": {"type": "string"},
+    "audio": {"type": "object"},
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["slot", "asset_id", "role"],
+        "properties": {
+          "slot": {"type": "string"},
+          "asset_id": {"type": "string"},
+          "role": {"type": "string", "enum": ["identity", "product", "style", "composition", "first_frame", "last_frame", "motion", "audio"]},
+          "experimental": {"type": "boolean"}
+        }
+      }
+    },
+    "acceptance_criteria": {"type": "array", "items": {"type": "string"}},
+    "state": {"type": "string", "enum": ["draft", "validated", "approved", "estimating", "authorized", "generating", "evaluating", "needs_retry", "accepted", "rejected"]},
+    "takes": {"type": "array"}
+  }
+}

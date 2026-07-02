@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "required": ["asset_id", "path", "sha256", "asset_kind", "origin", "rights_status", "real_face", "seedance_upload_allowed", "registered_at"],
+  "properties": {
+    "asset_id": {"type": "string"},
+    "path": {"type": "string"},
+    "sha256": {"type": "string"},
+    "asset_kind": {"type": "string", "enum": ["generated_charsheet", "product_photo", "brand_asset", "blender_render", "adopted_frame", "audio", "external_licensed"]},
+    "origin": {"type": "object"},
+    "rights_status": {"type": "string", "enum": ["company_owned", "ai_generated", "licensed", "unknown"]},
+    "real_face": {"type": "boolean"},
+    "seedance_upload_allowed": {"type": "boolean"},
+    "registered_at": {"type": "string"}
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "required": ["project", "execute", "budget", "edited_by"],
+  "properties": {
+    "project": {"type": "string"},
+    "execute": {
+      "type": "object",
+      "required": ["gpt_image", "seedance_estimate", "seedance_generate", "elevenlabs", "palmier_or_upscale", "publish"],
+      "properties": {
+        "gpt_image": {"type": "boolean"},
+        "seedance_estimate": {"type": "boolean"},
+        "seedance_generate": {"type": "boolean"},
+        "elevenlabs": {"type": "boolean"},
+        "palmier_or_upscale": {"type": "boolean"},
+        "publish": {"type": "boolean"}
+      }
+    },
+    "budget": {
+      "type": "object",
+      "required": ["cap_usd", "daily_cap_usd", "max_takes_per_shot", "max_parallel"],
+      "properties": {
+        "cap_usd": {"type": "number"},
+        "daily_cap_usd": {"type": "number"},
+        "max_takes_per_shot": {"type": "integer"},
+        "max_parallel": {"type": "integer"}
+      }
+    },
+    "edited_by": {"type": "string"}
+  }
+}

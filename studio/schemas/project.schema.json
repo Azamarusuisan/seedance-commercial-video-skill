@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "required": ["id", "type", "status", "brief", "budget", "shots", "created_at", "updated_at"],
+  "properties": {
+    "id": {"type": "string"},
+    "type": {"type": "string", "enum": ["short_ad", "long_ad", "short_film", "feature_film"]},
+    "status": {"type": "string", "enum": ["briefing", "scripting", "preproduction", "production", "assembly", "qc", "review", "published", "archived"]},
+    "brief": {
+      "type": "object",
+      "required": ["product", "target", "platform", "duration_sec", "aspect", "language"],
+      "properties": {
+        "product": {"type": "string"},
+        "target": {"type": "string"},
+        "platform": {"type": "array", "items": {"type": "string"}},
+        "duration_sec": {"type": "number"},
+        "aspect": {"type": "string"},
+        "language": {"type": "string"},
+        "must_include": {"type": "array"},
+        "must_avoid": {"type": "array"},
+        "reference_urls": {"type": "array"}
+      }
+    },
+    "budget": {
+      "type": "object",
+      "required": ["cap_usd", "daily_cap_usd", "spent_usd", "generations"],
+      "properties": {
+        "cap_usd": {"type": "number"},
+        "daily_cap_usd": {"type": "number"},
+        "spent_usd": {"type": "number"},
+        "generations": {"type": "integer"}
+      }
+    },
+    "audio_policy": {"type": "object"},
+    "bible_ref": {"type": "string"},
+    "shots": {"type": "array", "items": {"type": "string"}},
+    "timeline": {"type": "string"},
+    "created_at": {"type": "string"},
+    "updated_at": {"type": "string"}
+  }
+}
