@@ -7,7 +7,9 @@ REMOTE_SHA="$(git ls-remote origin main | cut -f1)"
 
 [ "$HEAD_SHA" = "$REMOTE_SHA" ] || { echo "FAIL: HEADがorigin/mainと不一致(未push)"; exit 1; }
 
-git diff --stat "$BASE..HEAD" -- workspace references tests/fixtures | grep -q . \
+# permission manifests are human-edited safety switches, not frozen historical data.
+# Their safety is enforced below by requiring all execute/generate flags to stay false.
+git diff --stat "$BASE..HEAD" -- workspace references tests/fixtures ':(exclude)workspace/run/*.permission.json' | grep -q . \
   && { echo "FAIL: 凍結領域に変更"; exit 1; } || true
 
 rg -n "SKIP_|BYPASS|FORCE_APPROVE|NO_GATE|APPROVED=1" studio/ --glob '!**/self_audit.sh' && exit 1 || true

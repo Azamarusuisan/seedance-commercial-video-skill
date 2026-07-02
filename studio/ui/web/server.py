@@ -23,7 +23,7 @@ label{display:block;margin:8px 0} input{background:#08111f;color:#eef;border:1px
 button{background:#19d3ff;color:#00111d;border:0;border-radius:6px;padding:8px 12px;font-weight:700} button:disabled{opacity:.5}
 code{color:#70ffbd}
 </style>
-<div class="banner"><b>Studio v2</b> / V1 FROZEN — 閲覧専用。制作はStudio v2へ。</div>
+<div class="banner"><b>Studio v2</b> / V1 FROZEN — 閲覧専用。制作はStudio v2へ。<br><small>workspace/run/*.permission.json は人間編集の安全装置。execute系trueはself_auditで停止。</small></div>
 <div class="card"><h2>作る</h2>
 <label>Root <input id="root" value="/tmp/studio-web-demo"></label>
 <label>Project <input id="project" value="demo"></label>
