@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from studio.agents.compiler import compile_prompt, draft_short_ad_contract
+from studio.agents.compiler import compile_prompt, draft_short_ad_contract, normalize_camera_action
 from studio.core.registry import AssetRegistry
 
 
@@ -13,6 +13,11 @@ class CompilerSeedTests(unittest.TestCase):
         draft = draft_short_ad_contract()
         self.assertIn("0-2s hook", draft["narrative_function"])
         self.assertTrue(any(item.startswith("0-2s") for item in draft["acceptance_criteria"]))
+
+    def test_camera_is_normalized_to_playbook_phrase(self):
+        camera, action = normalize_camera_action("dolly toward product", "open lid")
+        self.assertEqual(camera, "slow dolly-in")
+        self.assertEqual(action, "open lid")
 
     def test_compiler_includes_active_seed_rules_and_not_candidate_tokens(self):
         with tempfile.TemporaryDirectory() as tmp:
